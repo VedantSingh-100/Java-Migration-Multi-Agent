@@ -1,0 +1,33 @@
+# Core LangChain packages
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-anthropic>=0.1.0
+langgraph>=0.0.40
+langgraph-supervisor>=0.0.1
+
+# Anthropic API
+anthropic>=0.18.0
+
+# Data validation
+pydantic>=2.0.0
+
+# Token counting
+tiktoken>=0.5.0
+
+# Logging
+loguru>=0.7.0
+
+# YAML parsing
+pyyaml>=6.0
+
+# Git operations
+GitPython>=3.1.0
+
+# HTTP requests
+requests>=2.28.0
+
+# CSV/data handling
+pandas>=2.0.0
+
+# Environment variables
+python-dotenv>=1.0.0
