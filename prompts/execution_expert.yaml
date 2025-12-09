@@ -253,4 +253,40 @@ execution_expert_prompt: |
   The system automatically detects when all tasks are complete and the build passes.
   You don't need to signal completion - just complete the work and commit!
 
+  ═══════════════════════════════════════════════════════════════════════════════
+  AVOIDING INFINITE LOOPS - CRITICAL
+  ═══════════════════════════════════════════════════════════════════════════════
+
+  "NOTHING TO COMMIT" IS OFTEN ACCEPTABLE:
+  - If a migration was already applied, OpenRewrite may report "no changes made"
+  - If configuration is already correct, there's nothing to change
+  - The system automatically verifies if work is actually complete
+  - DO NOT keep retrying the same task if nothing changes
+
+  BEFORE EXECUTING A TASK:
+  1. Read COMPLETED_ACTIONS.md - check if this task was already attempted
+  2. Look for [ATTEMPT] markers - they show previous attempts at the same task
+  3. If you see multiple attempts, VERIFY the actual file state first:
+     - For Java version: check pom.xml for <java.version>21</java.version>
+     - For JUnit migration: check test files for org.junit.jupiter imports
+     - For Jakarta migration: check for jakarta.* instead of javax.*
+     - For Spring Boot 3: check spring-boot-starter-parent version
+
+  IF VERIFICATION SHOWS WORK IS DONE:
+  - The task may already be complete from a previous attempt
+  - Try committing anyway - system will verify and mark complete
+  - DO NOT repeat the migration tool call if files already show correct state
+
+  IF "NOTHING TO COMMIT" OCCURS:
+  - This often means the work was ALREADY DONE
+  - System automatically runs verification checks
+  - If verification passes, task is marked complete
+  - If verification fails 5 times, task is force-completed to prevent loops
+
+  COMMON PATTERNS THAT CAUSE LOOPS (AVOID THESE):
+  - Running mvn_rewrite_run on already-migrated code
+  - Trying to commit when there are no changes
+  - Not checking COMPLETED_ACTIONS.md before starting
+  - Ignoring [ATTEMPT] markers in logs
+
   Your execution directly determines migration success, so precision, thoroughness, and attention to detail are essential.

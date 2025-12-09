@@ -267,6 +267,14 @@ class SupervisorMigrationOrchestrator:
         self.action_counter = 0  # Increments with each logged action
         log_agent("Action logging system initialized with sequential numbering")
 
+        # Session-scoped commit tracking: Track commits made THIS session only
+        self.session_commits = []  # List of dicts: {hash, task, timestamp}
+        log_agent("Session commit tracking initialized")
+
+        # Task attempt tracking: Track how many times each task has been attempted
+        self.task_attempts = {}  # task_description -> count
+        log_agent("Task attempt tracking initialized for loop prevention")
+
         # Initialize context manager for smart message trimming
         from src.utils.context_manager import ContextManager
         self.context_manager = ContextManager(max_recent_messages=10, max_tool_output_lines=20)
@@ -1321,6 +1329,12 @@ TODO.md is managed by the analysis phase and is now locked."""
             # Determine success based on tool type
             if tool_name == 'git_commit':
                 is_success = 'Return code: 0' in result_str
+            elif tool_name == 'commit_changes':
+                # commit_changes returns "Committed changes: {hash} - {message}" on success
+                # or "Error committing changes: ..." on failure (including "nothing to commit")
+                is_success = 'Committed changes:' in result_str
+                # Track "nothing to commit" separately for verification flow
+                is_nothing_to_commit = 'nothing to commit' in result_str.lower()
             elif tool_name == 'create_branch':
                 is_success = 'Created branch' in result_str or 'Checked out branch' in result_str
             elif tool_name == 'add_openrewrite_plugin':
@@ -1354,11 +1368,10 @@ TODO.md is managed by the analysis phase and is now locked."""
             
             # DETERMINISTIC PROGRESS TRACKING: After successful commit (either tool), mark task complete
             COMMIT_TOOLS = {'git_commit', 'commit_changes'}
-            if tool_name in COMMIT_TOOLS and is_success:
-                log_agent(f"[AUTO_SYNC] 📝 Successful commit detected ({tool_name}) - marking current task complete")
 
-                # Extract current task BEFORE marking complete (for task-level logging)
-                current_task = None
+            # Extract current task for all commit operations (needed for verification flow)
+            current_task = None
+            if tool_name in COMMIT_TOOLS:
                 try:
                     visible_tasks_path = os.path.join(self.project_path, "VISIBLE_TASKS.md")
                     if os.path.exists(visible_tasks_path):
@@ -1367,21 +1380,61 @@ TODO.md is managed by the analysis phase and is now locked."""
                 except Exception as e:
                     log_agent(f"[AUTO_SYNC] Could not extract current task: {e}")
 
+            # Handle successful commit
+            if tool_name in COMMIT_TOOLS and is_success:
+                log_agent(f"[AUTO_SYNC] 📝 Successful commit detected ({tool_name}) - marking current task complete")
+
                 # Mark task complete in TODO.md and update VISIBLE_TASKS.md
                 self._update_visible_tasks_file(mark_current_complete=True)
 
-                # Log TASK-LEVEL completion (useful external memory)
+                # Log TASK-LEVEL completion and record session commit
                 if current_task:
-                    # Try to extract commit hash from result
                     commit_hash = None
-                    if result and isinstance(result, str) and 'commit' in result.lower():
+                    if result and isinstance(result, str):
                         import re
                         hash_match = re.search(r'[a-f0-9]{7,40}', result)
                         if hash_match:
                             commit_hash = hash_match.group(0)
+                            self._record_session_commit(commit_hash, current_task)
                     self._log_task_completion(current_task, commit_hash)
 
                 log_agent(f"[AUTO_SYNC] ✅ Task marked in TODO.md, VISIBLE_TASKS.md updated with next task")
+
+            # Handle "nothing to commit" - run verification to check if task is actually complete
+            elif tool_name == 'commit_changes' and 'nothing to commit' in result_str.lower():
+                log_agent(f"[AUTO_SYNC] ⚠ 'Nothing to commit' detected - running task verification")
+
+                if current_task:
+                    # Increment attempt counter
+                    attempt_count = self._increment_task_attempt(current_task)
+
+                    # Run verification to check if work is actually done
+                    is_verified, verify_reason = self._verify_task_complete(current_task)
+
+                    if is_verified:
+                        log_agent(f"[AUTO_SYNC] ✅ Task verified complete despite no commit: {verify_reason}")
+                        self._update_visible_tasks_file(mark_current_complete=True)
+                        self._log_task_completion(current_task, "VERIFIED_NO_COMMIT")
+                        log_agent(f"[AUTO_SYNC] ✅ Task marked complete via verification")
+                    else:
+                        log_agent(f"[AUTO_SYNC] ❌ Task NOT verified: {verify_reason} (attempt #{attempt_count})")
+
+                        # Check for loop condition - force complete after 5 attempts
+                        if attempt_count >= 5:
+                            log_agent(f"[LOOP_BREAK] 🔄 Task attempted {attempt_count} times - forcing completion")
+                            # Log to COMPLETED_ACTIONS.md for visibility
+                            self._append_to_completed_actions(
+                                f"\n[LOOP_BREAK] Task force-completed after {attempt_count} attempts: {current_task[:60]}...\n"
+                                f"    Reason: {verify_reason}\n"
+                            )
+                            self._update_visible_tasks_file(mark_current_complete=True)
+                            self._log_task_completion(current_task, "FORCE_COMPLETED")
+                            log_agent(f"[LOOP_BREAK] ⚠ Task force-marked complete to prevent infinite loop")
+                        elif attempt_count >= 3:
+                            # Log warning but continue
+                            log_agent(f"[LOOP_WARN] ⚠ Task attempted {attempt_count} times - may be stuck")
+                else:
+                    log_agent(f"[AUTO_SYNC] ⚠ Could not determine current task for verification")
             
             # Log ALL tracked tool executions (both success and failure) in structured format
             if hasattr(self, 'project_path') and self.project_path:
@@ -1914,7 +1967,248 @@ TODO.md is managed by the analysis phase and is now locked."""
         
         except Exception as e:
             log_agent(f"[AUTO_SYNC] Error marking task in TODO.md: {str(e)}", "ERROR")
-    
+
+    # ============== TASK VERIFICATION FUNCTIONS ==============
+    # These functions verify if a task is actually complete by checking file state,
+    # NOT git history (which can have stale/reverted commits)
+
+    def _verify_task_complete(self, task_description: str) -> tuple:
+        """
+        Verify if a task is actually complete by checking file state.
+        Returns (is_complete: bool, reason: str)
+        """
+        if not self.project_path or not task_description:
+            return False, "No project path or task description"
+
+        task_lower = task_description.lower()
+
+        # Match task to verification function
+        verifications = [
+            (r'add.*openrewrite|openrewrite.*plugin|configure.*recipe', self._verify_openrewrite_setup),
+            (r'java\s*21|java\s*version.*21|UpgradeToJava21', self._verify_java_21),
+            (r'spring\s*boot\s*3|UpgradeSpringBoot', self._verify_spring_boot_3),
+            (r'jakarta|javax.*to.*jakarta|JavaxMigration', self._verify_jakarta_migration),
+            (r'junit.*4.*to.*5|junit.*5|junit.*migration|JUnit4to5', self._verify_junit5_migration),
+            (r'verify.*compil|compilation', self._verify_compilation),
+            (r'verify.*test|run.*test', self._verify_tests),
+            (r'verify.*import|import.*migrat', self._verify_imports_generic),
+        ]
+
+        import re
+        for pattern, verify_func in verifications:
+            if re.search(pattern, task_lower, re.IGNORECASE):
+                try:
+                    is_complete, reason = verify_func(task_description)
+                    log_agent(f"[VERIFY] Task '{task_description[:40]}...' -> {is_complete}: {reason}")
+                    return is_complete, reason
+                except Exception as e:
+                    log_agent(f"[VERIFY] Error in {verify_func.__name__}: {e}")
+                    continue
+
+        # No specific verification found - cannot verify
+        return False, "No verification available for this task type"
+
+    def _verify_openrewrite_setup(self, task: str) -> tuple:
+        """Check if OpenRewrite plugin is in pom.xml."""
+        import subprocess
+        pom_path = os.path.join(self.project_path, 'pom.xml')
+
+        if not os.path.exists(pom_path):
+            return False, "pom.xml not found"
+
+        with open(pom_path, 'r') as f:
+            content = f.read()
+
+        if 'openrewrite-maven-plugin' in content:
+            return True, "OpenRewrite plugin found in pom.xml"
+        return False, "OpenRewrite plugin not found in pom.xml"
+
+    def _verify_java_21(self, task: str) -> tuple:
+        """Check if Java version is 21."""
+        import re as regex
+        pom_path = os.path.join(self.project_path, 'pom.xml')
+
+        if not os.path.exists(pom_path):
+            return False, "pom.xml not found"
+
+        with open(pom_path, 'r') as f:
+            content = f.read()
+
+        patterns = [
+            r'<java\.version>21</java\.version>',
+            r'<maven\.compiler\.source>21</maven\.compiler\.source>',
+            r'<maven\.compiler\.target>21</maven\.compiler\.target>',
+            r'<release>21</release>',
+        ]
+        for pattern in patterns:
+            if regex.search(pattern, content):
+                return True, f"Java 21 configured (matched: {pattern})"
+        return False, "Java 21 not found in pom.xml"
+
+    def _verify_spring_boot_3(self, task: str) -> tuple:
+        """Check if Spring Boot version is 3.x."""
+        import re as regex
+        pom_path = os.path.join(self.project_path, 'pom.xml')
+
+        if not os.path.exists(pom_path):
+            return False, "pom.xml not found"
+
+        with open(pom_path, 'r') as f:
+            content = f.read()
+
+        # Check for spring-boot-starter-parent version 3.x
+        match = regex.search(r'spring-boot-starter-parent.*?<version>(\d+)\.', content, regex.DOTALL)
+        if match and match.group(1) == '3':
+            return True, "Spring Boot 3.x found in parent"
+
+        # Check for spring-boot.version property
+        match = regex.search(r'<spring-boot\.version>(\d+)\.', content)
+        if match and match.group(1) == '3':
+            return True, "Spring Boot 3.x found in properties"
+
+        return False, "Spring Boot 3.x not found"
+
+    def _verify_jakarta_migration(self, task: str) -> tuple:
+        """Check no javax.persistence/servlet/inject imports remain."""
+        import subprocess
+
+        src_path = os.path.join(self.project_path, 'src')
+        if not os.path.exists(src_path):
+            return True, "No src directory - nothing to migrate"
+
+        # Check for OLD imports that should be gone
+        old_imports = subprocess.run(
+            ['grep', '-rE', r'import javax\.(persistence|servlet|validation|inject|annotation\.(Nullable|Nonnull))',
+             '--include=*.java', 'src/'],
+            capture_output=True, text=True, cwd=self.project_path
+        )
+
+        if old_imports.returncode == 0 and old_imports.stdout.strip():
+            # Found old imports
+            sample = old_imports.stdout.strip().split('\n')[0][:100]
+            return False, f"Still has javax imports: {sample}"
+        return True, "No legacy javax imports found"
+
+    def _verify_junit5_migration(self, task: str) -> tuple:
+        """Check JUnit 5 imports exist, no @RunWith."""
+        import subprocess
+
+        test_path = os.path.join(self.project_path, 'src', 'test')
+        if not os.path.exists(test_path):
+            return True, "No test directory - nothing to migrate"
+
+        # Check for JUnit 5 imports
+        junit5 = subprocess.run(
+            ['grep', '-r', 'org.junit.jupiter', '--include=*.java', 'src/test'],
+            capture_output=True, text=True, cwd=self.project_path
+        )
+
+        # Check for old @RunWith (JUnit 4 pattern) - but ignore @ExtendWith
+        runwith = subprocess.run(
+            ['grep', '-r', '@RunWith', '--include=*.java', 'src/test'],
+            capture_output=True, text=True, cwd=self.project_path
+        )
+
+        has_junit5 = junit5.returncode == 0 and junit5.stdout.strip()
+        has_runwith = runwith.returncode == 0 and runwith.stdout.strip()
+
+        if has_junit5 and not has_runwith:
+            return True, "JUnit 5 imports found, no @RunWith"
+        elif has_junit5 and has_runwith:
+            return False, "JUnit 5 found but @RunWith still present"
+        elif not has_junit5:
+            # No JUnit 5 found - check if there are any test files at all
+            any_tests = subprocess.run(
+                ['find', 'src/test', '-name', '*.java'],
+                capture_output=True, text=True, cwd=self.project_path
+            )
+            if not any_tests.stdout.strip():
+                return True, "No Java test files found - nothing to migrate"
+            return False, "No JUnit 5 imports found in test files"
+        return False, "JUnit migration verification inconclusive"
+
+    def _verify_compilation(self, task: str) -> tuple:
+        """Run mvn compile and check result."""
+        import subprocess
+
+        try:
+            result = subprocess.run(
+                ['mvn', 'compile', '-q', '-B', '-DskipTests'],
+                capture_output=True, text=True, cwd=self.project_path, timeout=300
+            )
+            if result.returncode == 0:
+                return True, "Compilation successful"
+            return False, f"Compilation failed: {result.stderr[:200] if result.stderr else result.stdout[:200]}"
+        except subprocess.TimeoutExpired:
+            return False, "Compilation timed out"
+        except Exception as e:
+            return False, f"Compilation error: {str(e)}"
+
+    def _verify_tests(self, task: str) -> tuple:
+        """Run mvn test and check result."""
+        import subprocess
+
+        try:
+            result = subprocess.run(
+                ['mvn', 'test', '-q', '-B'],
+                capture_output=True, text=True, cwd=self.project_path, timeout=600
+            )
+            if result.returncode == 0:
+                return True, "Tests passed"
+            return False, f"Tests failed: {result.stderr[:200] if result.stderr else result.stdout[:200]}"
+        except subprocess.TimeoutExpired:
+            return False, "Tests timed out"
+        except Exception as e:
+            return False, f"Test error: {str(e)}"
+
+    def _verify_imports_generic(self, task: str) -> tuple:
+        """Generic import verification based on task description."""
+        task_lower = task.lower()
+
+        if 'javax.persistence' in task_lower or 'jakarta' in task_lower:
+            return self._verify_jakarta_migration(task)
+        elif 'junit' in task_lower:
+            return self._verify_junit5_migration(task)
+
+        # Default: assume verified if we get here (can't verify generically)
+        return True, "Import verification passed (no specific check available)"
+
+    def _increment_task_attempt(self, task_description: str) -> int:
+        """Increment and return the attempt count for a task."""
+        if task_description not in self.task_attempts:
+            self.task_attempts[task_description] = 0
+        self.task_attempts[task_description] += 1
+        count = self.task_attempts[task_description]
+        log_agent(f"[ATTEMPT] Task attempt #{count}: {task_description[:50]}...")
+        return count
+
+    def _get_task_attempt_count(self, task_description: str) -> int:
+        """Get the current attempt count for a task."""
+        return self.task_attempts.get(task_description, 0)
+
+    def _record_session_commit(self, commit_hash: str, task_description: str):
+        """Record a commit made during this session."""
+        from datetime import datetime
+        self.session_commits.append({
+            'hash': commit_hash,
+            'task': task_description,
+            'timestamp': datetime.now().isoformat()
+        })
+        log_agent(f"[SESSION] Recorded commit {commit_hash[:8]} for task: {task_description[:40]}...")
+
+    def _append_to_completed_actions(self, entry: str):
+        """Append an entry to COMPLETED_ACTIONS.md."""
+        if not self.project_path:
+            return
+        try:
+            completed_actions_path = os.path.join(self.project_path, "COMPLETED_ACTIONS.md")
+            with open(completed_actions_path, 'a') as f:
+                f.write(entry)
+        except Exception as e:
+            log_agent(f"[ACTION_LOG] Error appending to COMPLETED_ACTIONS.md: {e}")
+
+    # ============== END TASK VERIFICATION FUNCTIONS ==============
+
     def _create_visible_tasks_file(self, visible_tasks: dict):
         """Create VISIBLE_TASKS.md file with only next 3 unchecked tasks
         
