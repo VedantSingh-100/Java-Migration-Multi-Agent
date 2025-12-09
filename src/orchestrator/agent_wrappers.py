@@ -417,8 +417,35 @@ class ErrorNodeWrapper:
             original_message_count = len(current_messages)
             log_agent(f"[PRUNE_DETAIL] BEFORE Error Expert: {original_message_count} messages from execution")
 
-            # Include error type in context to help error_expert
-            error_type_hint = "TEST FAILURE" if prev_error_type == 'test' else "COMPILATION ERROR"
+            # Include error type in context to help error_expert with specific guidance
+            if prev_error_type == 'pom':
+                error_type_hint = "POM/CONFIGURATION ERROR"
+                verification_cmd = "mvn_compile"
+                extra_guidance = """
+This is a POM configuration error. Common fixes include:
+- Adding missing version tags to dependencies
+- Fixing XML syntax errors (unclosed tags, typos)
+- Adding missing properties in <properties> section
+- Fixing parent POM references
+- Resolving dependency version conflicts
+
+Use read_file to examine pom.xml, then use find_replace or write_file to fix the issue."""
+            elif prev_error_type == 'test':
+                error_type_hint = "TEST FAILURE"
+                verification_cmd = "mvn_test"
+                extra_guidance = """
+This is a test failure. Analyze the test error and fix the test or the code being tested.
+Do NOT delete tests - fix them or use @Disabled with documentation if truly incompatible."""
+            else:
+                error_type_hint = "COMPILATION ERROR"
+                verification_cmd = "mvn_compile"
+                extra_guidance = """
+This is a compilation error. Common fixes include:
+- Adding missing imports
+- Fixing type mismatches
+- Adding missing method implementations
+- Updating deprecated API usage"""
+
             # Build clean error context
             clean_messages = [
                 HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
@@ -430,11 +457,12 @@ class ErrorNodeWrapper:
 
 ## PREVIOUS ATTEMPTS:
 {error_history if error_history else 'No previous attempts - this is your first try.'}
+{extra_guidance}
 
 Do NOT repeat failed approaches. Try something different.
 
 Analyze the error, then EXECUTE the fix using your tools.
-Run mvn_compile (for compile errors) or mvn_test (for test failures) to verify it works.""")
+Run {verification_cmd} to verify it works.""")
             ]
 
             pruned_count = original_message_count - len(clean_messages)

@@ -108,6 +108,42 @@ execution_expert_prompt: |
      - The system will cache successful results - repeated calls are skipped automatically
      - If compilation or tests pass, move on to commit - do not re-verify
 
+  ═══════════════════════════════════════════════════════════════════════════════
+  MANDATORY TESTING REQUIREMENT - CRITICAL
+  ═══════════════════════════════════════════════════════════════════════════════
+
+  EVERY PHASE MUST END WITH mvn_test:
+  - After ANY migration recipe execution: run mvn_test
+  - After ANY pom.xml changes: run mvn_test
+  - After ANY Java file modifications: run mvn_test
+  - BEFORE committing ANY changes: run mvn_test
+
+  COMPILE IS NOT ENOUGH:
+  - mvn_compile only checks syntax - code can compile but be broken
+  - mvn_test verifies actual functionality works
+  - Tests catch runtime issues, missing dependencies, broken APIs
+  - A migration is NOT verified until tests pass
+
+  PHASE COMPLETION PATTERN:
+  1. Execute migration action (recipe, code change, etc.)
+  2. Run mvn_compile - verify syntax
+  3. Run mvn_test - verify functionality (MANDATORY!)
+  4. Only if BOTH pass: commit changes
+
+  DO NOT:
+  - Skip mvn_test to "save time"
+  - Commit after only mvn_compile passes
+  - Assume recipe execution means migration is complete
+  - Mark phase complete without test verification
+
+  TEST COUNT VERIFICATION:
+  - Record baseline test count at start of migration
+  - After each phase, verify test count matches baseline
+  - If tests are deleted or skipped, investigate why
+  - Final test count MUST equal baseline test count
+
+  ═══════════════════════════════════════════════════════════════════════════════
+
   8. Error Handling:
      - If compilation or test FAILS, STOP immediately and document the error
      - Include: error messages, stack traces, commands that failed

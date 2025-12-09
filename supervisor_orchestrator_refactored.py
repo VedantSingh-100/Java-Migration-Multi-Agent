@@ -351,8 +351,13 @@ class SupervisorMigrationOrchestrator:
                 log_summary("MIGRATION FAILED: Max error attempts (3) reached")
                 return "FAILED"
 
-            # Differentiate between compile errors and test failures
-            if error_type == 'test':
+            # Differentiate between error types: pom, test, compile
+            if error_type == 'pom':
+                # POM errors go directly to error_expert - these are configuration issues
+                log_agent(f"[ROUTER] -> POM/configuration error detected, routing to error_expert (attempt {error_count}/3)")
+                log_summary(f"POM ERROR: Routing to error_expert for configuration fix (attempt {error_count}/3)")
+                return "error_expert"
+            elif error_type == 'test':
                 # Test failures get 1 retry before routing to error_expert
                 if test_failure_count == 0:
                     log_agent(f"[ROUTER] -> Test failure detected, allowing 1 retry (execution_expert)")
@@ -363,7 +368,7 @@ class SupervisorMigrationOrchestrator:
                     log_summary(f"TEST FAILURE PERSISTS: Routing to error_expert (attempt {error_count}/3)")
                     return "error_expert"
             else:
-                # Compile errors go to error_expert immediately
+                # Compile errors (and generic 'compile' type) go to error_expert immediately
                 log_agent(f"[ROUTER] -> Compile error detected, routing to error_expert (attempt {error_count}/3)")
                 return "error_expert"
 
@@ -562,7 +567,34 @@ class SupervisorMigrationOrchestrator:
         error_history = self.state_file_manager.read_file("ERROR_HISTORY.md")
 
         # Include error type in context to help error_expert
-        error_type_hint = "TEST FAILURE" if prev_error_type == 'test' else "COMPILATION ERROR"
+        if prev_error_type == 'pom':
+            error_type_hint = "POM/CONFIGURATION ERROR"
+            verification_cmd = "mvn_compile"
+            extra_guidance = """
+This is a POM configuration error. Common fixes include:
+- Adding missing version tags to dependencies
+- Fixing XML syntax errors (unclosed tags, typos)
+- Adding missing properties in <properties> section
+- Fixing parent POM references
+- Resolving dependency version conflicts
+
+Use read_file to examine pom.xml, then use find_replace or write_file to fix the issue."""
+        elif prev_error_type == 'test':
+            error_type_hint = "TEST FAILURE"
+            verification_cmd = "mvn_test"
+            extra_guidance = """
+This is a test failure. Analyze the test error and fix the test or the code being tested.
+Do NOT delete tests - fix them or use @Disabled with documentation if truly incompatible."""
+        else:
+            error_type_hint = "COMPILATION ERROR"
+            verification_cmd = "mvn_compile"
+            extra_guidance = """
+This is a compilation error. Common fixes include:
+- Adding missing imports
+- Fixing type mismatches
+- Adding missing method implementations
+- Updating deprecated API usage"""
+
         clean_messages = [
             HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
 
@@ -573,10 +605,11 @@ class SupervisorMigrationOrchestrator:
 
 ## PREVIOUS ATTEMPTS:
 {error_history if error_history else 'No previous attempts - this is your first try.'}
+{extra_guidance}
 
 Do NOT repeat failed approaches. Try something different.
 Analyze the error, then EXECUTE the fix using your tools.
-Run mvn_compile (for compile errors) or mvn_test (for test failures) to verify it works.""")
+Run {verification_cmd} to verify it works.""")
         ]
 
         state_with_context = dict(state)
@@ -789,6 +822,11 @@ Run mvn_compile (for compile errors) or mvn_test (for test failures) to verify i
         """Run supervised migration on a project"""
         # Cleanup and initialize
         self._cleanup_state_files(project_path)
+
+        # Reset verification cache singleton for new migration
+        from src.orchestrator.tool_registry import VerificationCache
+        VerificationCache.reset_singleton()
+        log_agent("[MIGRATE] Reset verification cache for new migration session")
 
         # Create and register state tracker
         self.state_tracker = MigrationStateTracker(project_path)

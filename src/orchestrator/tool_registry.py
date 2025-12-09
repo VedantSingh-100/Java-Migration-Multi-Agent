@@ -41,9 +41,33 @@ class VerificationCache:
 
     Uses file hashing (like GitHub Actions hashFiles) to detect when source files
     have changed and re-verification is needed.
+
+    SINGLETON PATTERN: Only one instance exists per project to ensure cache persists
+    across all tool wrapper instances and agent invocations.
     """
 
+    # Class-level singleton instance
+    _instance: Optional['VerificationCache'] = None
+    _instance_project_path: Optional[str] = None
+
+    def __new__(cls, project_path: str = None):
+        """Singleton pattern - return existing instance if project matches"""
+        if cls._instance is None or (project_path and cls._instance_project_path != project_path):
+            # Create new instance for new project or first time
+            instance = super().__new__(cls)
+            instance._initialized = False
+            cls._instance = instance
+            cls._instance_project_path = project_path
+            log_agent(f"[CACHE] Creating NEW VerificationCache instance for project")
+        else:
+            log_agent(f"[CACHE] Reusing existing VerificationCache instance (singleton)")
+        return cls._instance
+
     def __init__(self, project_path: str = None):
+        # Only initialize once per instance
+        if getattr(self, '_initialized', False):
+            return
+
         self.project_path = project_path
         self.last_compile_hash: Optional[str] = None
         self.last_test_hash: Optional[str] = None
@@ -51,11 +75,32 @@ class VerificationCache:
         self.last_test_result: Optional[str] = None
         self.last_compile_time: Optional[datetime] = None
         self.last_test_time: Optional[datetime] = None
+        self.compile_cache_hits: int = 0
+        self.compile_cache_misses: int = 0
+        self.test_cache_hits: int = 0
+        self.test_cache_misses: int = 0
+        self._initialized = True
+        log_agent(f"[CACHE] VerificationCache initialized for: {project_path}")
+
+    @classmethod
+    def get_instance(cls, project_path: str = None) -> 'VerificationCache':
+        """Get or create the singleton instance"""
+        return cls(project_path)
+
+    @classmethod
+    def reset_singleton(cls):
+        """Reset the singleton (for testing or new migration sessions)"""
+        cls._instance = None
+        cls._instance_project_path = None
+        log_agent("[CACHE] VerificationCache singleton reset")
 
     def set_project_path(self, project_path: str):
-        """Update project path and invalidate cache"""
-        self.project_path = project_path
-        self.invalidate_all()
+        """Update project path and invalidate cache if changed"""
+        if self.project_path != project_path:
+            log_agent(f"[CACHE] Project path changed: {self.project_path} -> {project_path}")
+            self.project_path = project_path
+            self.invalidate_all()
+            VerificationCache._instance_project_path = project_path
 
     def invalidate_all(self):
         """Invalidate all cached results"""
@@ -123,15 +168,19 @@ class VerificationCache:
             (is_cached, cached_result or None)
         """
         if self.last_compile_hash is None:
+            self.compile_cache_misses += 1
+            log_agent(f"[CACHE] ❌ Compile cache MISS (no previous hash) [hits={self.compile_cache_hits}, misses={self.compile_cache_misses}]")
             return False, None
 
         current_hash = self.compute_source_hash(include_tests=False)
         if current_hash == self.last_compile_hash:
             age = (datetime.now() - self.last_compile_time).total_seconds() if self.last_compile_time else 0
-            log_agent(f"[CACHE] ✅ Compile cache HIT (hash match, {age:.0f}s old)")
+            self.compile_cache_hits += 1
+            log_agent(f"[CACHE] ✅ Compile cache HIT (hash match, {age:.0f}s old) [hits={self.compile_cache_hits}, misses={self.compile_cache_misses}]")
             return True, self.last_compile_result
 
-        log_agent(f"[CACHE] ❌ Compile cache MISS (hash changed)")
+        self.compile_cache_misses += 1
+        log_agent(f"[CACHE] ❌ Compile cache MISS (hash changed: {self.last_compile_hash[:8]}... -> {current_hash[:8]}...) [hits={self.compile_cache_hits}, misses={self.compile_cache_misses}]")
         return False, None
 
     def check_test_cache(self) -> Tuple[bool, Optional[str]]:
@@ -142,16 +191,33 @@ class VerificationCache:
             (is_cached, cached_result or None)
         """
         if self.last_test_hash is None:
+            self.test_cache_misses += 1
+            log_agent(f"[CACHE] ❌ Test cache MISS (no previous hash) [hits={self.test_cache_hits}, misses={self.test_cache_misses}]")
             return False, None
 
         current_hash = self.compute_source_hash(include_tests=True)
         if current_hash == self.last_test_hash:
             age = (datetime.now() - self.last_test_time).total_seconds() if self.last_test_time else 0
-            log_agent(f"[CACHE] ✅ Test cache HIT (hash match, {age:.0f}s old)")
+            self.test_cache_hits += 1
+            log_agent(f"[CACHE] ✅ Test cache HIT (hash match, {age:.0f}s old) [hits={self.test_cache_hits}, misses={self.test_cache_misses}]")
             return True, self.last_test_result
 
-        log_agent(f"[CACHE] ❌ Test cache MISS (hash changed)")
+        self.test_cache_misses += 1
+        log_agent(f"[CACHE] ❌ Test cache MISS (hash changed: {self.last_test_hash[:8]}... -> {current_hash[:8]}...) [hits={self.test_cache_hits}, misses={self.test_cache_misses}]")
         return False, None
+
+    def get_stats(self) -> dict:
+        """Get cache statistics"""
+        return {
+            "compile_hits": self.compile_cache_hits,
+            "compile_misses": self.compile_cache_misses,
+            "compile_hit_rate": self.compile_cache_hits / max(1, self.compile_cache_hits + self.compile_cache_misses),
+            "test_hits": self.test_cache_hits,
+            "test_misses": self.test_cache_misses,
+            "test_hit_rate": self.test_cache_hits / max(1, self.test_cache_hits + self.test_cache_misses),
+            "last_compile_hash": self.last_compile_hash[:8] if self.last_compile_hash else None,
+            "last_test_hash": self.last_test_hash[:8] if self.last_test_hash else None,
+        }
 
     def update_compile_cache(self, result: str, success: bool):
         """Update compile cache after successful compile"""
@@ -477,10 +543,17 @@ The execution agent will handle all project modifications."""
                         pass
 
             # Allow all other file operations
-            # INVALIDATE VERIFICATION CACHE when source files change
-            if file_path.endswith('.java') or file_path.endswith('pom.xml'):
-                log_agent(f"[CACHE] Invalidating verification cache - source file modified: {os.path.basename(file_path)}")
+            # INVALIDATE VERIFICATION CACHE only when .java source files change
+            # NOTE: pom.xml changes affect dependencies/plugins but NOT compiled bytecode
+            # The hash-based cache will naturally miss if actual source code changes
+            # We only need to invalidate on .java changes since that affects compilation
+            if file_path.endswith('.java'):
+                log_agent(f"[CACHE] Invalidating verification cache - Java source file modified: {os.path.basename(file_path)}")
                 self.verification_cache.invalidate_all()
+            elif file_path.endswith('pom.xml'):
+                # Don't invalidate cache for pom.xml changes
+                # The compile will naturally detect dependency issues
+                log_agent(f"[CACHE] pom.xml modified - NOT invalidating cache (hash-based detection will handle)")
 
             return original_func(*args, **kwargs)
 

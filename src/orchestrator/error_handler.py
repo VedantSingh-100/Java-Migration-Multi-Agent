@@ -49,36 +49,87 @@ class ErrorHandler:
 
     def detect_build_error(self, messages: List[BaseMessage]) -> Tuple[bool, str, str]:
         """
-        Check if messages contain build errors from Maven or compilation.
+        Check if the MOST RECENT build tool result contains errors.
+
+        IMPORTANT: This follows the LangGraph best practice of checking the CURRENT
+        state of the most recent tool result, NOT scanning all historical messages
+        for any error. A successful build after a failed build means NO ERROR.
+
+        See: https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph
+        "Don't scan messages for tool success—instead, use direct state updates
+        that reflect tool outcomes"
 
         Args:
             messages: List of messages to check
 
         Returns:
             (has_error: bool, error_summary: str, error_type: str)
-            error_type: 'compile', 'test', or 'none'
+            error_type: 'compile', 'test', 'pom', or 'none'
         """
+        # Patterns for POM/configuration errors (need manual intervention or specific fixes)
+        POM_ERROR_PATTERNS = [
+            r'malformed\s+pom',
+            r'non[\-\s]?parseable\s+pom',
+            r'unrecognised\s+tag',
+            r'unrecognized\s+tag',  # alternate spelling
+            r'problems?\s+were\s+encountered\s+while\s+processing\s+the\s+pom',
+            r'the\s+build\s+could\s+not\s+read',
+            r'dependencies\.dependency\.version.*is\s+missing',
+            r'dependency\.version.*for.*is\s+missing',
+            r'\'dependencies\.dependency\.version\'',
+            r'project\.version.*is\s+missing',
+            r'invalid\s+pom',
+            r'error\s+parsing',
+            r'xml\s+parsing\s+error',
+            r'premature\s+end\s+of\s+file',
+            r'content\s+is\s+not\s+allowed\s+in\s+prolog',
+            r'must\s+be\s+terminated\s+by\s+the\s+matching',  # XML tag mismatch
+            r'element.*not\s+allowed\s+here',
+            r'cvc-complex-type',  # XML schema validation error
+            r'could\s+not\s+find\s+artifact',
+            r'could\s+not\s+resolve\s+dependencies',
+            r'failure\s+to\s+find',
+        ]
+
         # Patterns for compile errors (immediately route to error_expert)
         COMPILE_ERROR_PATTERNS = [
-            'cannot find symbol',
-            'compilation error',
-            'package .* does not exist',
-            'class .* does not exist',
-            'incompatible types',
-            'method .* cannot be applied',
-            'non-static .* cannot be referenced',
-            'unreported exception',
+            r'cannot\s+find\s+symbol',
+            r'compilation\s+error',
+            r'package\s+.*\s+does\s+not\s+exist',
+            r'class\s+.*\s+does\s+not\s+exist',
+            r'incompatible\s+types',
+            r'method\s+.*\s+cannot\s+be\s+applied',
+            r'non-static\s+.*\s+cannot\s+be\s+referenced',
+            r'unreported\s+exception',
+            r'error:\s+\[',  # javac error format
+            r'cannot\s+be\s+applied\s+to',
+            r'is\s+not\s+abstract\s+and\s+does\s+not\s+override',
+            r'has\s+private\s+access',
+            r'cannot\s+access',
+            r'bad\s+operand',
+            r'illegal\s+start\s+of\s+expression',
+            r'reached\s+end\s+of\s+file\s+while\s+parsing',
+            r'unclosed\s+string\s+literal',
         ]
 
         # Patterns for test failures (retry once before routing to error_expert)
         TEST_FAILURE_PATTERNS = [
-            r'Tests run:.*Failures: [1-9]',
-            r'Tests run:.*Errors: [1-9]',
-            r'There are test failures',
-            r'Failed tests:',
-            r'Tests in error:',
-            r'Test .* FAILED',
+            r'Tests\s+run:.*Failures:\s*[1-9]',
+            r'Tests\s+run:.*Errors:\s*[1-9]',
+            r'There\s+are\s+test\s+failures',
+            r'Failed\s+tests:',
+            r'Tests\s+in\s+error:',
+            r'Test\s+.*\s+FAILED',
             r'testCompile.*FAILED',
+            r'java\.lang\.AssertionError',
+            r'org\.junit\..*AssertionFailedError',
+            r'expected:<.*>\s+but\s+was:<.*>',
+        ]
+
+        # Patterns that indicate a SUCCESSFUL build (no errors)
+        SUCCESS_PATTERNS = [
+            r'BUILD\s+SUCCESS',
+            r'Return\s+code:\s*0',
         ]
 
         import re
@@ -94,35 +145,99 @@ class ErrorHandler:
                 msg_content = str(msg.content)
                 msg_name = getattr(msg, 'name', '')
 
-            # Only check Maven/build related messages
-            if not msg_name or not ('mvn' in msg_name.lower() or 'compile' in msg_name.lower() or 'test' in msg_name.lower()):
+            # Check if this is a build-related message (mvn_compile, mvn_test, etc.)
+            is_build_tool_result = self._is_build_tool_result(msg_content, msg_name)
+
+            if not is_build_tool_result:
                 continue
 
-            # Check for BUILD FAILURE/ERROR indicator
-            if 'BUILD FAILURE' not in msg_content and 'BUILD ERROR' not in msg_content and '[ERROR]' not in msg_content:
-                continue
+            # FOUND A BUILD TOOL RESULT - This is the MOST RECENT one
+            # Check SUCCESS first - if the most recent build succeeded, NO ERROR
+            for pattern in SUCCESS_PATTERNS:
+                if re.search(pattern, msg_content, re.IGNORECASE):
+                    log_agent(f"[ERROR_DETECT] Most recent build SUCCEEDED (pattern: {pattern})")
+                    return False, "", "none"
 
-            # Extract error summary
-            error_lines = [line for line in msg_content.split('\n') if 'ERROR' in line or 'FAILURE' in line or 'Failed' in line]
-            error_summary = '\n'.join(error_lines[:5]) if error_lines else msg_content[:500]
+            # Check for failure indicators
+            has_failure_indicator = (
+                'BUILD FAILURE' in msg_content or
+                'BUILD ERROR' in msg_content or
+                '[ERROR]' in msg_content or
+                'COMPILATION ERROR' in msg_content or
+                'Failed to execute goal' in msg_content or
+                'Return code: 1' in msg_content
+            )
 
-            # Check for test failures FIRST (more specific)
+            if not has_failure_indicator:
+                # Build tool result found but no failure indicators - treat as success
+                log_agent(f"[ERROR_DETECT] Most recent build tool result has no failure indicators - treating as success")
+                return False, "", "none"
+
+            # Extract error summary - get more context
+            error_lines = []
+            for line in msg_content.split('\n'):
+                if any(kw in line for kw in ['ERROR', 'FAILURE', 'Failed', 'error:', 'cannot', 'missing']):
+                    error_lines.append(line.strip())
+            error_summary = '\n'.join(error_lines[:10]) if error_lines else msg_content[:800]
+
+            # Check for POM errors FIRST (most specific, need different handling)
+            for pattern in POM_ERROR_PATTERNS:
+                if re.search(pattern, msg_content, re.IGNORECASE):
+                    log_agent(f"[ERROR_DETECT] POM/configuration error detected: {pattern}")
+                    log_summary(f"POM ERROR: {pattern} - requires configuration fix")
+                    return True, error_summary, 'pom'
+
+            # Check for test failures SECOND (more specific than compile)
             for pattern in TEST_FAILURE_PATTERNS:
                 if re.search(pattern, msg_content, re.IGNORECASE):
                     log_agent(f"[ERROR_DETECT] Test failure detected: {pattern}")
                     return True, error_summary, 'test'
 
-            # Check for compile errors
+            # Check for compile errors THIRD
             for pattern in COMPILE_ERROR_PATTERNS:
                 if re.search(pattern, msg_content, re.IGNORECASE):
                     log_agent(f"[ERROR_DETECT] Compile error detected: {pattern}")
                     return True, error_summary, 'compile'
 
             # Generic build failure (treat as compile error for immediate handling)
-            log_agent(f"[ERROR_DETECT] Generic build failure detected")
+            log_agent(f"[ERROR_DETECT] Generic build failure detected (no specific pattern matched)")
             return True, error_summary, 'compile'
 
+        # No build tool results found in messages
+        log_agent(f"[ERROR_DETECT] No build tool results found in messages")
         return False, "", "none"
+
+    def _is_build_tool_result(self, content: str, name: str) -> bool:
+        """
+        Check if a message is a build tool result (mvn_compile, mvn_test, etc.)
+
+        Args:
+            content: Message content
+            name: Message/tool name
+
+        Returns:
+            True if this is a build tool result
+        """
+        # Check by name first (most reliable)
+        if name:
+            name_lower = name.lower()
+            build_tool_names = ['mvn_compile', 'mvn_test', 'mvn_rewrite', 'maven']
+            if any(tool in name_lower for tool in build_tool_names):
+                return True
+
+        # Check by content patterns (for messages without clear names)
+        build_content_indicators = [
+            'Return code:',  # Our Maven tools return this
+            'BUILD SUCCESS',
+            'BUILD FAILURE',
+            '[INFO] BUILD',
+            'mvn compile',
+            'mvn test',
+            '[INFO] --- maven-compiler-plugin',
+            '[INFO] --- maven-surefire-plugin',
+        ]
+
+        return any(indicator in content for indicator in build_content_indicators)
 
     def log_error_attempt(self, error: str, attempt_num: int,
                           was_successful: bool, attempted_fixes: List[str] = None):

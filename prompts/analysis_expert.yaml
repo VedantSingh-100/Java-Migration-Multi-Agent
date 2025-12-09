@@ -186,43 +186,80 @@ analysis_expert_prompt: |
   Do NOT just write headers like "# TODO.md" - write the actual TODO items!
   Your analysis directly drives migration execution, so be thorough and specific.
 
-  TODO.md FORMAT - BE EXPLICIT ABOUT GOALS, NOT TOOLS:
+  TODO.md FORMAT - PHASE-BASED COARSE-GRAINED TASKS:
 
-  Create clear, explicit TODO items that describe WHAT needs to be accomplished.
-  DO NOT specify WHICH TOOL to use - the execution agent has specialized tools and will choose correctly.
+  CRITICAL: Create COARSE-GRAINED, PHASE-BASED tasks to minimize LLM calls.
+  Each migration phase should have exactly 4 tasks:
+  1. Execute the migration action
+  2. Verify compilation (mvn compile)
+  3. Verify tests pass (mvn test) - MANDATORY
+  4. Commit the changes
 
-  ✓ GOOD EXAMPLES (explicit goals, no tool prescription):
-  - [ ] Add OpenRewrite Maven plugin to pom.xml with migration recipes configured
-  - [ ] Execute Java 21 migration using OpenRewrite (org.openrewrite.java.migrate.UpgradeToJava21)
-  - [ ] Execute Spring Boot 2 to 3 migration using OpenRewrite (org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0)
-  - [ ] Execute javax to jakarta namespace migration (org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta)
-  - [ ] Update Spring Cloud dependencies to version compatible with Spring Boot 3
-  - [ ] Verify compilation after Java version migration
-  - [ ] Commit changes after completing Java 21 migration phase
-  - [ ] Run all tests to verify migration success
+  DO NOT create fine-grained verification tasks like "Verify file X was updated".
+  The execution agent will verify its own work within each task.
 
-  ✗ BAD EXAMPLES (too vague):
-  - [ ] Migrate to Java 21
-  - [ ] Update dependencies
-  - [ ] Fix build errors
+  ✓ CORRECT PHASE STRUCTURE (use this exact pattern):
 
-  ✗ BAD EXAMPLES (tool prescription - don't do this!):
-  - [ ] Add OpenRewrite plugin (use add_openrewrite_plugin tool)
-  - [ ] Update pom.xml (use write_file tool)
-  - [ ] Commit changes (use git_commit tool)
+  ## PHASE 1: BASELINE AND SETUP
+  - [ ] Establish build baseline (mvn compile, mvn test) and record test count
+  - [ ] Create migration branch and commit any uncommitted changes
 
-  ✗ BAD EXAMPLES (code snippets - don't do this!):
-  - [ ] Add OpenRewrite plugin to pom.xml
-    ```xml
-    <plugin>...</plugin>
-    ```
+  ## PHASE 2: OPENREWRITE SETUP
+  - [ ] Add OpenRewrite Maven plugin with all required migration recipes configured
+  - [ ] Verify compilation passes (mvn compile)
+  - [ ] Verify tests pass (mvn test)
+  - [ ] Commit OpenRewrite setup changes
 
-  IMPORTANT:
-  - Be explicit about WHAT needs to be done (the goal/outcome)
-  - Include recipe names when known (e.g., org.openrewrite.java.migrate.UpgradeToJava21)
-  - DO NOT specify which tool to use (execution agent has dynamic tool binding)
-  - DO NOT include code snippets or XML in TODO.md
-  - Let the execution agent figure out HOW to accomplish each task
+  ## PHASE 3: JAVA 21 MIGRATION
+  - [ ] Execute Java 21 migration (recipe: org.openrewrite.java.migrate.UpgradeToJava21) and update pom.xml properties
+  - [ ] Verify compilation passes (mvn compile)
+  - [ ] Verify tests pass (mvn test)
+  - [ ] Commit Java 21 migration changes
+
+  ## PHASE 4: SPRING BOOT 3 MIGRATION
+  - [ ] Execute Spring Boot 3 migration (recipe: org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0) and update versions
+  - [ ] Verify compilation passes (mvn compile)
+  - [ ] Verify tests pass (mvn test)
+  - [ ] Commit Spring Boot 3 migration changes
+
+  ## PHASE 5: JAVAX TO JAKARTA MIGRATION
+  - [ ] Execute jakarta migration (recipe: org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta)
+  - [ ] Verify compilation passes (mvn compile)
+  - [ ] Verify tests pass (mvn test)
+  - [ ] Commit jakarta migration changes
+
+  ## PHASE 6: JUNIT 5 MIGRATION
+  - [ ] Execute JUnit 5 migration (recipe: org.openrewrite.java.testing.junit5.JUnit4to5Migration)
+  - [ ] Verify compilation passes (mvn compile)
+  - [ ] Verify tests pass (mvn test) - ensure test count matches baseline
+  - [ ] Commit JUnit 5 migration changes
+
+  ## PHASE 7: FINAL VALIDATION
+  - [ ] Run full build validation (mvn clean compile test)
+  - [ ] Verify test count matches baseline and all tests pass
+  - [ ] Create MigrationReport.md with summary of all changes
+
+  ✗ BAD - TOO FINE-GRAINED (wastes LLM calls):
+  - [ ] Verify javax.persistence in Vehicle.java
+  - [ ] Verify javax.xml.bind in Position.java
+  - [ ] Verify javax.annotation in Startup.java
+  - [ ] Verify compilation after migration
+  - [ ] Verify tests after migration
+  - [ ] Commit changes
+
+  ✗ BAD - NO TEST VERIFICATION:
+  - [ ] Execute migration
+  - [ ] Verify compilation passes
+  - [ ] Commit changes
+  (Missing mvn test - tests MUST be verified after every phase!)
+
+  KEY RULES:
+  1. Maximum 4 tasks per phase (action, compile, test, commit)
+  2. EVERY phase MUST include "Verify tests pass (mvn test)"
+  3. Include recipe names in action tasks
+  4. DO NOT create separate verification tasks for individual files
+  5. The execution agent will verify file changes as part of the action task
+  6. Keep total TODO items under 25 for a typical migration
 
   COMPLETION (RECOMMENDED):
   When you have finished your analysis and created a comprehensive migration plan:
