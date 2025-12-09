@@ -110,6 +110,11 @@ class ErrorHandler:
             r'illegal\s+start\s+of\s+expression',
             r'reached\s+end\s+of\s+file\s+while\s+parsing',
             r'unclosed\s+string\s+literal',
+            r'invalid\s+target\s+release',  # Java version mismatch (e.g., "invalid target release: 21")
+            r'invalid\s+source\s+release',  # Java source version mismatch
+            r'source\s+release\s+\d+\s+requires\s+target\s+release',  # Source/target version conflict
+            r'class\s+file\s+has\s+wrong\s+version',  # Compiled with different Java version
+            r'unsupported\s+class\s+file.*version',  # Class file version incompatibility
         ]
 
         # Patterns for test failures (retry once before routing to error_expert)
