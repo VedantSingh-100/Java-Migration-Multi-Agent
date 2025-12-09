@@ -56,6 +56,11 @@ class State(AgentState):
     has_build_error: bool = False
     error_count: int = 0
     last_error_message: str = ""
+    error_type: str = "none"  # 'compile', 'test', or 'none'
+
+    # Test failure tracking (for retry-then-route pattern)
+    test_failure_count: int = 0  # Consecutive test failures on current task
+    last_test_failure_task: str = ""  # Track which task caused the failure
 
 
 class StateFileManager:

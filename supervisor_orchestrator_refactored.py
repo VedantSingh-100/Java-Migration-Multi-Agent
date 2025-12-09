@@ -324,10 +324,12 @@ class SupervisorMigrationOrchestrator:
         current_phase = state.get('current_phase', 'INIT')
         has_build_error = state.get('has_build_error', False)
         error_count = state.get('error_count', 0)
+        error_type = state.get('error_type', 'none')
         execution_done = state.get('execution_done', False)
         analysis_done = state.get('analysis_done', False)
+        test_failure_count = state.get('test_failure_count', 0)
 
-        log_agent(f"[ROUTER] Phase: {current_phase} | Analysis: {analysis_done} | Execution: {execution_done} | Error: {has_build_error} ({error_count})")
+        log_agent(f"[ROUTER] Phase: {current_phase} | Analysis: {analysis_done} | Execution: {execution_done} | Error: {has_build_error} (type={error_type}, count={error_count}, test_failures={test_failure_count})")
 
         # Check for timeout condition
         if current_phase == "EXECUTION_TIMEOUT":
@@ -342,14 +344,28 @@ class SupervisorMigrationOrchestrator:
                 log_agent("[ROUTER] -> Migration complete successfully, ending")
             return "END"
 
-        # PRIORITY 2: Check for build errors
-        if has_build_error and error_count < 3:
-            log_agent(f"[ROUTER] -> Build error detected, routing to error_expert (attempt {error_count}/3)")
-            return "error_expert"
-        elif has_build_error and error_count >= 3:
-            log_agent("[ROUTER] -> Max error attempts reached, MIGRATION FAILED", "ERROR")
-            log_summary("MIGRATION FAILED: Max error attempts (3) reached")
-            return "FAILED"
+        # PRIORITY 2: Check for build errors (now with test failure retry logic)
+        if has_build_error:
+            if error_count >= 3:
+                log_agent("[ROUTER] -> Max error attempts reached, MIGRATION FAILED", "ERROR")
+                log_summary("MIGRATION FAILED: Max error attempts (3) reached")
+                return "FAILED"
+
+            # Differentiate between compile errors and test failures
+            if error_type == 'test':
+                # Test failures get 1 retry before routing to error_expert
+                if test_failure_count == 0:
+                    log_agent(f"[ROUTER] -> Test failure detected, allowing 1 retry (execution_expert)")
+                    log_summary("TEST FAILURE: Allowing execution_expert to retry once")
+                    return "execution_expert"  # State will increment test_failure_count
+                else:
+                    log_agent(f"[ROUTER] -> Test failure persists after retry, routing to error_expert (attempt {error_count}/3)")
+                    log_summary(f"TEST FAILURE PERSISTS: Routing to error_expert (attempt {error_count}/3)")
+                    return "error_expert"
+            else:
+                # Compile errors go to error_expert immediately
+                log_agent(f"[ROUTER] -> Compile error detected, routing to error_expert (attempt {error_count}/3)")
+                return "error_expert"
 
         # PRIORITY 3: Route based on phase
         if not analysis_done:
@@ -479,8 +495,34 @@ class SupervisorMigrationOrchestrator:
             log_agent("[WRAPPER] Execution COMPLETE")
             log_summary("EXECUTION PHASE: COMPLETED")
 
-        # Check for build errors
-        has_error, error_msg = self.error_handler.detect_build_error(messages)
+        # Check for build errors (now returns error_type)
+        has_error, error_msg, error_type = self.error_handler.detect_build_error(messages)
+
+        # Track test failure count for retry logic
+        prev_test_failure_count = state.get("test_failure_count", 0)
+        current_task = self.task_manager.extract_current_task(visible_tasks_content) if visible_tasks_content else ""
+        last_test_failure_task = state.get("last_test_failure_task", "")
+
+        # Test failure tracking logic
+        if has_error and error_type == 'test':
+            # Check if this is the same task or a new one
+            if current_task == last_test_failure_task:
+                # Same task failing again - increment count
+                new_test_failure_count = prev_test_failure_count + 1
+                log_agent(f"[WRAPPER] Test failure on same task (count: {new_test_failure_count})")
+            else:
+                # New task failing - start fresh count
+                new_test_failure_count = 1
+                log_agent(f"[WRAPPER] Test failure on new task '{current_task[:50]}...'")
+            new_last_test_failure_task = current_task
+        elif not has_error:
+            # Tests passed - reset count
+            new_test_failure_count = 0
+            new_last_test_failure_task = ""
+        else:
+            # Compile error (not test) - keep existing test failure state
+            new_test_failure_count = prev_test_failure_count
+            new_last_test_failure_task = last_test_failure_task
 
         # Detect if agent returned without making tool calls
         new_no_tool_loops = self._count_no_tool_response(messages, no_tool_loops)
@@ -495,17 +537,21 @@ class SupervisorMigrationOrchestrator:
             "total_execution_loops": total_loops,
             "stuck_intervention_active": new_loops_without_progress >= MAX_LOOPS_WITHOUT_PROGRESS,
             "has_build_error": has_error,
+            "error_type": error_type,
             "error_count": state.get("error_count", 0) + (1 if has_error else 0),
             "last_error_message": error_msg if has_error else "",
-            "no_tool_call_loops": new_no_tool_loops
+            "no_tool_call_loops": new_no_tool_loops,
+            "test_failure_count": new_test_failure_count,
+            "last_test_failure_task": new_last_test_failure_task,
         }
 
     def _wrap_error_node(self, state: State):
         """Wrapper for error agent with error resolution tracking"""
         error_count = state.get("error_count", 0)
         project_path = state.get("project_path", "")
+        prev_error_type = state.get("error_type", "none")
 
-        log_agent(f"[WRAPPER] Running error_expert (attempt {error_count}/3)")
+        log_agent(f"[WRAPPER] Running error_expert (attempt {error_count}/3, type={prev_error_type})")
         log_summary(f"ERROR RESOLUTION: error_expert attempting fix (attempt {error_count}/3)")
 
         error_agent = self.migration_workers[2]
@@ -515,8 +561,12 @@ class SupervisorMigrationOrchestrator:
         current_error = self._extract_latest_error(current_messages)
         error_history = self.state_file_manager.read_file("ERROR_HISTORY.md")
 
+        # Include error type in context to help error_expert
+        error_type_hint = "TEST FAILURE" if prev_error_type == 'test' else "COMPILATION ERROR"
         clean_messages = [
             HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
+
+## ERROR TYPE: {error_type_hint}
 
 ## CURRENT ERROR:
 {current_error}
@@ -526,7 +576,7 @@ class SupervisorMigrationOrchestrator:
 
 Do NOT repeat failed approaches. Try something different.
 Analyze the error, then EXECUTE the fix using your tools.
-Run mvn_compile to verify it works.""")
+Run mvn_compile (for compile errors) or mvn_test (for test failures) to verify it works.""")
         ]
 
         state_with_context = dict(state)
@@ -534,7 +584,7 @@ Run mvn_compile to verify it works.""")
         result = error_agent.invoke(state_with_context)
 
         messages = result.get("messages", [])
-        still_has_error, error_msg = self.error_handler.detect_build_error(messages)
+        still_has_error, error_msg, new_error_type = self.error_handler.detect_build_error(messages)
 
         # Log error attempt
         self.error_handler.log_error_attempt(
@@ -544,7 +594,7 @@ Run mvn_compile to verify it works.""")
         )
 
         if still_has_error:
-            log_agent("[WRAPPER] Build error still present")
+            log_agent(f"[WRAPPER] Build error still present (type={new_error_type})")
         else:
             log_agent("[WRAPPER] Build error RESOLVED")
             log_summary("ERROR RESOLVED: Build errors fixed")
@@ -554,8 +604,14 @@ Run mvn_compile to verify it works.""")
             "analysis_done": state.get("analysis_done", False),
             "execution_done": state.get("execution_done", False),
             "has_build_error": still_has_error,
-            "error_count": state.get("error_count", 0) if still_has_error else 0,
-            "last_error_message": error_msg if still_has_error else ""
+            "error_type": new_error_type if still_has_error else "none",
+            # FIX: INCREMENT error_count when error_expert fails, reset to 0 when fixed
+            # Bug was: error_count stayed at 1 forever, router's "error_count >= 3" check never triggered
+            "error_count": state.get("error_count", 0) + 1 if still_has_error else 0,
+            "last_error_message": error_msg if still_has_error else "",
+            # Reset test failure count when error is resolved
+            "test_failure_count": state.get("test_failure_count", 0) if still_has_error else 0,
+            "last_test_failure_task": state.get("last_test_failure_task", "") if still_has_error else "",
         }
 
     def _apply_phase_transition(self, state: State) -> List[BaseMessage]:
@@ -768,7 +824,10 @@ Run mvn_compile to verify it works.""")
                 "stuck_intervention_active": False,
                 "has_build_error": False,
                 "error_count": 0,
-                "last_error_message": ""
+                "last_error_message": "",
+                "error_type": "none",
+                "test_failure_count": 0,
+                "last_test_failure_task": "",
             }, {"recursion_limit": 500}):
                 step_count += 1
                 last_chunk = chunk

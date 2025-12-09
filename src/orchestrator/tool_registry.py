@@ -5,6 +5,7 @@ This module handles:
 - Tool set definitions for each agent (analysis, execution, error, supervisor)
 - Tool wrapping for tracking, protection, and deduplication
 - File access controls
+- Verification caching (to prevent over-verification)
 
 Each agent type has a specific set of tools tailored to its role:
 - Analysis: Read-only + state file creation (TODO.md, CURRENT_STATE.md, analysis.md)
@@ -14,8 +15,10 @@ Each agent type has a specific set of tools tailored to its role:
 """
 
 import os
+import glob
+import hashlib
 from datetime import datetime, timedelta
-from typing import List, Set, Callable, Any
+from typing import List, Set, Callable, Any, Optional, Tuple
 
 from langchain_core.tools import StructuredTool
 
@@ -26,6 +29,145 @@ from .constants import (
     PROTECTED_STATE_FILES,
     ERROR_AGENT_BLOCKED_FILES
 )
+
+
+# =============================================================================
+# VERIFICATION CACHE
+# =============================================================================
+
+class VerificationCache:
+    """
+    Content-hash based verification cache to prevent redundant mvn compile/test calls.
+
+    Uses file hashing (like GitHub Actions hashFiles) to detect when source files
+    have changed and re-verification is needed.
+    """
+
+    def __init__(self, project_path: str = None):
+        self.project_path = project_path
+        self.last_compile_hash: Optional[str] = None
+        self.last_test_hash: Optional[str] = None
+        self.last_compile_result: Optional[str] = None
+        self.last_test_result: Optional[str] = None
+        self.last_compile_time: Optional[datetime] = None
+        self.last_test_time: Optional[datetime] = None
+
+    def set_project_path(self, project_path: str):
+        """Update project path and invalidate cache"""
+        self.project_path = project_path
+        self.invalidate_all()
+
+    def invalidate_all(self):
+        """Invalidate all cached results"""
+        self.last_compile_hash = None
+        self.last_test_hash = None
+        self.last_compile_result = None
+        self.last_test_result = None
+        self.last_compile_time = None
+        self.last_test_time = None
+        log_agent("[CACHE] Verification cache invalidated")
+
+    def invalidate_compile(self):
+        """Invalidate compile cache (keeps test cache)"""
+        self.last_compile_hash = None
+        self.last_compile_result = None
+        self.last_compile_time = None
+
+    def invalidate_test(self):
+        """Invalidate test cache"""
+        self.last_test_hash = None
+        self.last_test_result = None
+        self.last_test_time = None
+
+    def compute_source_hash(self, include_tests: bool = False) -> str:
+        """
+        Compute hash of source files (like hashFiles in GitHub Actions).
+
+        Args:
+            include_tests: If True, include test files in hash
+
+        Returns:
+            MD5 hash of all source file contents
+        """
+        if not self.project_path:
+            return ""
+
+        patterns = [
+            os.path.join(self.project_path, '**', 'pom.xml'),
+            os.path.join(self.project_path, 'src', 'main', '**', '*.java'),
+        ]
+        if include_tests:
+            patterns.append(os.path.join(self.project_path, 'src', 'test', '**', '*.java'))
+
+        hasher = hashlib.md5()
+        file_count = 0
+
+        for pattern in patterns:
+            for filepath in sorted(glob.glob(pattern, recursive=True)):
+                try:
+                    with open(filepath, 'rb') as f:
+                        hasher.update(f.read())
+                    file_count += 1
+                except (IOError, OSError):
+                    continue
+
+        hash_result = hasher.hexdigest()
+        log_agent(f"[CACHE] Computed hash for {file_count} files (include_tests={include_tests}): {hash_result[:8]}...")
+        return hash_result
+
+    def check_compile_cache(self) -> Tuple[bool, Optional[str]]:
+        """
+        Check if compile result is cached and valid.
+
+        Returns:
+            (is_cached, cached_result or None)
+        """
+        if self.last_compile_hash is None:
+            return False, None
+
+        current_hash = self.compute_source_hash(include_tests=False)
+        if current_hash == self.last_compile_hash:
+            age = (datetime.now() - self.last_compile_time).total_seconds() if self.last_compile_time else 0
+            log_agent(f"[CACHE] ✅ Compile cache HIT (hash match, {age:.0f}s old)")
+            return True, self.last_compile_result
+
+        log_agent(f"[CACHE] ❌ Compile cache MISS (hash changed)")
+        return False, None
+
+    def check_test_cache(self) -> Tuple[bool, Optional[str]]:
+        """
+        Check if test result is cached and valid.
+
+        Returns:
+            (is_cached, cached_result or None)
+        """
+        if self.last_test_hash is None:
+            return False, None
+
+        current_hash = self.compute_source_hash(include_tests=True)
+        if current_hash == self.last_test_hash:
+            age = (datetime.now() - self.last_test_time).total_seconds() if self.last_test_time else 0
+            log_agent(f"[CACHE] ✅ Test cache HIT (hash match, {age:.0f}s old)")
+            return True, self.last_test_result
+
+        log_agent(f"[CACHE] ❌ Test cache MISS (hash changed)")
+        return False, None
+
+    def update_compile_cache(self, result: str, success: bool):
+        """Update compile cache after successful compile"""
+        if success:
+            self.last_compile_hash = self.compute_source_hash(include_tests=False)
+            self.last_compile_result = result
+            self.last_compile_time = datetime.now()
+            log_agent(f"[CACHE] Updated compile cache (hash: {self.last_compile_hash[:8]}...)")
+
+    def update_test_cache(self, result: str, success: bool):
+        """Update test cache after successful test"""
+        if success:
+            self.last_test_hash = self.compute_source_hash(include_tests=True)
+            self.last_test_result = result
+            self.last_test_time = datetime.now()
+            log_agent(f"[CACHE] Updated test cache (hash: {self.last_test_hash[:8]}...)")
 
 
 # =============================================================================
@@ -83,14 +225,15 @@ EXECUTION_TOOL_NAMES: Set[str] = {
 
 # Error agent tools - for diagnosing and fixing errors
 ERROR_TOOL_NAMES: Set[str] = {
-    # Read tools - will be wrapped to block state files
-    'read_file', 'file_exists',
-    # Diagnostic tools
+    # File operations - error_expert needs to fix code!
+    'read_file', 'write_file', 'file_exists', 'find_replace',
+    # Build/diagnostic tools
     'mvn_compile', 'mvn_test',
     # Git operations (diagnostic)
-    'git_status', 'get_log', 'list_branches'
-    # REMOVED: run_command (too dangerous - agent did manual sed/find edits)
-    # REMOVED: check_migration_state (confuses agent about current phase)
+    'git_status', 'get_log', 'list_branches',
+    # NOTE: run_command intentionally excluded (too dangerous - agent did manual sed/find edits)
+    # NOTE: check_migration_state excluded (confuses agent about current phase)
+    # NOTE: web_search_tool and call_openrewrite_agent are BNY-specific, not available here
 }
 
 # Supervisor agent tools - read-only for oversight
@@ -134,11 +277,16 @@ class ToolWrapper:
         # Session-scoped tracking for loop prevention
         self.session_commits = []  # Track commits made THIS session
         self.task_attempts = {}  # task_description -> attempt count
-        log_agent("[TOOL_WRAPPER] Session tracking initialized")
+
+        # Verification cache to prevent over-verification
+        self.verification_cache = VerificationCache(project_path)
+
+        log_agent("[TOOL_WRAPPER] Session tracking initialized with verification cache")
 
     def set_project_path(self, project_path: str):
         """Update the project path"""
         self.project_path = project_path
+        self.verification_cache.set_project_path(project_path)
 
     def wrap_analysis_tool(self, tool) -> StructuredTool:
         """
@@ -329,6 +477,11 @@ The execution agent will handle all project modifications."""
                         pass
 
             # Allow all other file operations
+            # INVALIDATE VERIFICATION CACHE when source files change
+            if file_path.endswith('.java') or file_path.endswith('pom.xml'):
+                log_agent(f"[CACHE] Invalidating verification cache - source file modified: {os.path.basename(file_path)}")
+                self.verification_cache.invalidate_all()
+
             return original_func(*args, **kwargs)
 
         return StructuredTool(
@@ -395,7 +548,7 @@ Your task tracking works like this:
         )
 
     def _wrap_tracked_tool(self, tool, on_commit_success: Callable = None) -> StructuredTool:
-        """Wrap tracked tools with deduplication and logging"""
+        """Wrap tracked tools with deduplication, caching, and logging"""
         original_func = tool.func
         tool_name = tool.name
 
@@ -405,6 +558,19 @@ Your task tracking works like this:
                 skip_msg = self._check_deduplication(tool_name, args, kwargs)
                 if skip_msg:
                     return skip_msg
+
+            # VERIFICATION CACHING: Check cache before running mvn_compile or mvn_test
+            if tool_name == 'mvn_compile':
+                is_cached, cached_result = self.verification_cache.check_compile_cache()
+                if is_cached and cached_result:
+                    log_agent(f"[CACHE] Returning cached compile result (no source changes detected)")
+                    return f"[CACHED] {cached_result}\n\n(No source files changed since last successful compile - skipping redundant build)"
+
+            if tool_name == 'mvn_test':
+                is_cached, cached_result = self.verification_cache.check_test_cache()
+                if is_cached and cached_result:
+                    log_agent(f"[CACHE] Returning cached test result (no source/test changes detected)")
+                    return f"[CACHED] {cached_result}\n\n(No source or test files changed since last successful test run - skipping redundant tests)"
 
             # Smart git_commit: Auto-stage if nothing staged
             if tool_name == 'git_commit':
@@ -448,6 +614,17 @@ Your task tracking works like this:
                 'timestamp': datetime.now(),
                 'success': is_success
             })
+
+            # UPDATE VERIFICATION CACHE after successful mvn_compile or mvn_test
+            if tool_name == 'mvn_compile' and is_success:
+                self.verification_cache.update_compile_cache(result_str, is_success)
+            elif tool_name == 'mvn_test' and is_success:
+                self.verification_cache.update_test_cache(result_str, is_success)
+
+            # INVALIDATE CACHE when OpenRewrite modifies files
+            if tool_name in ['mvn_rewrite_run', 'mvn_rewrite_run_recipe'] and is_success:
+                log_agent("[CACHE] Invalidating verification cache - OpenRewrite modified source files")
+                self.verification_cache.invalidate_all()
 
             # Handle commit scenarios
             if tool_name in COMMIT_TOOLS:
@@ -991,16 +1168,51 @@ Your task tracking works like this:
         """
         Wrap error agent tools with restrictions.
 
-        Error agent should NOT see state files (TODO.md, VISIBLE_TASKS.md, etc.)
-        Error agent should ONLY see project code files and error messages.
+        Error agent should NOT see/modify state files (TODO.md, VISIBLE_TASKS.md, etc.)
+        Error agent should ONLY see/modify project code files.
         """
         tool_name = tool.name
 
-        # Only wrap read_file - other tools are safe
         if tool_name == 'read_file':
             return self.wrap_error_read_file(tool)
 
+        if tool_name in ['write_file', 'find_replace']:
+            return self._wrap_error_write_tool(tool)
+
         return tool
+
+    def _wrap_error_write_tool(self, tool) -> StructuredTool:
+        """
+        Wrap write_file/find_replace for error agent to block state file modifications.
+        Error agent should only modify project code files (pom.xml, .java, etc.)
+        """
+        original_func = tool.func
+        tool_name = tool.name
+
+        def error_write_protected(*args, **kwargs):
+            file_path = kwargs.get('file_path', args[0] if args else '')
+
+            # Block state files
+            for blocked in ERROR_AGENT_BLOCKED_FILES:
+                if blocked in file_path:
+                    log_agent(f"[ERROR_BLOCK] Error agent tried to modify {blocked} - BLOCKED")
+                    return f"ERROR: {blocked} is not modifiable by error agent. Focus on fixing project code files only."
+
+            # Block COMPLETED_ACTIONS.md (system-managed)
+            if 'COMPLETED_ACTIONS.md' in file_path:
+                log_agent(f"[ERROR_BLOCK] Error agent tried to modify COMPLETED_ACTIONS.md - BLOCKED")
+                return "ERROR: COMPLETED_ACTIONS.md is system-managed. You cannot modify it."
+
+            # Allow modifications to project files (.java, pom.xml, .properties, .yml, etc.)
+            log_agent(f"[ERROR_WRITE] Error agent modifying: {file_path}")
+            return original_func(*args, **kwargs)
+
+        return StructuredTool(
+            name=tool.name,
+            description=tool.description,
+            func=error_write_protected,
+            args_schema=tool.args_schema
+        )
 
 
 def get_tools_for_agent(agent_type: str, all_tools: List, tool_wrapper: ToolWrapper = None, on_commit_success: Callable = None) -> List:
@@ -1043,14 +1255,10 @@ def get_tools_for_agent(agent_type: str, all_tools: List, tool_wrapper: ToolWrap
         return wrapped
 
     elif agent_type == 'error':
-        wrapped = []
-        for tool in tools:
-            if tool.name == 'read_file':
-                wrapped.append(tool_wrapper.wrap_error_read_file(tool))
-            else:
-                wrapped.append(tool)
-        log_agent(f"[TOOLS] Error agent has {len(wrapped)} tools (diagnostic only)")
-        log_agent(f"[TOOLS] Error agent CANNOT read: {', '.join(ERROR_AGENT_BLOCKED_FILES)}")
+        wrapped = [tool_wrapper.wrap_error_tool(tool) for tool in tools]
+        log_agent(f"[TOOLS] Error agent has {len(wrapped)} tools (diagnostic + fix)")
+        log_agent(f"[TOOLS] Error tools: {sorted([t.name for t in wrapped])}")
+        log_agent(f"[TOOLS] Error agent CANNOT access state files: {', '.join(ERROR_AGENT_BLOCKED_FILES)}")
         return wrapped
 
     else:

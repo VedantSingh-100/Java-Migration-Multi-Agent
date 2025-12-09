@@ -532,3 +532,96 @@ The work was done. The agent just couldn't check it off the list, so it kept doi
 6. Cost of the loop: ~$3.50 (burned on redundant work)
 
 **The system is actually quite capable when it's not stuck in a loop. The architecture is sound - just needs the safety rails we discussed.**
+---
+
+# Run #2 Analysis: 200 LLM Calls (December 8, 2025 - 19:57)
+
+## Overview
+
+| Metric | Value |
+|--------|-------|
+| **Duration** | 23 minutes (19:57:44 - 20:20:21) |
+| **LLM Calls** | 200/200 (circuit breaker triggered) |
+| **Cost** | $4.34 (1.34M tokens) |
+| **Outcome** | Migration incomplete - stopped at Spring Boot 3 migration |
+
+---
+
+## What Happened
+
+### Phase 1-3: Success (19:57 - 20:03)
+- Analysis completed successfully
+- Tasks 1-6: Branch, baseline compile/test, OpenRewrite setup - all passed
+- **~30 LLM calls**
+
+### Phase 4: Java 21 Migration Failure (20:03 - 20:04)
+- `mvn rewrite:run` (UpgradeToJava21) succeeded
+- `mvn compile` FAILED
+- **Root cause**: Local JDK is 17, but code was upgraded to Java 21
+
+### Phase 5: ERROR EXPERT DEATH LOOP (20:05 - 20:14) 💀
+
+**THE NEW BUG DISCOVERED:**
+
+```
+20:05:13 - ERROR RESOLUTION: error_expert attempting fix (attempt 1/3)
+20:06:46 - ERROR RESOLUTION: error_expert attempting fix (attempt 1/3)  ← SAME!
+20:08:02 - ERROR RESOLUTION: error_expert attempting fix (attempt 1/3)  ← SAME!
+20:09:06 - ERROR RESOLUTION: error_expert attempting fix (attempt 1/3)  ← SAME!
+... (10 more times, all "attempt 1/3")
+```
+
+The error attempt counter **NEVER INCREMENTED**. It stayed at "1/3" forever, so the 3-attempt limit was never enforced.
+
+**~100 LLM calls burned here**
+
+### Phase 6: Accidental Fix (20:14)
+After 10+ failed attempts, Error Expert finally realized:
+- Checked `java -version` → shows Java 17
+- Changed pom.xml from Java 21 → Java 17
+- Compile passed
+
+### Phase 7: Spring Boot 3 Migration (20:17 - 20:20)
+- `mvn rewrite:run` (Spring Boot 3) succeeded
+- `mvn compile` FAILED
+- Error Expert loop started again
+- Hit 200 LLM limit
+
+---
+
+## Bug Found and Fixed
+
+**File**: `supervisor_orchestrator_refactored.py` line 557
+**Also in**: `src/orchestrator/agent_wrappers.py` line 444
+
+**Before (BUG):**
+```python
+"error_count": state.get("error_count", 0) if still_has_error else 0,
+```
+
+**After (FIX):**
+```python
+"error_count": state.get("error_count", 0) + 1 if still_has_error else 0,
+```
+
+**Explanation**: The original code kept error_count at the same value when error_expert failed. It should INCREMENT, so the router's `error_count >= 3` check can trigger.
+
+---
+
+## Bugs Fixed Today (Dec 8, 2025)
+
+| Bug | Location | Status |
+|-----|----------|--------|
+| error_count never increments | `supervisor_orchestrator_refactored.py:557`, `agent_wrappers.py:444` | ✅ FIXED |
+| commit_changes success detection | `src/orchestrator/tool_registry.py:594-597` | ✅ FIXED (earlier) |
+| "nothing to commit" handling | `src/orchestrator/tool_registry.py:618-623` | ✅ FIXED (earlier) |
+| log_task_completion never called | `src/orchestrator/tool_registry.py:469-472` | ✅ FIXED (earlier) |
+| task_manager not passed to ToolWrapper | `supervisor_orchestrator_refactored.py` | ✅ FIXED (earlier) |
+
+---
+
+## Remaining Issues
+
+1. **JDK Version Mismatch**: System upgrades to Java 21 but local JDK is 17 → guaranteed failure
+2. **Error Expert Lacks write_file**: Can read files but can't make targeted edits to fix errors
+3. **No Recipe Name Caching**: Agent keeps trying wrong recipe names

@@ -189,11 +189,34 @@ class ExecutionNodeWrapper:
             if completion_stats.get('completed_tasks', 0) > 0:
                 log_agent(f"[PROGRESS] {completion_reason}")
 
-        # Detect build errors
-        has_error, error_msg = self.error_handler.detect_build_error(messages)
+        # Detect build errors (now returns error_type)
+        has_error, error_msg, error_type = self.error_handler.detect_build_error(messages)
         if has_error:
-            log_agent(f"[WRAPPER] Build error detected in execution output")
-            log_summary(f"BUILD ERROR: {error_msg[:100]}...")
+            log_agent(f"[WRAPPER] Build error detected in execution output (type={error_type})")
+            log_summary(f"BUILD ERROR ({error_type.upper()}): {error_msg[:100]}...")
+
+        # Track test failure count for retry logic
+        prev_test_failure_count = state.get("test_failure_count", 0)
+        # Get current task for tracking
+        visible_tasks_content = self.state_file_manager.read_file("VISIBLE_TASKS.md")
+        current_task = self.task_manager.extract_current_task(visible_tasks_content) if visible_tasks_content else ""
+        last_test_failure_task = state.get("last_test_failure_task", "")
+
+        # Test failure tracking logic
+        if has_error and error_type == 'test':
+            if current_task == last_test_failure_task:
+                new_test_failure_count = prev_test_failure_count + 1
+                log_agent(f"[WRAPPER] Test failure on same task (count: {new_test_failure_count})")
+            else:
+                new_test_failure_count = 1
+                log_agent(f"[WRAPPER] Test failure on new task")
+            new_last_test_failure_task = current_task
+        elif not has_error:
+            new_test_failure_count = 0
+            new_last_test_failure_task = ""
+        else:
+            new_test_failure_count = prev_test_failure_count
+            new_last_test_failure_task = last_test_failure_task
 
         # Determine if intervention needed for next loop
         needs_intervention = (new_loops_without_progress >= MAX_LOOPS_WITHOUT_PROGRESS and
@@ -210,8 +233,11 @@ class ExecutionNodeWrapper:
             "total_execution_loops": total_loops,
             "stuck_intervention_active": needs_intervention,
             "has_build_error": has_error,
+            "error_type": error_type,
             "error_count": state.get("error_count", 0) + (1 if has_error else 0),
-            "last_error_message": error_msg if has_error else ""
+            "last_error_message": error_msg if has_error else "",
+            "test_failure_count": new_test_failure_count,
+            "last_test_failure_task": new_last_test_failure_task,
         }
 
     def _apply_phase_transition(self, state: State, current_messages: List[BaseMessage]) -> List[BaseMessage]:
@@ -356,9 +382,10 @@ class ErrorNodeWrapper:
         error_count = state.get("error_count", 0)
         last_error_msg = state.get("last_error_message", "")
         project_path = state.get("project_path", "")
+        prev_error_type = state.get("error_type", "none")
 
-        log_agent(f"[WRAPPER] Running error_expert (attempt {error_count}/3)")
-        log_summary(f"ERROR RESOLUTION: error_expert attempting to fix build errors (attempt {error_count}/3)")
+        log_agent(f"[WRAPPER] Running error_expert (attempt {error_count}/3, type={prev_error_type})")
+        log_summary(f"ERROR RESOLUTION: error_expert attempting to fix {prev_error_type} errors (attempt {error_count}/3)")
 
         # Extract current error
         current_messages = state.get("messages", [])
@@ -376,8 +403,11 @@ class ErrorNodeWrapper:
                 "analysis_done": state.get("analysis_done", False),
                 "execution_done": state.get("execution_done", False),
                 "has_build_error": True,
+                "error_type": prev_error_type,
                 "error_count": 3,
-                "last_error_message": "Duplicate error - cannot resolve"
+                "last_error_message": "Duplicate error - cannot resolve",
+                "test_failure_count": state.get("test_failure_count", 0),
+                "last_test_failure_task": state.get("last_test_failure_task", ""),
             }
 
         # Apply aggressive pruning for error expert
@@ -387,9 +417,13 @@ class ErrorNodeWrapper:
             original_message_count = len(current_messages)
             log_agent(f"[PRUNE_DETAIL] BEFORE Error Expert: {original_message_count} messages from execution")
 
+            # Include error type in context to help error_expert
+            error_type_hint = "TEST FAILURE" if prev_error_type == 'test' else "COMPILATION ERROR"
             # Build clean error context
             clean_messages = [
                 HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
+
+## ERROR TYPE: {error_type_hint}
 
 ## CURRENT ERROR:
 {current_error}
@@ -400,7 +434,7 @@ class ErrorNodeWrapper:
 Do NOT repeat failed approaches. Try something different.
 
 Analyze the error, then EXECUTE the fix using your tools.
-Run mvn_compile to verify it works.""")
+Run mvn_compile (for compile errors) or mvn_test (for test failures) to verify it works.""")
             ]
 
             pruned_count = original_message_count - len(clean_messages)
@@ -417,9 +451,9 @@ Run mvn_compile to verify it works.""")
         state_with_context["messages"] = current_messages
         result = self.error_agent.invoke(state_with_context)
 
-        # Check if errors are resolved
+        # Check if errors are resolved (now returns error_type)
         messages = result.get("messages", [])
-        still_has_error, error_msg = self.error_handler.detect_build_error(messages)
+        still_has_error, error_msg, new_error_type = self.error_handler.detect_build_error(messages)
 
         # Log error attempt to history
         self.error_handler.log_error_attempt(
@@ -429,8 +463,8 @@ Run mvn_compile to verify it works.""")
         )
 
         if still_has_error:
-            log_agent("[WRAPPER] Build error still present after error_expert")
-            log_summary(f"ERROR PERSISTS: {error_msg[:100]}...")
+            log_agent(f"[WRAPPER] Build error still present after error_expert (type={new_error_type})")
+            log_summary(f"ERROR PERSISTS ({new_error_type.upper()}): {error_msg[:100]}...")
         else:
             log_agent("[WRAPPER] Build error RESOLVED by error_expert")
             log_summary("ERROR RESOLVED: Build errors fixed, returning to execution")
@@ -441,8 +475,14 @@ Run mvn_compile to verify it works.""")
             "analysis_done": state.get("analysis_done", False),
             "execution_done": state.get("execution_done", False),
             "has_build_error": still_has_error,
-            "error_count": state.get("error_count", 0) if still_has_error else 0,
-            "last_error_message": error_msg if still_has_error else ""
+            "error_type": new_error_type if still_has_error else "none",
+            # FIX: INCREMENT error_count when error_expert fails, reset to 0 when fixed
+            # Bug was: error_count stayed at 1 forever, router's "error_count >= 3" check never triggered
+            "error_count": state.get("error_count", 0) + 1 if still_has_error else 0,
+            "last_error_message": error_msg if still_has_error else "",
+            # Reset test failure count when error is resolved
+            "test_failure_count": state.get("test_failure_count", 0) if still_has_error else 0,
+            "last_test_failure_task": state.get("last_test_failure_task", "") if still_has_error else "",
         }
 
     def _extract_latest_error(self, messages: List[BaseMessage]) -> str:

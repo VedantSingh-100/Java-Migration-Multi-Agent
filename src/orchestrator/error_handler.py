@@ -47,7 +47,7 @@ class ErrorHandler:
         """Update the project path"""
         self.project_path = project_path
 
-    def detect_build_error(self, messages: List[BaseMessage]) -> Tuple[bool, str]:
+    def detect_build_error(self, messages: List[BaseMessage]) -> Tuple[bool, str, str]:
         """
         Check if messages contain build errors from Maven or compilation.
 
@@ -55,8 +55,34 @@ class ErrorHandler:
             messages: List of messages to check
 
         Returns:
-            (has_error: bool, error_summary: str)
+            (has_error: bool, error_summary: str, error_type: str)
+            error_type: 'compile', 'test', or 'none'
         """
+        # Patterns for compile errors (immediately route to error_expert)
+        COMPILE_ERROR_PATTERNS = [
+            'cannot find symbol',
+            'compilation error',
+            'package .* does not exist',
+            'class .* does not exist',
+            'incompatible types',
+            'method .* cannot be applied',
+            'non-static .* cannot be referenced',
+            'unreported exception',
+        ]
+
+        # Patterns for test failures (retry once before routing to error_expert)
+        TEST_FAILURE_PATTERNS = [
+            r'Tests run:.*Failures: [1-9]',
+            r'Tests run:.*Errors: [1-9]',
+            r'There are test failures',
+            r'Failed tests:',
+            r'Tests in error:',
+            r'Test .* FAILED',
+            r'testCompile.*FAILED',
+        ]
+
+        import re
+
         for msg in reversed(messages):
             msg_content = ""
             msg_name = ""
@@ -68,15 +94,35 @@ class ErrorHandler:
                 msg_content = str(msg.content)
                 msg_name = getattr(msg, 'name', '')
 
-            # Check for Maven/build failures
-            if msg_name and ('mvn' in msg_name.lower() or 'compile' in msg_name.lower()):
-                if 'BUILD FAILURE' in msg_content or 'BUILD ERROR' in msg_content or '[ERROR]' in msg_content:
-                    # Extract error summary
-                    error_lines = [line for line in msg_content.split('\n') if 'ERROR' in line]
-                    error_summary = '\n'.join(error_lines[:5]) if error_lines else msg_content[:500]
-                    return True, error_summary
+            # Only check Maven/build related messages
+            if not msg_name or not ('mvn' in msg_name.lower() or 'compile' in msg_name.lower() or 'test' in msg_name.lower()):
+                continue
 
-        return False, ""
+            # Check for BUILD FAILURE/ERROR indicator
+            if 'BUILD FAILURE' not in msg_content and 'BUILD ERROR' not in msg_content and '[ERROR]' not in msg_content:
+                continue
+
+            # Extract error summary
+            error_lines = [line for line in msg_content.split('\n') if 'ERROR' in line or 'FAILURE' in line or 'Failed' in line]
+            error_summary = '\n'.join(error_lines[:5]) if error_lines else msg_content[:500]
+
+            # Check for test failures FIRST (more specific)
+            for pattern in TEST_FAILURE_PATTERNS:
+                if re.search(pattern, msg_content, re.IGNORECASE):
+                    log_agent(f"[ERROR_DETECT] Test failure detected: {pattern}")
+                    return True, error_summary, 'test'
+
+            # Check for compile errors
+            for pattern in COMPILE_ERROR_PATTERNS:
+                if re.search(pattern, msg_content, re.IGNORECASE):
+                    log_agent(f"[ERROR_DETECT] Compile error detected: {pattern}")
+                    return True, error_summary, 'compile'
+
+            # Generic build failure (treat as compile error for immediate handling)
+            log_agent(f"[ERROR_DETECT] Generic build failure detected")
+            return True, error_summary, 'compile'
+
+        return False, "", "none"
 
     def log_error_attempt(self, error: str, attempt_num: int,
                           was_successful: bool, attempted_fixes: List[str] = None):

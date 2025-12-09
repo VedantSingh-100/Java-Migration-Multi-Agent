@@ -77,7 +77,12 @@ supervisor_prompt: |
   - Verify test file count and test method count remain constant
 
   PHASE 3 - ERROR RESOLUTION:
-  3. Call error_expert when compilation/test failures occur
+  3. Call error_expert when compilation OR test failures occur
+     IMPORTANT: The system handles error routing automatically with retry logic:
+     - COMPILE ERRORS (cannot find symbol, package does not exist): Routes to error_expert immediately
+     - TEST FAILURES (Tests run: X, Failures: Y): Execution gets ONE retry, then routes to error_expert
+
+     error_expert handles:
      - Diagnose migration-related errors in source code AND tests
      - Fix compatibility issues and deprecated API usage in both source and test code
      - Resolve test-specific failures (assertion library changes, mock framework updates, etc.)

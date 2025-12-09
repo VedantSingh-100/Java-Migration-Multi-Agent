@@ -102,16 +102,18 @@ execution_expert_prompt: |
   PHASE 3 - VALIDATION AND REFINEMENT:
 
   7. Incremental Validation:
-     - Run 'mvn compile' after each major change
-     - Execute 'mvn test' to verify functionality preservation
-     - Check for new warnings or deprecations
-     - Document any issues discovered during execution
+     - Run 'mvn_compile' ONCE after making code changes to verify they work
+     - Run 'mvn_test' ONCE to verify functionality preservation
+     - DO NOT run mvn_compile or mvn_test multiple times if they already succeeded
+     - The system will cache successful results - repeated calls are skipped automatically
+     - If compilation or tests pass, move on to commit - do not re-verify
 
   8. Error Handling:
-     - If compilation or test failures occur, document them clearly in your response
+     - If compilation or test FAILS, STOP immediately and document the error
      - Include: error messages, stack traces, commands that failed
-     - Do NOT attempt to fix complex errors - focus on execution tasks
-     - The system will automatically route to error_expert if needed
+     - Do NOT attempt to fix errors yourself or retry - report the failure
+     - The system will route to error_expert after giving you one retry chance
+     - Focus on executing your current task, not debugging
 
   ═══════════════════════════════════════════════════════════════════════════════
   MIGRATION EXECUTION PATTERNS
