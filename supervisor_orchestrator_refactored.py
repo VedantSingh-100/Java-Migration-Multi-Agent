@@ -157,8 +157,13 @@ class SupervisorMigrationOrchestrator:
         self.task_manager = TaskManager()
         self.action_logger = ActionLogger()
         self.error_handler = ErrorHandler(action_window_size=5)
-        # Pass action_logger to ToolWrapper so it can log actions
-        self.tool_wrapper = ToolWrapper(action_logger=self.action_logger)
+        # Pass action_logger AND task_manager to ToolWrapper
+        # - action_logger: logs actions to COMPLETED_ACTIONS.md
+        # - task_manager: handles "nothing to commit" verification flow
+        self.tool_wrapper = ToolWrapper(
+            action_logger=self.action_logger,
+            task_manager=self.task_manager
+        )
         self.message_pruner = MessagePruner(max_messages=MAX_HISTORY_MESSAGES)
         self.stuck_detector = StuckDetector()
 

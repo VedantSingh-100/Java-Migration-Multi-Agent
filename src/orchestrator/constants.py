@@ -26,7 +26,7 @@ MAX_SUMMARY_LENGTH = 8000
 # =============================================================================
 
 # Maximum LLM calls allowed per migration (prevents runaway costs)
-MAX_LLM_CALLS = 80
+MAX_LLM_CALLS = 200
 
 # Maximum execution loops per phase before hard stop
 MAX_EXECUTION_LOOPS_PER_PHASE = 30

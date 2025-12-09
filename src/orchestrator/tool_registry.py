@@ -131,6 +131,11 @@ class ToolWrapper:
         self.recent_tracked_tools = []
         self.verification_window_seconds = 60
 
+        # Session-scoped tracking for loop prevention
+        self.session_commits = []  # Track commits made THIS session
+        self.task_attempts = {}  # task_description -> attempt count
+        log_agent("[TOOL_WRAPPER] Session tracking initialized")
+
     def set_project_path(self, project_path: str):
         """Update the project path"""
         self.project_path = project_path
@@ -420,6 +425,10 @@ Your task tracking works like this:
 
             # Determine success
             is_success = self._determine_success(tool_name, result)
+            result_str = str(result) if result is not None else ""
+
+            # Check for "nothing to commit" scenario
+            is_nothing_to_commit = self._is_nothing_to_commit(tool_name, result)
 
             # Log action
             if self.action_logger:
@@ -440,11 +449,36 @@ Your task tracking works like this:
                 'success': is_success
             })
 
-            # Auto-sync after successful commit
-            if tool_name in COMMIT_TOOLS and is_success:
-                log_agent(f"[AUTO_SYNC] Successful commit detected ({tool_name}) - triggering task sync")
-                if on_commit_success:
-                    on_commit_success()
+            # Handle commit scenarios
+            if tool_name in COMMIT_TOOLS:
+                if is_success:
+                    # Successful commit - record and trigger auto-sync
+                    log_agent(f"[AUTO_SYNC] ✅ Successful commit detected ({tool_name}) - triggering task sync")
+
+                    # Record session commit
+                    commit_hash = ""
+                    if 'Committed changes:' in result_str:
+                        # Extract hash from "Committed changes: {hash} - {message}"
+                        parts = result_str.split('Committed changes:')[1].strip().split(' ')
+                        if parts:
+                            commit_hash = parts[0]
+                    current_task = self._get_current_task_from_visible()
+                    if commit_hash and current_task:
+                        self._record_session_commit(commit_hash, current_task)
+
+                    # LOG TASK COMPLETION to COMPLETED_ACTIONS.md
+                    if current_task and self.action_logger:
+                        self.action_logger.log_task_completion(current_task, commit_hash)
+                        log_agent(f"[TASK_LOG] Logged task completion: {current_task[:60]}...")
+
+                    if on_commit_success:
+                        on_commit_success()
+
+                elif is_nothing_to_commit:
+                    # "Nothing to commit" - run verification flow
+                    log_agent(f"[AUTO_SYNC] ⚠ 'Nothing to commit' detected - running task verification")
+                    result_str = self._handle_nothing_to_commit(result_str)
+                    return result_str
 
             return result if result is not None else f"Error: {error}"
 
@@ -589,7 +623,12 @@ Your task tracking works like this:
         result_str = str(result) if result is not None else ""
 
         if tool_name == 'git_commit':
+            # git_commit uses run_command, returns "Return code: 0" on success
             return 'Return code: 0' in result_str
+        elif tool_name == 'commit_changes':
+            # commit_changes (from git_operations.py) returns "Committed changes: {hash} - {message}"
+            # on success, or "Error committing changes: ..." on failure
+            return 'Committed changes:' in result_str
         elif tool_name == 'create_branch':
             return 'Created branch' in result_str or 'Checked out branch' in result_str
         elif tool_name == 'add_openrewrite_plugin':
@@ -604,6 +643,319 @@ Your task tracking works like this:
                 'completed' in result_str.lower() or
                 'Return code: 0' in result_str
             )
+
+    def _is_nothing_to_commit(self, tool_name: str, result) -> bool:
+        """Check if commit tool returned 'nothing to commit'"""
+        if tool_name not in COMMIT_TOOLS:
+            return False
+        result_str = str(result).lower() if result is not None else ""
+        return 'nothing to commit' in result_str or 'working tree clean' in result_str
+
+    # =========================================================================
+    # TASK VERIFICATION FUNCTIONS
+    # =========================================================================
+
+    def _increment_task_attempt(self, task_description: str) -> int:
+        """Increment and return the attempt count for a task"""
+        if task_description not in self.task_attempts:
+            self.task_attempts[task_description] = 0
+        self.task_attempts[task_description] += 1
+        count = self.task_attempts[task_description]
+        log_agent(f"[LOOP_TRACK] Task attempt #{count}: {task_description[:60]}...")
+        return count
+
+    def _get_task_attempt_count(self, task_description: str) -> int:
+        """Get the current attempt count for a task"""
+        return self.task_attempts.get(task_description, 0)
+
+    def _record_session_commit(self, commit_hash: str, task_description: str):
+        """Record a commit made in this session"""
+        self.session_commits.append({
+            'hash': commit_hash,
+            'task': task_description,
+            'timestamp': datetime.now()
+        })
+        log_agent(f"[SESSION] Recorded commit {commit_hash[:8]} for task: {task_description[:50]}...")
+
+    def _verify_task_complete(self, task_description: str) -> tuple:
+        """
+        Verify if a task is actually complete by checking file state.
+
+        Returns:
+            (is_verified: bool, reason: str)
+        """
+        import subprocess
+        import re
+
+        if not self.project_path:
+            return False, "No project path set"
+
+        task_lower = task_description.lower()
+
+        # Match task to verification function using patterns
+        verifications = [
+            (r'add.*openrewrite|openrewrite.*plugin|configure.*recipe', self._verify_openrewrite_setup),
+            (r'java\s*21|java\s*version.*21|UpgradeToJava21', self._verify_java_21),
+            (r'spring\s*boot\s*3|UpgradeSpringBoot', self._verify_spring_boot_3),
+            (r'jakarta|javax.*to.*jakarta|JavaxMigration', self._verify_jakarta_migration),
+            (r'junit.*4.*to.*5|junit.*5|junit.*migration|JUnit4to5', self._verify_junit5_migration),
+            (r'verify.*compil|compilation', self._verify_compilation),
+            (r'verify.*test|run.*test', self._verify_tests),
+            (r'verify.*import|import.*migrat', self._verify_imports_generic),
+            (r'create.*branch|branch.*creat', self._verify_branch_exists),
+            (r'baseline|establish.*build', self._verify_compilation),
+        ]
+
+        for pattern, verify_func in verifications:
+            if re.search(pattern, task_lower, re.IGNORECASE):
+                try:
+                    return verify_func()
+                except Exception as e:
+                    log_agent(f"[VERIFY] Error in {verify_func.__name__}: {e}")
+                    return False, f"Verification error: {e}"
+
+        # Default: can't verify, assume not complete
+        return False, f"No verification available for task type"
+
+    def _verify_openrewrite_setup(self) -> tuple:
+        """Verify OpenRewrite plugin is configured in pom.xml"""
+        import os
+        pom_path = os.path.join(self.project_path, "pom.xml")
+        if not os.path.exists(pom_path):
+            return False, "pom.xml not found"
+
+        with open(pom_path, 'r') as f:
+            content = f.read()
+
+        if 'openrewrite-maven-plugin' in content or 'rewrite-maven-plugin' in content:
+            return True, "OpenRewrite plugin found in pom.xml"
+        return False, "OpenRewrite plugin not found in pom.xml"
+
+    def _verify_java_21(self) -> tuple:
+        """Verify Java version is set to 21"""
+        import os
+        pom_path = os.path.join(self.project_path, "pom.xml")
+        if not os.path.exists(pom_path):
+            return False, "pom.xml not found"
+
+        with open(pom_path, 'r') as f:
+            content = f.read()
+
+        # Check for java.version property
+        if '<java.version>21</java.version>' in content:
+            return True, "Java version 21 configured via java.version property"
+        if '<maven.compiler.source>21</maven.compiler.source>' in content:
+            return True, "Java version 21 configured via maven.compiler.source"
+        if '<release>21</release>' in content:
+            return True, "Java version 21 configured via release tag"
+
+        return False, "Java version 21 not found in pom.xml"
+
+    def _verify_spring_boot_3(self) -> tuple:
+        """Verify Spring Boot 3.x is configured"""
+        import os
+        pom_path = os.path.join(self.project_path, "pom.xml")
+        if not os.path.exists(pom_path):
+            return False, "pom.xml not found"
+
+        with open(pom_path, 'r') as f:
+            content = f.read()
+
+        import re
+        # Check for spring-boot version 3.x
+        match = re.search(r'spring-boot.*?(\d+\.\d+\.\d+)', content, re.IGNORECASE | re.DOTALL)
+        if match:
+            version = match.group(1)
+            if version.startswith('3.'):
+                return True, f"Spring Boot {version} configured"
+
+        return False, "Spring Boot 3.x not found in pom.xml"
+
+    def _verify_jakarta_migration(self) -> tuple:
+        """Verify javax imports have been migrated to jakarta"""
+        import subprocess
+        import os
+
+        # Search for remaining javax.persistence or javax.servlet imports
+        result = subprocess.run(
+            ['grep', '-r', '-l', 'javax.persistence\|javax.servlet', '--include=*.java', '.'],
+            cwd=self.project_path,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        if result.returncode != 0 or not result.stdout.strip():
+            return True, "No javax.persistence/servlet imports found"
+
+        files_with_javax = result.stdout.strip().split('\n')
+        return False, f"Found javax imports in {len(files_with_javax)} files"
+
+    def _verify_junit5_migration(self) -> tuple:
+        """Verify JUnit 5 migration is complete"""
+        import subprocess
+        import os
+
+        # Check for JUnit 5 imports (positive check)
+        junit5_result = subprocess.run(
+            ['grep', '-r', 'org.junit.jupiter', '--include=*.java', '.'],
+            cwd=self.project_path,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        has_junit5 = junit5_result.returncode == 0 and junit5_result.stdout.strip()
+
+        # Check for old JUnit 4 patterns (negative check)
+        junit4_result = subprocess.run(
+            ['grep', '-r', '-l', '@RunWith\|org.junit.Test\|org.junit.Before', '--include=*.java', '.'],
+            cwd=self.project_path,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        has_junit4 = junit4_result.returncode == 0 and junit4_result.stdout.strip()
+
+        if has_junit5 and not has_junit4:
+            return True, "JUnit 5 imports present, no JUnit 4 patterns found"
+        elif has_junit5 and has_junit4:
+            files = junit4_result.stdout.strip().split('\n')
+            return False, f"JUnit 4 patterns still in {len(files)} files"
+        elif not has_junit5:
+            return False, "No JUnit 5 imports found"
+
+        return False, "JUnit migration status unclear"
+
+    def _verify_compilation(self) -> tuple:
+        """Verify project compiles successfully"""
+        import subprocess
+
+        result = subprocess.run(
+            ['mvn', 'compile', '-q', '-B'],
+            cwd=self.project_path,
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+
+        if result.returncode == 0:
+            return True, "Project compiles successfully"
+        return False, f"Compilation failed: {result.stderr[:200]}"
+
+    def _verify_tests(self) -> tuple:
+        """Verify tests pass"""
+        import subprocess
+
+        result = subprocess.run(
+            ['mvn', 'test', '-q', '-B'],
+            cwd=self.project_path,
+            capture_output=True,
+            text=True,
+            timeout=600
+        )
+
+        if result.returncode == 0:
+            return True, "Tests pass successfully"
+        return False, f"Tests failed: {result.stderr[:200]}"
+
+    def _verify_imports_generic(self) -> tuple:
+        """Generic import verification - just check compilation"""
+        return self._verify_compilation()
+
+    def _verify_branch_exists(self) -> tuple:
+        """Verify migration branch exists"""
+        import subprocess
+
+        result = subprocess.run(
+            ['git', 'branch', '--list', 'migration*'],
+            cwd=self.project_path,
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+
+        if result.returncode == 0 and result.stdout.strip():
+            return True, f"Migration branch exists: {result.stdout.strip()}"
+        return False, "No migration branch found"
+
+    def _get_current_task_from_visible(self) -> str:
+        """Get current task from VISIBLE_TASKS.md"""
+        import os
+        visible_path = os.path.join(self.project_path, "VISIBLE_TASKS.md")
+        if not os.path.exists(visible_path):
+            return ""
+
+        try:
+            with open(visible_path, 'r') as f:
+                content = f.read()
+
+            if 'CURRENT TASK' in content:
+                current_section = content.split('CURRENT TASK')[1]
+                if 'UPCOMING' in current_section:
+                    current_section = current_section.split('UPCOMING')[0]
+
+                for line in current_section.split('\n'):
+                    line = line.strip()
+                    if line.startswith('- [') and ']' in line:
+                        task = line.split(']', 1)[1].strip()
+                        return task
+        except Exception as e:
+            log_agent(f"[VERIFY] Error reading VISIBLE_TASKS.md: {e}")
+
+        return ""
+
+    def _handle_nothing_to_commit(self, result_str: str) -> str:
+        """
+        Handle 'nothing to commit' scenario with verification.
+
+        Returns modified result string or triggers auto-sync if verified.
+        """
+        if not self.task_manager:
+            return result_str
+
+        current_task = self._get_current_task_from_visible()
+        if not current_task:
+            log_agent("[AUTO_SYNC] ⚠ 'Nothing to commit' but no current task found")
+            return result_str
+
+        attempt_count = self._increment_task_attempt(current_task)
+        is_verified, verify_reason = self._verify_task_complete(current_task)
+
+        if is_verified:
+            log_agent(f"[AUTO_SYNC] ✅ Task verified complete despite no commit: {verify_reason}")
+            # Trigger task completion via task_manager
+            if hasattr(self.task_manager, 'update_visible_tasks_file'):
+                from .state import StateFileManager
+                sfm = StateFileManager(self.project_path)
+                self.task_manager.update_visible_tasks_file(sfm, mark_current_complete=True)
+
+                # LOG TASK COMPLETION to COMPLETED_ACTIONS.md
+                if self.action_logger:
+                    self.action_logger.log_task_completion(current_task, "VERIFIED_NO_COMMIT")
+                    log_agent(f"[TASK_LOG] Logged verified task completion: {current_task[:60]}...")
+
+                return f"{result_str}\n\n[AUTO-VERIFIED] Task marked complete: {verify_reason}"
+        else:
+            log_agent(f"[AUTO_SYNC] ⚠ Task not verified: {verify_reason}")
+
+            # Force complete after 5 attempts to prevent infinite loop
+            if attempt_count >= 5:
+                log_agent(f"[LOOP_BREAK] 🔄 Task attempted {attempt_count} times - forcing completion")
+                if hasattr(self.task_manager, 'update_visible_tasks_file'):
+                    from .state import StateFileManager
+                    sfm = StateFileManager(self.project_path)
+                    self.task_manager.update_visible_tasks_file(sfm, mark_current_complete=True)
+
+                    # LOG TASK COMPLETION to COMPLETED_ACTIONS.md
+                    if self.action_logger:
+                        self.action_logger.log_task_completion(current_task, "FORCE_COMPLETED")
+                        log_agent(f"[TASK_LOG] Logged force-completed task: {current_task[:60]}...")
+
+                    return f"{result_str}\n\n[FORCE-COMPLETED] Task force-completed after {attempt_count} attempts"
+
+        return result_str
 
     def has_recent_tracked_tool_call(self) -> tuple:
         """
