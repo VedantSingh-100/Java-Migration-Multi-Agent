@@ -51,6 +51,7 @@ class State(AgentState):
     total_execution_loops: int = 0
     stuck_intervention_active: bool = False
     no_tool_call_loops: int = 0  # Track loops where agent returned without tool calls
+    thinking_loops: int = 0  # Track consecutive "thinking" responses (allow limited)
 
     # Error detection and routing
     has_build_error: bool = False

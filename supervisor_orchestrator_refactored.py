@@ -13,9 +13,10 @@ This file uses modular components from src/orchestrator/:
 - Agent wrappers (agent_wrappers.py)
 """
 import os
+import re
 import json
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 
 import tiktoken
 from dotenv import load_dotenv
@@ -529,8 +530,74 @@ class SupervisorMigrationOrchestrator:
             new_test_failure_count = prev_test_failure_count
             new_last_test_failure_task = last_test_failure_task
 
-        # Detect if agent returned without making tool calls
+        # ═══════════════════════════════════════════════════════════════
+        # INTELLIGENT NO-TOOL RESPONSE HANDLING
+        # ═══════════════════════════════════════════════════════════════
+        # KEY INSIGHT: If progress was made, the no-tool response is BENIGN
+        # (agent did work, then acknowledged). Only intervene if NO progress.
+        #
+        # Categories when NO progress:
+        # - acknowledging: Wasteful - re-invoke with directive
+        # - confused: Harmful - re-invoke with help
+        # - thinking: Allow 2x then force
+        # - complete: Verify and allow
+        # - unknown: Graduated response
+
         new_no_tool_loops = self._count_no_tool_response(messages, no_tool_loops)
+        thinking_loops = state.get("thinking_loops", 0)
+        was_reinvoked = False
+        progress_made = current_todo_count > last_todo_count
+
+        if new_no_tool_loops > 0:
+            # Extract response text and classify it
+            response_text = self._extract_last_ai_response_text(messages)
+            response_type = self._classify_no_tool_response(response_text)
+
+            # KEY DECISION: Did we make progress?
+            if progress_made:
+                # Progress was made - this is a BENIGN acknowledgment
+                # The agent DID work (tools were called earlier in the ReAct loop),
+                # then said "done". This is fine - reset counter and continue.
+                log_agent(f"[NO_TOOL] Response type: {response_type} BUT progress made ({last_todo_count}->{current_todo_count}) - BENIGN, resetting counter")
+                new_no_tool_loops = 0  # Reset counter - this was productive
+                thinking_loops = 0
+            else:
+                # NO progress - this is potentially HARMFUL
+                log_agent(f"[NO_TOOL] Response type: {response_type}, NO progress (no_tool_count: {new_no_tool_loops}) - INTERVENING")
+
+                # Handle based on classification
+                messages, new_no_tool_loops, was_reinvoked = self._handle_no_tool_response(
+                    state=state,
+                    messages=messages,
+                    response_type=response_type,
+                    no_tool_count=new_no_tool_loops,
+                    execution_agent=execution_agent,
+                    project_path=project_path,
+                    total_loops=total_loops,
+                    current_task=current_task,
+                    completed_summary=completed_summary
+                )
+
+                # Update thinking_loops tracker
+                if response_type == "thinking":
+                    thinking_loops += 1
+                else:
+                    thinking_loops = 0  # Reset if not thinking
+
+                # If re-invoked successfully, re-check for errors in new messages
+                if was_reinvoked:
+                    has_error, error_msg, error_type = self.error_handler.detect_build_error(messages)
+                    execution_complete = self._is_migration_complete(project_path)
+                    # Re-calculate progress
+                    todo_progress = calculate_todo_progress(project_path)
+                    current_todo_count = todo_progress['completed']
+                    if current_todo_count > last_todo_count:
+                        new_loops_without_progress = 0
+                        new_no_tool_loops = 0  # Progress made after re-invoke - reset
+                        log_agent(f"[PROGRESS] After re-invoke, TODO count: {last_todo_count} -> {current_todo_count}")
+        else:
+            # Agent used tools - reset thinking counter
+            thinking_loops = 0
 
         return {
             "messages": messages,
@@ -546,6 +613,7 @@ class SupervisorMigrationOrchestrator:
             "error_count": state.get("error_count", 0) + (1 if has_error else 0),
             "last_error_message": error_msg if has_error else "",
             "no_tool_call_loops": new_no_tool_loops,
+            "thinking_loops": thinking_loops,
             "test_failure_count": new_test_failure_count,
             "last_test_failure_task": new_last_test_failure_task,
         }
@@ -722,6 +790,242 @@ Run {verification_cmd} to verify it works.""")
             new_count = prev_count + 1
             log_agent(f"[WRAPPER] Agent returned WITHOUT tool calls - counter: {new_count}", "WARNING")
             return new_count
+
+    def _extract_last_ai_response_text(self, messages: List[BaseMessage]) -> str:
+        """
+        Extract the text content from the last AI message.
+        Returns empty string if no AI message found.
+        """
+        if not messages:
+            return ""
+
+        for msg in reversed(messages):
+            msg_type = getattr(msg, 'type', None) or type(msg).__name__
+            if msg_type == 'ai' or 'AIMessage' in type(msg).__name__:
+                content = getattr(msg, 'content', '')
+                if isinstance(content, str):
+                    return content
+                elif isinstance(content, list):
+                    # Handle content blocks (like Anthropic format)
+                    text_parts = []
+                    for block in content:
+                        if isinstance(block, dict) and block.get('type') == 'text':
+                            text_parts.append(block.get('text', ''))
+                        elif isinstance(block, str):
+                            text_parts.append(block)
+                    return ' '.join(text_parts)
+                return str(content)
+        return ""
+
+    def _classify_no_tool_response(self, response_text: str) -> str:
+        """
+        Classify agent text response into categories to determine appropriate handling.
+
+        Categories:
+        - 'acknowledging': Agent is confirming previous work (wasteful but benign)
+        - 'confused': Agent doesn't know what to do (harmful - needs help)
+        - 'thinking': Agent is reasoning/analyzing (benign, allow limited times)
+        - 'complete': Agent believes migration is done (check and allow)
+        - 'unknown': Can't classify (treat cautiously)
+
+        Returns: One of the category strings
+        """
+        if not response_text:
+            return "unknown"
+
+        text_lower = response_text.lower()
+
+        # COMPLETE patterns - agent thinks migration is done
+        complete_patterns = [
+            r'migration.*complete',
+            r'all\s+tasks.*(?:done|complete|finished)',
+            r'no\s+(?:more|further|remaining)\s+tasks',
+            r'successfully\s+completed?\s+(?:all|the)\s+migration',
+            r'migration\s+(?:is\s+)?finished',
+        ]
+
+        # CONFUSED patterns - agent is stuck/lost (harmful)
+        confused_patterns = [
+            r"(?:i'm|i am|i'm)\s*(?:not\s+sure|unsure|unclear)",
+            r"(?:don't|do not|doesn't)\s+(?:know|understand)",
+            r"(?:need|require).*clarification",
+            r"(?:what|which|how)\s+should\s+i",
+            r"please\s+(?:provide|specify|clarify)",
+            r"(?:can you|could you).*(?:help|clarify|explain)",
+            r"(?:i'm|i am)\s+(?:stuck|blocked|unable)",
+            r"not\s+(?:able|possible)\s+to\s+(?:proceed|continue)",
+            r"(?:error|issue|problem).*(?:understand|resolve)",
+            r"waiting\s+for\s+(?:input|instruction|guidance)",
+        ]
+
+        # ACKNOWLEDGING patterns - agent confirms work (wasteful)
+        # Using .{0,20} instead of strict character classes for flexibility
+        ack_patterns = [
+            r"(?:great|excellent|perfect|good|wonderful).{0,20}(?:moving|proceed|next|continue|let's)",
+            r"task.{0,20}(?:completed?|done|finished)",
+            r"successfully.{0,20}(?:done|completed?|finished)",
+            r"let(?:'s| me| us)\s+(?:move|proceed|continue)\s+(?:on|to|with)",
+            r"now\s+(?:i'll|let's|we\s+can|i\s+will).{0,30}next",
+            r"understood.{0,10}(?:proceed|moving|continue)?",
+            r"(?:moving|proceeding|continuing)\s+(?:on|to|with|forward)",  # Added 'forward'
+            r"(?:moving|proceeding|continuing)\s+to\s+(?:the\s+)?next",  # Added simpler pattern
+            r"ready\s+(?:to|for)\s+(?:the\s+)?next",
+            r"acknowledged",
+            r"(?:sounds|looks)\s+good.{0,20}(?:let's|i'll|proceed)?",
+        ]
+
+        # THINKING patterns - agent reasoning (benign, limited tolerance)
+        thinking_patterns = [
+            r"let\s+me\s+(?:think|analyze|consider|review|check|examine|look)",
+            r"(?:first|before).*(?:i\s+(?:need|should|will|must))",
+            r"(?:looking|examining|analyzing|reviewing|checking)\s+(?:at|the)",
+            r"(?:i\s+see|i\s+notice|i\s+observe|i\s+found)",
+            r"(?:based\s+on|according\s+to)\s+(?:the|my)",
+            r"(?:it\s+(?:seems|appears|looks)\s+(?:like|that))",
+            r"(?:i\s+(?:need|should|will|must)\s+(?:first|analyze|check|review))",
+        ]
+
+        # Check patterns in order of priority
+        for pattern in complete_patterns:
+            if re.search(pattern, text_lower):
+                log_agent(f"[CLASSIFY] Response classified as COMPLETE (pattern: {pattern})")
+                return "complete"
+
+        for pattern in confused_patterns:
+            if re.search(pattern, text_lower):
+                log_agent(f"[CLASSIFY] Response classified as CONFUSED (pattern: {pattern})")
+                return "confused"
+
+        for pattern in ack_patterns:
+            if re.search(pattern, text_lower):
+                log_agent(f"[CLASSIFY] Response classified as ACKNOWLEDGING (pattern: {pattern})")
+                return "acknowledging"
+
+        for pattern in thinking_patterns:
+            if re.search(pattern, text_lower):
+                log_agent(f"[CLASSIFY] Response classified as THINKING (pattern: {pattern})")
+                return "thinking"
+
+        log_agent(f"[CLASSIFY] Response classified as UNKNOWN (no pattern matched)")
+        return "unknown"
+
+    def _get_directive_for_response_type(self, response_type: str, no_tool_count: int) -> str:
+        """
+        Get an appropriate directive message based on response classification.
+        """
+        directives = {
+            "acknowledging": (
+                "⛔ STOP ACKNOWLEDGING. You already completed the previous task. "
+                "The system auto-advances to the next task. "
+                "DO NOT say 'moving to next task' - just EXECUTE the CURRENT TASK shown above using tools NOW."
+            ),
+            "confused": (
+                "🔍 You seem stuck. Here's what to do:\n"
+                "1. Use read_file to read VISIBLE_TASKS.md - this shows your CURRENT TASK\n"
+                "2. Execute that task using the appropriate tools\n"
+                "3. If task involves code changes, use find_replace or write_file\n"
+                "4. If task involves running commands, use mvn_compile or mvn_test\n"
+                "DO NOT ask questions - just read the task file and execute it."
+            ),
+            "thinking": (
+                "⏰ Enough analysis. You've had time to think. "
+                "Now USE A TOOL to make actual progress. "
+                "Execute the CURRENT TASK shown above - do not respond with more analysis."
+            ),
+            "unknown": (
+                f"⚠️ You've returned {no_tool_count}x without using tools. "
+                "This is your final warning. USE A TOOL NOW or the migration will fail. "
+                "Read VISIBLE_TASKS.md and execute the current task immediately."
+            ),
+        }
+        return directives.get(response_type, directives["unknown"])
+
+    def _handle_no_tool_response(
+        self,
+        state: State,
+        messages: List[BaseMessage],
+        response_type: str,
+        no_tool_count: int,
+        execution_agent,
+        project_path: str,
+        total_loops: int,
+        current_task: str,
+        completed_summary: str
+    ) -> Tuple[List[BaseMessage], int, bool]:
+        """
+        Handle a no-tool response based on its classification.
+
+        Returns:
+            Tuple of (new_messages, new_no_tool_count, was_reinvoked)
+        """
+        # COMPLETE: Verify and allow
+        if response_type == "complete":
+            if self._is_migration_complete(project_path):
+                log_agent("[NO_TOOL_HANDLER] Migration actually complete - allowing")
+                return messages, 0, False
+            else:
+                log_agent("[NO_TOOL_HANDLER] Agent claims complete but migration NOT done - re-invoking")
+                response_type = "confused"  # Treat as confused if falsely claiming complete
+
+        # THINKING: Allow limited times (2), then force action
+        if response_type == "thinking":
+            thinking_loops = state.get("thinking_loops", 0) + 1
+            if thinking_loops <= 2:
+                log_agent(f"[NO_TOOL_HANDLER] Thinking response ({thinking_loops}/2) - allowing this time")
+                return messages, no_tool_count, False  # Don't reset counter, but don't re-invoke
+            else:
+                log_agent(f"[NO_TOOL_HANDLER] Too much thinking ({thinking_loops}) - forcing action")
+                # Fall through to re-invoke
+
+        # For ACKNOWLEDGING, CONFUSED, excessive THINKING, or UNKNOWN with high count:
+        # Immediate re-invoke with directive
+        should_reinvoke = (
+            response_type == "acknowledging" or
+            response_type == "confused" or
+            (response_type == "thinking" and state.get("thinking_loops", 0) >= 2) or
+            (response_type == "unknown" and no_tool_count >= 2)
+        )
+
+        if not should_reinvoke:
+            # Unknown with low count - just warn next time
+            log_agent(f"[NO_TOOL_HANDLER] {response_type} response (count: {no_tool_count}) - will warn next loop")
+            return messages, no_tool_count, False
+
+        # RE-INVOKE with directive
+        log_agent(f"[NO_TOOL_HANDLER] Re-invoking agent with {response_type.upper()} directive")
+
+        directive = self._get_directive_for_response_type(response_type, no_tool_count)
+
+        # Compile new context with directive
+        reinvoke_messages = compile_execution_context(
+            project_path=project_path,
+            loop_num=total_loops,
+            current_task=current_task,
+            completed_summary=completed_summary,
+            last_result=directive
+        )
+
+        # Re-invoke agent
+        state_with_messages = dict(state)
+        state_with_messages["messages"] = reinvoke_messages
+
+        try:
+            result = execution_agent.invoke(state_with_messages)
+            new_messages = result.get("messages", [])
+
+            # Check if re-invoke produced tools
+            new_no_tool_count = self._count_no_tool_response(new_messages, 0)
+
+            if new_no_tool_count == 0:
+                log_agent("[NO_TOOL_HANDLER] Re-invoke successful - agent used tools")
+                return new_messages, 0, True
+            else:
+                log_agent(f"[NO_TOOL_HANDLER] Re-invoke still no tools - returning with count {no_tool_count + 1}")
+                return new_messages, no_tool_count + 1, True
+
+        except Exception as e:
+            log_agent(f"[NO_TOOL_HANDLER] Re-invoke failed: {e}", "ERROR")
+            return messages, no_tool_count + 1, False
 
     def _create_supervisor(self):
         """Create supervisor workflow with deterministic routing"""
