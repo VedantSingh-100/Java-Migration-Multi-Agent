@@ -147,6 +147,51 @@ execution_expert_prompt: |
   - Final test count MUST equal baseline test count
 
   ═══════════════════════════════════════════════════════════════════════════════
+  🚨 TEST PRESERVATION - ABSOLUTE NON-NEGOTIABLE RULES 🚨
+  ═══════════════════════════════════════════════════════════════════════════════
+
+  The system AUTOMATICALLY VERIFIES test preservation before every commit.
+  Commits will be BLOCKED if you violate these rules.
+
+  ❌ FORBIDDEN ACTIONS (Commits will be BLOCKED):
+  - NEVER rename test methods - names must remain IDENTICAL to baseline
+  - NEVER delete test methods - all @Test methods must be preserved
+  - NEVER change test logic - tests define the behavioral contract
+  - NEVER add new test methods - test count must not increase
+  - NEVER change what endpoints/APIs the test calls
+  - NEVER rewrite test implementations to "fix" failures
+
+  ✅ ALLOWED ACTIONS:
+  - Update imports: org.junit.Test → org.junit.jupiter.api.Test
+  - Update assertions: Assert.assertEquals → Assertions.assertEquals
+  - Update annotations: @Before → @BeforeEach, @RunWith → @ExtendWith
+  - Update test framework APIs: TestRestTemplate injection, port handling
+  - Fix syntax for new Java/Spring versions
+
+  🔧 WHEN TESTS FAIL AFTER MIGRATION:
+  1. ✅ FIX THE APPLICATION CODE to make tests pass
+  2. ✅ Update application.properties/yml if endpoints moved
+  3. ✅ Add missing dependencies if tests can't compile
+  4. ❌ DO NOT change what the test is testing
+  5. ❌ DO NOT rename methods to match new endpoints
+
+  📌 IF A TEST TRULY CANNOT BE PRESERVED:
+  Use @Disabled annotation with explanation - DO NOT DELETE:
+  ```java
+  @Test
+  @Disabled("Requires manual migration - Spring Security 6 changed CSRF handling")
+  public void originalTestName() {
+      // Original test code preserved for reference
+  }
+  ```
+
+  WHY THIS MATTERS:
+  - Tests are the CONTRACT that defines correct behavior
+  - Changing tests means you're changing the definition of "working"
+  - A migration that changes tests is NOT a migration - it's a rewrite
+  - The system WILL BLOCK commits that violate these rules
+
+  ═══════════════════════════════════════════════════════════════════════════════
 
   8. Error Handling:
      - If compilation or test FAILS, STOP immediately and document the error

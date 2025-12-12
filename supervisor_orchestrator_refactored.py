@@ -1089,6 +1089,10 @@ Run {verification_cmd} to verify it works.""")
         try:
             project_path = state.get("project_path", "")
 
+            # CRITICAL: Capture test baseline BEFORE execution starts
+            # This enables deterministic verification of test preservation
+            self._capture_test_baseline(project_path)
+
             # Read TODO and create VISIBLE_TASKS.md
             todo_content = self.state_file_manager.read_file("TODO.md", keep_beginning=True)
             visible_tasks = self.task_manager.get_visible_tasks(todo_content, max_visible=3)
@@ -1110,6 +1114,30 @@ Run {verification_cmd} to verify it works.""")
             return state.get("messages", []) + [
                 HumanMessage(content="EXECUTION PHASE - Read VISIBLE_TASKS.md and execute tasks.")
             ]
+
+    def _capture_test_baseline(self, project_path: str):
+        """
+        Capture test method baseline before execution starts.
+
+        This enables deterministic verification that test methods are preserved
+        during migration. The commit_changes tool will verify against this baseline.
+        """
+        try:
+            from src.utils.test_verifier import TestMethodVerifier
+
+            verifier = TestMethodVerifier(project_path)
+            baseline = verifier.capture_baseline()
+
+            if baseline:
+                log_agent(f"[TEST_BASELINE] Captured {sum(f.method_count for f in baseline.values())} test methods from {len(baseline)} files")
+                log_summary(f"TEST BASELINE CAPTURED: {len(baseline)} test files - preservation will be enforced on commits")
+            else:
+                log_agent("[TEST_BASELINE] No test files found - test preservation verification skipped")
+
+        except ImportError:
+            log_agent("[TEST_BASELINE] TestMethodVerifier not available - skipping baseline capture", "WARNING")
+        except Exception as e:
+            log_agent(f"[TEST_BASELINE] Error capturing baseline: {e}", "WARNING")
 
     def _is_migration_complete(self, project_path: str) -> bool:
         """Check if migration is complete based on TODO.md status"""

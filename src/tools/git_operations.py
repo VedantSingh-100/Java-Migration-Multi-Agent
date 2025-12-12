@@ -93,13 +93,46 @@ def commit_changes(repo_path: str, message: str, add_all: bool = True) -> str:
     """
     Stage changes (all by default) and commit with the given message.
     Set add_all=False to require explicit git.add calls beforehand.
+
+    IMPORTANT: This tool verifies test method preservation before committing.
+    If test methods have been renamed, deleted, or modified inappropriately,
+    the commit will be BLOCKED with an error message.
     """
     try:
+        # STEP 1: Verify test preservation BEFORE committing
+        from src.utils.test_verifier import verify_test_preservation_before_commit
+
+        is_valid, verification_msg = verify_test_preservation_before_commit(repo_path)
+
+        if not is_valid:
+            # Block the commit - test preservation violated
+            return f"""COMMIT BLOCKED - TEST PRESERVATION VIOLATION
+
+{verification_msg}
+
+Your commit was NOT created. You must:
+1. Revert changes to test files
+2. Fix the APPLICATION code instead
+3. Use @Disabled annotation if a test truly cannot work
+
+DO NOT rename, delete, or rewrite test methods."""
+
+        # STEP 2: Proceed with commit if verification passed
         repo = Repo(repo_path)
         if add_all:
             repo.git.add(A=True)
         commit = repo.index.commit(message)
         return f"Committed changes: {commit.hexsha} - {message}"
+    except ImportError:
+        # If verifier not available, proceed without verification (backwards compatibility)
+        try:
+            repo = Repo(repo_path)
+            if add_all:
+                repo.git.add(A=True)
+            commit = repo.index.commit(message)
+            return f"Committed changes: {commit.hexsha} - {message}"
+        except Exception as e:
+            return f"Error committing changes: {e}"
     except Exception as e:
         return f"Error committing changes: {e}"
 
