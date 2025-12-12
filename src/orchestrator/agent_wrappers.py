@@ -29,6 +29,7 @@ from src.utils.completion_detector import detect_analysis_complete
 
 from .constants import MAX_EXECUTION_LOOPS_PER_PHASE, MAX_LOOPS_WITHOUT_PROGRESS
 from .state import State, calculate_todo_progress
+from .error_handler import unified_classifier, MavenErrorType
 
 
 class AnalysisNodeWrapper:
@@ -189,11 +190,13 @@ class ExecutionNodeWrapper:
             if completion_stats.get('completed_tasks', 0) > 0:
                 log_agent(f"[PROGRESS] {completion_reason}")
 
-        # Detect build errors (now returns error_type)
-        has_error, error_msg, error_type = self.error_handler.detect_build_error(messages)
+        # Detect build errors using unified classifier (Single Source of Truth)
+        error_type, error_msg = unified_classifier.classify_from_messages(messages)
+        has_error = error_type != MavenErrorType.SUCCESS
+
         if has_error:
-            log_agent(f"[WRAPPER] Build error detected in execution output (type={error_type})")
-            log_summary(f"BUILD ERROR ({error_type.upper()}): {error_msg[:100]}...")
+            log_agent(f"[WRAPPER] Build error detected in execution output (type={error_type.value})")
+            log_summary(f"BUILD ERROR ({error_type.value}): {error_msg[:100]}...")
 
         # Track test failure count for retry logic
         prev_test_failure_count = state.get("test_failure_count", 0)
@@ -202,8 +205,8 @@ class ExecutionNodeWrapper:
         current_task = self.task_manager.extract_current_task(visible_tasks_content) if visible_tasks_content else ""
         last_test_failure_task = state.get("last_test_failure_task", "")
 
-        # Test failure tracking logic
-        if has_error and error_type == 'test':
+        # Test failure tracking logic - use MavenErrorType enum
+        if has_error and error_type == MavenErrorType.TEST_FAILURE:
             if current_task == last_test_failure_task:
                 new_test_failure_count = prev_test_failure_count + 1
                 log_agent(f"[WRAPPER] Test failure on same task (count: {new_test_failure_count})")
@@ -222,7 +225,7 @@ class ExecutionNodeWrapper:
         needs_intervention = (new_loops_without_progress >= MAX_LOOPS_WITHOUT_PROGRESS and
                             not execution_complete)
 
-        # Update state
+        # Update state - store error_type.value (string) for serialization
         return {
             "messages": messages,
             "analysis_done": state.get("analysis_done", False),
@@ -233,7 +236,7 @@ class ExecutionNodeWrapper:
             "total_execution_loops": total_loops,
             "stuck_intervention_active": needs_intervention,
             "has_build_error": has_error,
-            "error_type": error_type,
+            "error_type": error_type.value,  # Store as string for serialization
             "error_count": state.get("error_count", 0) + (1 if has_error else 0),
             "last_error_message": error_msg if has_error else "",
             "test_failure_count": new_test_failure_count,
@@ -418,33 +421,8 @@ class ErrorNodeWrapper:
             log_agent(f"[PRUNE_DETAIL] BEFORE Error Expert: {original_message_count} messages from execution")
 
             # Include error type in context to help error_expert with specific guidance
-            if prev_error_type == 'pom':
-                error_type_hint = "POM/CONFIGURATION ERROR"
-                verification_cmd = "mvn_compile"
-                extra_guidance = """
-This is a POM configuration error. Common fixes include:
-- Adding missing version tags to dependencies
-- Fixing XML syntax errors (unclosed tags, typos)
-- Adding missing properties in <properties> section
-- Fixing parent POM references
-- Resolving dependency version conflicts
-
-Use read_file to examine pom.xml, then use find_replace or write_file to fix the issue."""
-            elif prev_error_type == 'test':
-                error_type_hint = "TEST FAILURE"
-                verification_cmd = "mvn_test"
-                extra_guidance = """
-This is a test failure. Analyze the test error and fix the test or the code being tested.
-Do NOT delete tests - fix them or use @Disabled with documentation if truly incompatible."""
-            else:
-                error_type_hint = "COMPILATION ERROR"
-                verification_cmd = "mvn_compile"
-                extra_guidance = """
-This is a compilation error. Common fixes include:
-- Adding missing imports
-- Fixing type mismatches
-- Adding missing method implementations
-- Updating deprecated API usage"""
+            # Map new MavenErrorType values to appropriate guidance
+            error_type_hint, verification_cmd, extra_guidance = self._get_error_guidance(prev_error_type)
 
             # Build clean error context
             clean_messages = [
@@ -479,9 +457,10 @@ Run {verification_cmd} to verify it works.""")
         state_with_context["messages"] = current_messages
         result = self.error_agent.invoke(state_with_context)
 
-        # Check if errors are resolved (now returns error_type)
+        # Check if errors are resolved using unified classifier (Single Source of Truth)
         messages = result.get("messages", [])
-        still_has_error, error_msg, new_error_type = self.error_handler.detect_build_error(messages)
+        new_error_type, error_msg = unified_classifier.classify_from_messages(messages)
+        still_has_error = new_error_type != MavenErrorType.SUCCESS
 
         # Log error attempt to history
         self.error_handler.log_error_attempt(
@@ -491,19 +470,19 @@ Run {verification_cmd} to verify it works.""")
         )
 
         if still_has_error:
-            log_agent(f"[WRAPPER] Build error still present after error_expert (type={new_error_type})")
-            log_summary(f"ERROR PERSISTS ({new_error_type.upper()}): {error_msg[:100]}...")
+            log_agent(f"[WRAPPER] Build error still present after error_expert (type={new_error_type.value})")
+            log_summary(f"ERROR PERSISTS ({new_error_type.value}): {error_msg[:100]}...")
         else:
             log_agent("[WRAPPER] Build error RESOLVED by error_expert")
             log_summary("ERROR RESOLVED: Build errors fixed, returning to execution")
 
-        # Update state
+        # Update state - store error_type.value (string) for serialization
         return {
             "messages": messages,
             "analysis_done": state.get("analysis_done", False),
             "execution_done": state.get("execution_done", False),
             "has_build_error": still_has_error,
-            "error_type": new_error_type if still_has_error else "none",
+            "error_type": new_error_type.value if still_has_error else MavenErrorType.SUCCESS.value,
             # FIX: INCREMENT error_count when error_expert fails, reset to 0 when fixed
             # Bug was: error_count stayed at 1 forever, router's "error_count >= 3" check never triggered
             "error_count": state.get("error_count", 0) + 1 if still_has_error else 0,
@@ -512,6 +491,149 @@ Run {verification_cmd} to verify it works.""")
             "test_failure_count": state.get("test_failure_count", 0) if still_has_error else 0,
             "last_test_failure_task": state.get("last_test_failure_task", "") if still_has_error else "",
         }
+
+    def _get_error_guidance(self, error_type_str: str) -> tuple:
+        """
+        Get error-specific guidance based on MavenErrorType value string.
+
+        Args:
+            error_type_str: The error_type value string from state
+
+        Returns:
+            (error_type_hint: str, verification_cmd: str, extra_guidance: str)
+        """
+        # POM/Dependency errors
+        if error_type_str in ['pom_syntax_error', 'artifact_not_found', 'dependency_conflict', 'version_mismatch']:
+            return (
+                "POM/DEPENDENCY ERROR",
+                "mvn_compile",
+                """
+This is a POM configuration or dependency error. Common fixes include:
+- Adding missing version tags to dependencies
+- Fixing XML syntax errors (unclosed tags, typos)
+- Adding missing properties in <properties> section
+- Fixing parent POM references
+- Resolving dependency version conflicts
+- Checking artifact coordinates (groupId, artifactId)
+
+Use read_file to examine pom.xml, then use find_replace or write_file to fix the issue."""
+            )
+
+        # Test failures
+        elif error_type_str == 'test_failure':
+            return (
+                "TEST FAILURE",
+                "mvn_test",
+                """
+This is a test failure. Analyze the test error and fix the test or the code being tested.
+Do NOT delete tests - fix them or use @Disabled with documentation if truly incompatible."""
+            )
+
+        # Migration-specific errors
+        elif error_type_str == 'jakarta_migration_error':
+            return (
+                "JAKARTA MIGRATION ERROR",
+                "mvn_compile",
+                """
+This is a javax to jakarta namespace migration error. Common fixes:
+- Replace javax.servlet.* with jakarta.servlet.*
+- Replace javax.persistence.* with jakarta.persistence.*
+- Replace javax.validation.* with jakarta.validation.*
+- Update import statements in affected Java files
+- Check for JPA/Hibernate compatibility issues"""
+            )
+
+        elif error_type_str == 'spring_migration_error':
+            return (
+                "SPRING MIGRATION ERROR",
+                "mvn_compile",
+                """
+This is a Spring framework migration error. Common fixes:
+- Update deprecated Spring APIs to new equivalents
+- Check Spring Boot 3.x compatibility
+- Update WebMvcConfigurer implementations
+- Fix ErrorController changes (getErrorPath removed in 2.3+)
+- Check for removed or moved Spring classes"""
+            )
+
+        elif error_type_str == 'java_version_error':
+            return (
+                "JAVA VERSION ERROR",
+                "mvn_compile",
+                """
+This is a Java version compatibility error. Common fixes:
+- Update source/target version in pom.xml
+- Check maven-compiler-plugin configuration
+- Verify JDK compatibility with libraries
+- Update deprecated Java APIs for target version"""
+            )
+
+        # Infrastructure errors (usually auto-fixed, but if they reach error_expert...)
+        elif error_type_str in ['ssl_certificate', 'auth_401', 'auth_403', 'network_timeout']:
+            return (
+                "INFRASTRUCTURE/NETWORK ERROR",
+                "mvn_compile",
+                """
+This is a network/infrastructure error that wasn't auto-fixed. Options:
+- Check repository URLs in pom.xml
+- Verify artifact coordinates are correct
+- Consider adding public repository fallbacks
+- Check for corporate proxy/firewall issues"""
+            )
+
+        # Runtime errors (exceptions during build)
+        elif error_type_str == 'runtime_error':
+            return (
+                "RUNTIME ERROR",
+                "mvn_compile",
+                """
+This is a runtime error that occurred during the build process. Common causes:
+- NullPointerException in plugin execution
+- ClassNotFoundException - missing class at runtime
+- NoClassDefFoundError - class available at compile but not runtime
+- NoSuchMethodError - method signature changed between versions
+- OutOfMemoryError - increase heap size with -Xmx
+- Configuration errors in plugins (resources, exec, etc.)
+
+Steps to fix:
+1. Read the full stack trace to identify the failing plugin/class
+2. Check if it's a dependency version mismatch
+3. Verify plugin configurations in pom.xml
+4. Check if required resources/files exist"""
+            )
+
+        # Generic build failure (catch-all)
+        elif error_type_str == 'generic_build_failure':
+            return (
+                "BUILD FAILURE",
+                "mvn_compile",
+                """
+This is a generic build failure without a specific error category. Steps to diagnose:
+1. Read the full Maven output to identify the failing phase/goal
+2. Check which plugin is failing (compiler, surefire, resources, etc.)
+3. Look for any error messages or exceptions in the output
+4. Try running with -X flag for debug output: mvn compile -X
+
+Common causes:
+- Plugin configuration errors
+- Missing required files or resources
+- Environment/path issues
+- Maven version incompatibilities"""
+            )
+
+        # Default: Compilation error
+        else:
+            return (
+                "COMPILATION ERROR",
+                "mvn_compile",
+                """
+This is a compilation error. Common fixes include:
+- Adding missing imports
+- Fixing type mismatches
+- Adding missing method implementations
+- Updating deprecated API usage
+- Fixing syntax errors"""
+            )
 
     def _extract_latest_error(self, messages: List[BaseMessage]) -> str:
         """Extract the most recent error from messages"""

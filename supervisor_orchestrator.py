@@ -59,6 +59,7 @@ from src.orchestrator import (
     ActionLogger,
     initialize_completed_actions_file,
     # Errors
+    MavenErrorType,
     ErrorHandler,
     StuckDetector,
     initialize_error_history_file,
@@ -1623,7 +1624,12 @@ TODO.md is managed by the analysis phase and is now locked."""
     
     def _route_next_agent(self, state: State) -> str:
         """Deterministic router based on state flags (NO LLM)
-        
+
+        Uses unified error classification (MavenErrorType) for intelligent routing:
+        - Infrastructure errors (SSL, auth): Usually auto-fixed, but route to error_expert if failed
+        - Build errors (compilation, test, POM): Always route to error_expert
+        - Migration errors (Jakarta, Spring, Java version): Route to error_expert with specific guidance
+
         Returns:
             - 'analysis_expert': Need analysis
             - 'execution_expert': Execute tasks
@@ -1636,39 +1642,78 @@ TODO.md is managed by the analysis phase and is now locked."""
         error_count = state.get('error_count', 0)
         execution_done = state.get('execution_done', False)
         analysis_done = state.get('analysis_done', False)
-        
+        error_type_str = state.get('error_type', 'success')  # Now uses MavenErrorType.value
+
         log_agent(f"[ROUTER] Current phase: {current_phase}")
         log_agent(f"[ROUTER] Analysis done: {analysis_done}")
         log_agent(f"[ROUTER] Execution done: {execution_done}")
-        log_agent(f"[ROUTER] Build error: {has_build_error} (count: {error_count})")
-        
+        log_agent(f"[ROUTER] Build error: {has_build_error} (type: {error_type_str}, count: {error_count})")
+
         # Check for timeout condition
         if current_phase == "EXECUTION_TIMEOUT":
             log_agent("[ROUTER] → Execution timeout reached, ending migration", "WARNING")
             return "END"
-        
+
         # REMOVED: Stuck loop detection was causing false "success" at 39% completion
         # Loop detection remains active for logging, but doesn't force END anymore
-        
+
         # PRIORITY 1: If execution is complete (all TODOs done), END regardless of errors
         # The agent has finished all planned tasks - errors are acceptable
         if execution_done:
             if has_build_error:
-                log_agent("[ROUTER] → Execution complete with build errors - ending migration (TODO tasks done)")
+                log_agent(f"[ROUTER] → Execution complete with build errors ({error_type_str}) - ending migration (TODO tasks done)")
                 log_agent("[ROUTER] → Build errors detected but all TODO items completed - migration finished")
             else:
                 log_agent("[ROUTER] → Migration complete successfully, ending")
             return "END"
-        
+
         # PRIORITY 2: Check for build errors ONLY if execution is NOT complete
-        if has_build_error and error_count < 3:
-            log_agent(f"[ROUTER] → Build error detected, routing to error_expert (attempt {error_count}/3)")
+        if has_build_error:
+            # Define error categories for routing decisions
+            # Infrastructure errors - usually auto-fixed, but if they persist, error_expert can help
+            infrastructure_errors = {
+                MavenErrorType.SSL_CERTIFICATE.value,
+                MavenErrorType.AUTH_401.value,
+                MavenErrorType.AUTH_403.value,
+                MavenErrorType.NETWORK_TIMEOUT.value,
+            }
+
+            # Build errors - always need error_expert
+            build_errors = {
+                MavenErrorType.COMPILATION_ERROR.value,
+                MavenErrorType.TEST_FAILURE.value,
+                MavenErrorType.POM_SYNTAX_ERROR.value,
+                MavenErrorType.ARTIFACT_NOT_FOUND.value,
+                MavenErrorType.DEPENDENCY_CONFLICT.value,
+                MavenErrorType.VERSION_MISMATCH.value,
+                MavenErrorType.RUNTIME_ERROR.value,
+                MavenErrorType.GENERIC_BUILD_FAILURE.value,
+            }
+
+            # Migration-specific errors - need error_expert with migration expertise
+            migration_errors = {
+                MavenErrorType.JAVA_VERSION_ERROR.value,
+                MavenErrorType.SPRING_MIGRATION_ERROR.value,
+                MavenErrorType.JAKARTA_MIGRATION_ERROR.value,
+            }
+
+            if error_count >= 3:
+                log_agent(f"[ROUTER] → Max error attempts reached for {error_type_str}, MIGRATION FAILED", "ERROR")
+                log_summary(f"MIGRATION FAILED: Max error attempts (3) reached for {error_type_str}")
+                return "FAILED"
+
+            # Log the error category for better visibility
+            if error_type_str in infrastructure_errors:
+                log_agent(f"[ROUTER] → Infrastructure error ({error_type_str}), auto-fix failed, routing to error_expert (attempt {error_count}/3)")
+            elif error_type_str in migration_errors:
+                log_agent(f"[ROUTER] → Migration-specific error ({error_type_str}), routing to error_expert (attempt {error_count}/3)")
+            elif error_type_str in build_errors:
+                log_agent(f"[ROUTER] → Build error ({error_type_str}), routing to error_expert (attempt {error_count}/3)")
+            else:
+                log_agent(f"[ROUTER] → Unknown error type ({error_type_str}), routing to error_expert (attempt {error_count}/3)")
+
             return "error_expert"
-        elif has_build_error and error_count >= 3:
-            log_agent("[ROUTER] → Max error attempts reached, MIGRATION FAILED", "ERROR")
-            log_summary("MIGRATION FAILED: Max error attempts (3) reached without resolution")
-            return "FAILED"
-        
+
         # PRIORITY 3: Route based on explicit state flags
         if not analysis_done:
             log_agent("[ROUTER] → Routing to analysis_expert")
@@ -2422,12 +2467,16 @@ EXTERNAL MEMORY (Updated: {timestamp}) - READ THIS BEFORE EVERY ACTION
             log_agent(f"[LOOP_DETECT] 🔴 No actions logged to COMPLETED_ACTIONS in last {self.action_window_size} calls", "WARNING")
             return (True, f"No progress: 0 completions in last {self.action_window_size} actions")
         
-        # Pattern 3: Same TODO item attempted repeatedly
-        todo_counts = Counter(a.get('todo_item') for a in last_n if a.get('todo_item'))
-        for todo_item, count in todo_counts.items():
+        # Pattern 3: Same TODO item FAILED repeatedly (only count failures, not successful attempts)
+        todo_failures = Counter(
+            a.get('todo_item')
+            for a in last_n
+            if a.get('todo_item') and not a.get('logged_to_completed')
+        )
+        for todo_item, count in todo_failures.items():
             if count >= 3:
-                log_agent(f"[LOOP_DETECT] 🔴 TODO '{todo_item[:50]}...' attempted {count} times", "WARNING")
-                return (True, f"TODO item attempted {count} times without completion")
+                log_agent(f"[LOOP_DETECT] TODO '{todo_item[:50]}...' FAILED {count} times", "WARNING")
+                return (True, f"TODO item failed {count} times without success")
         
         return (False, "Agent making progress")
     

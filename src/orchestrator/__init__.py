@@ -82,9 +82,18 @@ from .action_logger import (
 
 # Error handling
 from .error_handler import (
+    # Unified error classification (Single Source of Truth)
+    MavenErrorType,
+    UnifiedErrorClassifier,
+    unified_classifier,
+    # Legacy error handler (for error history, stuck detection)
     ErrorHandler,
     StuckDetector,
     initialize_error_history_file,
+    # Signature-based loop detection helpers
+    ToolResultCategory,
+    categorize_tool_result,
+    hash_tool_args,
 )
 
 # Agent wrappers
@@ -148,10 +157,17 @@ __all__ = [
     'ActionLogger',
     'initialize_completed_actions_file',
 
-    # Errors
+    # Errors (Unified Classification)
+    'MavenErrorType',
+    'UnifiedErrorClassifier',
+    'unified_classifier',
     'ErrorHandler',
     'StuckDetector',
     'initialize_error_history_file',
+    # Signature-based loop detection
+    'ToolResultCategory',
+    'categorize_tool_result',
+    'hash_tool_args',
 
     # Wrappers
     'AnalysisNodeWrapper',

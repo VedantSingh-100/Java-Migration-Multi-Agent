@@ -11,6 +11,9 @@ import xml.etree.ElementTree as ET
 from src.utils.logging_config import log_summary
 from langchain_core.tools import tool
 
+# Import unified error classification system (Single Source of Truth)
+from src.orchestrator.error_handler import unified_classifier, MavenErrorType
+
 
 # Add blocked commands for safety
 BLOCKED_COMMANDS = {
@@ -227,66 +230,9 @@ def is_command_safe(command: str) -> tuple[bool, str]:
     return True, "Command is safe"
 
 
-# SSL/Maven error patterns
-SSL_ERROR_PATTERNS = [
-    "SSLHandshakeException",
-    "SSLException",
-    "PKIX path building failed",
-    "unable to find valid certification path",
-    "SSL peer shut down incorrectly",
-    "Received fatal alert",
-    "Certificate",
-    "sun.security.validator.ValidatorException"
-]
-
-MAVEN_DEPENDENCY_PATTERNS = [
-    "Downloading from",
-    "Downloaded from",
-    "Could not transfer artifact"
-]
-
-
-def has_ssl_error(output: str) -> bool:
-    """Check if command output contains SSL-related errors."""
-    if not output:
-        return False
-
-    for pattern in SSL_ERROR_PATTERNS:
-        if pattern in output:
-            return True
-    return False
-
-
-def classify_maven_error(output: str) -> str:
-    """
-    Classify the type of Maven error from output.
-    Returns: 'SSL_AND_403', 'SSL', '403_FORBIDDEN', '401_UNAUTHORIZED', '404_NOT_FOUND', 'ARTIFACT_MISSING', or 'OTHER'
-
-    Note: Checks for 403/401 first since they're more actionable than SSL errors.
-    If both SSL and 403 are present, returns 'SSL_AND_403' to handle both.
-    """
-    if not output:
-        return "OTHER"
-
-    has_ssl = has_ssl_error(output)
-    has_403 = "403" in output or "Forbidden" in output
-    has_401 = "401" in output or "Unauthorized" in output
-
-    # Check for combined errors first
-    if has_ssl and (has_403 or has_401):
-        return "SSL_AND_403"  # Mixed error - needs both handlers
-    elif has_403:
-        return "403_FORBIDDEN"
-    elif has_401:
-        return "401_UNAUTHORIZED"
-    elif has_ssl:
-        return "SSL"
-    elif "404" in output or "Not Found" in output:
-        return "404_NOT_FOUND"
-    elif "Could not find artifact" in output or "Could not resolve dependencies" in output:
-        return "ARTIFACT_MISSING"
-    else:
-        return "OTHER"
+# NOTE: Error classification has been moved to src/orchestrator/error_handler.py
+# The UnifiedErrorClassifier (unified_classifier singleton) is now the Single Source of Truth
+# for all Maven error classification. See MavenErrorType enum for all supported error types.
 
 
 def add_public_repositories_to_pom(pom_path: str) -> bool:
@@ -494,7 +440,11 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
             dep_resolved = True
             break
 
-        if has_ssl_error(combined_output):
+        # Use unified classifier for dependency resolution errors
+        dep_error_type = unified_classifier.classify(combined_output, dep_result.returncode)
+        log_summary(f"MVN_DEPENDENCY: Error type: {dep_error_type.value}")
+
+        if dep_error_type == MavenErrorType.SSL_CERTIFICATE:
             log_summary(f"MVN_DEPENDENCY: SSL error detected in dependency resolution")
             ssl_error_detected = True
 
@@ -504,7 +454,7 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
                 time.sleep(sleep_time)
         else:
             # Non-SSL error, don't retry
-            log_summary(f"MVN_DEPENDENCY: Non-SSL error, skipping retries")
+            log_summary(f"MVN_DEPENDENCY: Non-SSL error ({dep_error_type.value}), skipping retries")
             break
 
     # Step 2: Try the actual Maven command
@@ -524,24 +474,19 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
         lines = text.splitlines()
         return "\n".join(lines[-n:])
 
-    # Check if the main command has SSL errors
+    # Step 3: Classify error using unified classifier (Single Source of Truth)
     combined_output = (result.stdout or "") + (result.stderr or "")
-    has_ssl = has_ssl_error(combined_output)
+    error_type = unified_classifier.classify(combined_output, result.returncode)
+    log_summary(f"MVN_ERROR_CLASSIFICATION: {error_type.value}")
 
-    # Step 3: If command failed, classify error and apply appropriate fix
+    # Step 4: If command failed, apply appropriate fix based on error type
     if result.returncode != 0:
-        error_type = classify_maven_error(combined_output)
-        log_summary(f"MVN_ERROR_CLASSIFICATION: Detected error type: {error_type}")
+        # Check if this is an infrastructure error that can be auto-fixed
+        is_ssl_error = error_type == MavenErrorType.SSL_CERTIFICATE
+        is_auth_error = error_type in [MavenErrorType.AUTH_401, MavenErrorType.AUTH_403]
 
-        # Handle mixed SSL + 403 errors (try 403 handler directly with SSL bypass)
-        if error_type == "SSL_AND_403":
-            log_summary(f"MVN_MIXED_ERROR: Detected both SSL and 403 errors, using 403 handler with SSL bypass")
-            success, handler_output = handle_authorization_error(command, cwd, timeout)
-            if success:
-                return handler_output
-
-        # Handle SSL errors
-        elif error_type == "SSL" and ssl_error_detected:
+        # Handle SSL errors (with or without auth errors)
+        if is_ssl_error:
             log_summary(f"MVN_SSL_BYPASS: Attempting to cache dependencies with SSL verification disabled")
 
             # Use go-offline to download all dependencies with SSL checks disabled
@@ -561,7 +506,7 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
             if cache_result.returncode == 0:
                 log_summary(f"MVN_SSL_BYPASS: Successfully cached dependencies to .m2 repository")
 
-                # Step 4: Now try offline mode with cached dependencies
+                # Step 5: Now try offline mode with cached dependencies
                 log_summary(f"MVN_OFFLINE: Attempting offline mode with cached dependencies")
                 offline_command = command + " -o"
                 offline_result = subprocess.run(
@@ -587,37 +532,67 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
                     log_summary(f"MVN_OFFLINE: Offline mode failed even after caching")
             else:
                 log_summary(f"MVN_SSL_BYPASS: Failed to cache dependencies")
-                # Check if cache failure was due to 403 - if so, try 403 handler
-                cache_error_type = classify_maven_error(cache_output)
-                if cache_error_type in ["403_FORBIDDEN", "401_UNAUTHORIZED"]:
-                    log_summary(f"MVN_SSL_BYPASS: Detected {cache_error_type} during caching, trying 403 handler")
+                # Check if cache failure was due to auth error - if so, try 403 handler
+                cache_error_type = unified_classifier.classify(cache_output, cache_result.returncode)
+                if cache_error_type in [MavenErrorType.AUTH_401, MavenErrorType.AUTH_403]:
+                    log_summary(f"MVN_SSL_BYPASS: Detected {cache_error_type.value} during caching, trying auth handler")
                     success, handler_output = handle_authorization_error(command, cwd, timeout)
                     if success:
                         return handler_output
 
-        # Handle 403/401 authorization errors directly
-        elif error_type in ["403_FORBIDDEN", "401_UNAUTHORIZED"]:
+        # Handle 401/403 authorization errors directly
+        elif is_auth_error:
+            log_summary(f"MVN_AUTH_ERROR: Detected {error_type.value}, attempting to add public repositories")
             success, handler_output = handle_authorization_error(command, cwd, timeout)
             if success:
                 return handler_output
 
-    # Step 5: Return the result (success or final failure)
+    # Step 6: Return the result (success or final failure)
     output = f"Return code: {result.returncode}\n"
 
     if result.returncode != 0:
-        error_type = classify_maven_error(combined_output)
-        if error_type == "SSL_AND_403":
-            output += "WARNING: Both SSL certificate and authorization (403) errors detected\n"
-            output += "NOTE: Attempted adding public repositories with SSL bypass but failed\n"
-        elif error_type == "SSL":
+        # Use unified classifier categories for warning messages
+        output += f"ERROR_TYPE: {error_type.value}\n"
+
+        # Infrastructure errors (auto-fix attempted)
+        if error_type == MavenErrorType.SSL_CERTIFICATE:
             output += "WARNING: SSL certificate errors detected during Maven operations\n"
             output += "NOTE: Attempted SSL bypass and offline mode but failed\n"
-        elif error_type in ["403_FORBIDDEN", "401_UNAUTHORIZED"]:
-            output += "WARNING: Authorization errors (403/401) detected during Maven operations\n"
+        elif error_type in [MavenErrorType.AUTH_401, MavenErrorType.AUTH_403]:
+            output += "WARNING: Authorization errors (401/403) detected during Maven operations\n"
             output += "NOTE: Attempted adding public repositories but failed\n"
-        elif error_type in ["404_NOT_FOUND", "ARTIFACT_MISSING"]:
-            output += "WARNING: Artifacts not found (404) or missing\n"
+        elif error_type == MavenErrorType.NETWORK_TIMEOUT:
+            output += "WARNING: Network timeout during Maven operations\n"
+
+        # Dependency errors
+        elif error_type == MavenErrorType.ARTIFACT_NOT_FOUND:
+            output += "WARNING: Artifacts not found\n"
             output += "NOTE: Some dependencies may not be available in configured repositories\n"
+        elif error_type == MavenErrorType.DEPENDENCY_CONFLICT:
+            output += "WARNING: Dependency version conflict detected\n"
+        elif error_type == MavenErrorType.VERSION_MISMATCH:
+            output += "WARNING: Version mismatch detected\n"
+
+        # Build errors (need error_expert)
+        elif error_type == MavenErrorType.COMPILATION_ERROR:
+            output += "WARNING: Compilation errors detected\n"
+            output += "NOTE: Java source code needs fixes - route to error_expert\n"
+        elif error_type == MavenErrorType.TEST_FAILURE:
+            output += "WARNING: Test failures detected\n"
+            output += "NOTE: Tests need investigation - route to error_expert\n"
+        elif error_type == MavenErrorType.POM_SYNTAX_ERROR:
+            output += "WARNING: POM syntax error detected\n"
+            output += "NOTE: pom.xml needs fixes - route to error_expert\n"
+
+        # Migration-specific errors
+        elif error_type == MavenErrorType.JAVA_VERSION_ERROR:
+            output += "WARNING: Java version configuration error\n"
+        elif error_type == MavenErrorType.SPRING_MIGRATION_ERROR:
+            output += "WARNING: Spring migration error detected\n"
+        elif error_type == MavenErrorType.JAKARTA_MIGRATION_ERROR:
+            output += "WARNING: Jakarta namespace migration error detected\n"
+
+        # Unknown/fallback
         else:
             output += "WARNING: Maven command failed\n"
 
@@ -627,7 +602,7 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
         output += f"STDERR:\n{tail(result.stderr)}\n"
 
     if result.returncode != 0:
-        log_summary(f"MVN_COMMAND: Failed with return code {result.returncode}")
+        log_summary(f"MVN_COMMAND: Failed with return code {result.returncode}, error_type={error_type.value}")
     else:
         log_summary(f"MVN_COMMAND: Success")
 

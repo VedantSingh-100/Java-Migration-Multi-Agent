@@ -49,15 +49,28 @@ class State(AgentState):
     last_todo_count: int = 0
     loops_without_progress: int = 0
     total_execution_loops: int = 0
-    stuck_intervention_active: bool = False
     no_tool_call_loops: int = 0  # Track loops where agent returned without tool calls
     thinking_loops: int = 0  # Track consecutive "thinking" responses (allow limited)
 
+    # Stuck loop detection state (for routing)
+    is_stuck: bool = False  # TRUE = stuck loop detected this loop
+    stuck_type: str = "none"  # 'tool_loop', 'no_progress', or 'none'
+    stuck_tool: str = ""  # Which tool is looping (e.g., 'find_replace')
+    stuck_loop_attempts: int = 0  # How many error_expert attempts for this stuck loop
+    stuck_reason: str = ""  # Human-readable reason for being stuck
+    stuck_failed_approaches: str = ""  # JSON list of approaches that failed (for error_expert context)
+
     # Error detection and routing
+    # Uses MavenErrorType enum values from error_handler.py (Single Source of Truth)
     has_build_error: bool = False
     error_count: int = 0
     last_error_message: str = ""
-    error_type: str = "none"  # 'compile', 'test', or 'none'
+    error_type: str = "success"  # MavenErrorType.value - see error_handler.py for all types:
+    # Infrastructure errors: 'ssl_certificate', 'auth_401', 'auth_403', 'network_timeout'
+    # Dependency errors: 'artifact_not_found', 'dependency_conflict', 'version_mismatch'
+    # Build errors: 'compilation_error', 'test_failure', 'pom_syntax_error'
+    # Migration errors: 'java_version_error', 'spring_migration_error', 'jakarta_migration_error'
+    # Control states: 'unknown', 'success'
 
     # Test failure tracking (for retry-then-route pattern)
     test_failure_count: int = 0  # Consecutive test failures on current task

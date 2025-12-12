@@ -581,20 +581,18 @@ Example format:
 Be technical and precise. Omit marketing content, navigation, or irrelevant details."""
 
         try:
-            # Use Anthropic Claude for summarization
-            from langchain_anthropic import ChatAnthropic
+            # Use Amazon Bedrock Claude for summarization
+            from langchain_aws import ChatBedrock
             import os
 
-            api_key = os.environ.get("ANTHROPIC_API_KEY")
-            if not api_key:
-                raise ValueError("ANTHROPIC_API_KEY not set")
-
-            llm = ChatAnthropic(
-                model="claude-sonnet-4-20250514",
-                api_key=api_key,
-                temperature=0,
-                max_tokens=800,  # Cap summary length
-                max_retries=5,
+            # Using us. prefix for cross-region inference profile
+            llm = ChatBedrock(
+                model_id="us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+                region_name=os.environ.get("AWS_REGION", "us-east-1"),
+                model_kwargs={
+                    "max_tokens": 800,  # Cap summary length
+                    "temperature": 0.0,
+                },
             )
 
             summary = llm.invoke(prompt).content

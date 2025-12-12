@@ -15,14 +15,18 @@ This file uses modular components from src/orchestrator/:
 import os
 import re
 import json
+import time
+import random
+import asyncio
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
 
 import tiktoken
 from dotenv import load_dotenv
 from pydantic import PrivateAttr
+from botocore.exceptions import ClientError
 
-from langchain_anthropic import ChatAnthropic
+from langchain_aws import ChatBedrock
 from langchain_core.globals import set_verbose
 from langchain_core.messages import BaseMessage, HumanMessage
 
@@ -69,6 +73,10 @@ from src.orchestrator import (
     ErrorHandler,
     StuckDetector,
     initialize_error_history_file,
+    # Signature-based loop detection helpers
+    categorize_tool_result,
+    hash_tool_args,
+    ToolResultCategory,
     # Wrappers
     AnalysisNodeWrapper,
     ExecutionNodeWrapper,
@@ -94,10 +102,18 @@ from prompts.prompt_loader import (
 load_dotenv()
 set_verbose(True)
 
-# Anthropic API key from environment variable
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-if not ANTHROPIC_API_KEY:
-    raise ValueError("ANTHROPIC_API_KEY environment variable is required")
+# Amazon Bedrock API key from environment variable
+# This is a long-term Bedrock API key (ABSK format) used as bearer token
+BEDROCK_API_KEY = os.environ.get("AWS_BEARER_TOKEN_BEDROCK")
+if not BEDROCK_API_KEY:
+    raise ValueError("AWS_BEARER_TOKEN_BEDROCK environment variable is required")
+
+# AWS Region for Bedrock
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+
+# Claude 3.5 Sonnet model ID on Amazon Bedrock (cross-region inference profile)
+# Using us. prefix for cross-region inference which is required for v2 models
+BEDROCK_MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
 
 # Global token counter
 tc = TokenCounter()
@@ -109,16 +125,22 @@ class LLMCallLimitExceeded(Exception):
     pass
 
 
-class CircuitBreakerChatAnthropic(ChatAnthropic):
-    """Wrapper around ChatAnthropic that enforces LLM call limits by checking BEFORE each call"""
+class CircuitBreakerChatBedrock(ChatBedrock):
+    """
+    Wrapper around ChatBedrock that:
+    1. Enforces LLM call limits by checking BEFORE each call
+    2. Retries with exponential backoff on throttling errors
+    """
 
     _token_counter: Any = PrivateAttr()
     _max_calls: int = PrivateAttr()
+    _max_retries: int = PrivateAttr(default=5)
 
-    def __init__(self, token_counter, max_calls, **kwargs):
+    def __init__(self, token_counter, max_calls, max_retries=5, **kwargs):
         super().__init__(**kwargs)
         self._token_counter = token_counter
         self._max_calls = max_calls
+        self._max_retries = max_retries
 
     def _generate(self, *args, **kwargs):
         if self._token_counter.llm_calls >= self._max_calls:
@@ -126,7 +148,24 @@ class CircuitBreakerChatAnthropic(ChatAnthropic):
             raise LLMCallLimitExceeded(
                 f"LLM call limit of {self._max_calls} exceeded ({self._token_counter.llm_calls} calls already made)"
             )
-        return super()._generate(*args, **kwargs)
+
+        # Retry with exponential backoff on throttling
+        for attempt in range(self._max_retries):
+            try:
+                return super()._generate(*args, **kwargs)
+            except ClientError as e:
+                error_code = e.response.get('Error', {}).get('Code', '')
+                if error_code == 'ThrottlingException':
+                    if attempt < self._max_retries - 1:
+                        wait_time = (2 ** attempt) + random.uniform(0, 1)
+                        log_agent(f"[THROTTLE] Rate limited, waiting {wait_time:.1f}s (attempt {attempt+1}/{self._max_retries})")
+                        log_summary(f"[THROTTLE] AWS Bedrock rate limit hit, retrying in {wait_time:.1f}s")
+                        time.sleep(wait_time)
+                    else:
+                        log_agent(f"[THROTTLE] Max retries ({self._max_retries}) exceeded", "ERROR")
+                        raise
+                else:
+                    raise
 
     async def _agenerate(self, *args, **kwargs):
         if self._token_counter.llm_calls >= self._max_calls:
@@ -134,7 +173,24 @@ class CircuitBreakerChatAnthropic(ChatAnthropic):
             raise LLMCallLimitExceeded(
                 f"LLM call limit of {self._max_calls} exceeded ({self._token_counter.llm_calls} calls already made)"
             )
-        return await super()._agenerate(*args, **kwargs)
+
+        # Retry with exponential backoff on throttling (async version)
+        for attempt in range(self._max_retries):
+            try:
+                return await super()._agenerate(*args, **kwargs)
+            except ClientError as e:
+                error_code = e.response.get('Error', {}).get('Code', '')
+                if error_code == 'ThrottlingException':
+                    if attempt < self._max_retries - 1:
+                        wait_time = (2 ** attempt) + random.uniform(0, 1)
+                        log_agent(f"[THROTTLE] Rate limited (async), waiting {wait_time:.1f}s (attempt {attempt+1}/{self._max_retries})")
+                        log_summary(f"[THROTTLE] AWS Bedrock rate limit hit, retrying in {wait_time:.1f}s")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        log_agent(f"[THROTTLE] Max retries ({self._max_retries}) exceeded (async)", "ERROR")
+                        raise
+                else:
+                    raise
 
 
 class SupervisorMigrationOrchestrator:
@@ -192,15 +248,17 @@ class SupervisorMigrationOrchestrator:
             raise LLMCallLimitExceeded(f"Migration stopped: LLM call limit of {MAX_LLM_CALLS} exceeded")
 
     def _create_model(self):
-        """Create circuit-breaker wrapped model instance"""
-        return CircuitBreakerChatAnthropic(
+        """Create circuit-breaker wrapped model instance using Amazon Bedrock"""
+        return CircuitBreakerChatBedrock(
             token_counter=tc,
             max_calls=MAX_LLM_CALLS,
-            model="claude-sonnet-4-20250514",
-            api_key=ANTHROPIC_API_KEY,
+            model_id=BEDROCK_MODEL_ID,
+            region_name=AWS_REGION,
             callbacks=[LLMLogger(), tc],
-            max_tokens=8192,
-            max_retries=5,
+            model_kwargs={
+                "max_tokens": 8192,
+                "temperature": 0.0,
+            },
         )
 
     def _create_migration_workers(self):
@@ -330,7 +388,13 @@ class SupervisorMigrationOrchestrator:
         analysis_done = state.get('analysis_done', False)
         test_failure_count = state.get('test_failure_count', 0)
 
-        log_agent(f"[ROUTER] Phase: {current_phase} | Analysis: {analysis_done} | Execution: {execution_done} | Error: {has_build_error} (type={error_type}, count={error_count}, test_failures={test_failure_count})")
+        # Stuck loop detection state
+        is_stuck = state.get('is_stuck', False)
+        stuck_type = state.get('stuck_type', 'none')
+        stuck_loop_attempts = state.get('stuck_loop_attempts', 0)
+        stuck_reason = state.get('stuck_reason', '')
+
+        log_agent(f"[ROUTER] Phase: {current_phase} | Analysis: {analysis_done} | Execution: {execution_done} | Error: {has_build_error} (type={error_type}, count={error_count}, test_failures={test_failure_count}) | Stuck: {is_stuck} (type={stuck_type}, attempts={stuck_loop_attempts})")
 
         # Check for timeout condition
         if current_phase == "EXECUTION_TIMEOUT":
@@ -345,13 +409,20 @@ class SupervisorMigrationOrchestrator:
                 log_agent("[ROUTER] -> Migration complete successfully, ending")
             return "END"
 
-        # PRIORITY 2: Check for build errors (now with test failure retry logic)
-        if has_build_error:
-            if error_count >= 3:
-                log_agent("[ROUTER] -> Max error attempts reached, MIGRATION FAILED", "ERROR")
-                log_summary("MIGRATION FAILED: Max error attempts (3) reached")
-                return "FAILED"
+        # PRIORITY 2: Max retries exceeded (build errors OR stuck loops) → FAILED
+        # Using stuck_loop_attempts (cumulative) rather than error_count for stuck loops
+        if error_count >= 3:
+            log_agent("[ROUTER] -> Max error attempts reached (3), MIGRATION FAILED", "ERROR")
+            log_summary("MIGRATION FAILED: Max error attempts (3) reached")
+            return "FAILED"
 
+        if stuck_loop_attempts >= 3:
+            log_agent(f"[ROUTER] -> Max stuck loop attempts reached ({stuck_loop_attempts}), MIGRATION FAILED", "ERROR")
+            log_summary(f"MIGRATION FAILED: Stuck in loop for {stuck_loop_attempts} attempts - {stuck_reason}")
+            return "FAILED"
+
+        # PRIORITY 3: Check for build errors (now with test failure retry logic)
+        if has_build_error:
             # Differentiate between error types: pom, test, compile
             if error_type == 'pom':
                 # POM errors go directly to error_expert - these are configuration issues
@@ -373,7 +444,14 @@ class SupervisorMigrationOrchestrator:
                 log_agent(f"[ROUTER] -> Compile error detected, routing to error_expert (attempt {error_count}/3)")
                 return "error_expert"
 
-        # PRIORITY 3: Route based on phase
+        # PRIORITY 4: Stuck loop detected → route to error_expert for alternative approach
+        # This handles cases like FIND REPLACE NO MATCH loops (not build errors)
+        if is_stuck:
+            log_agent(f"[ROUTER] -> STUCK LOOP detected (type={stuck_type}, attempt={stuck_loop_attempts}/3): {stuck_reason}", "WARNING")
+            log_summary(f"STUCK LOOP: Routing to error_expert to try alternative approach (attempt {stuck_loop_attempts}/3)")
+            return "error_expert"
+
+        # PRIORITY 5: Route based on phase
         if not analysis_done:
             log_agent("[ROUTER] -> Routing to analysis_expert")
             return "analysis_expert"
@@ -429,12 +507,8 @@ class SupervisorMigrationOrchestrator:
                 "total_execution_loops": total_loops
             }
 
-        # Check for stuck loop patterns
-        if total_loops >= 3:
-            is_stuck, stuck_reason = self.error_handler.detect_stuck_loop()
-            if is_stuck:
-                log_agent(f"[STUCK] Loop pattern detected: {stuck_reason}", "WARNING")
-                log_console(f"Loop pattern: {stuck_reason}", "WARNING")
+        # NOTE: Stuck loop detection moved AFTER agent runs and tool calls are tracked
+        # This ensures detect_stuck_loop() sees the CURRENT loop's data, not stale data
 
         execution_agent = self.migration_workers[1]
 
@@ -479,6 +553,31 @@ class SupervisorMigrationOrchestrator:
         state_with_messages = dict(state)
         state_with_messages["messages"] = compiled_messages
         result = execution_agent.invoke(state_with_messages)
+
+        # ═══════════════════════════════════════════════════════════════
+        # TRACK TOOL CALLS FOR STUCK LOOP DETECTION
+        # ═══════════════════════════════════════════════════════════════
+        # Extract tool calls from messages and track them via error_handler
+        # This populates recent_actions so detect_stuck_loop() can work
+        result_messages = result.get("messages", [])
+        tracked_tool_count = self._extract_and_track_tool_calls(result_messages, current_task or "")
+        log_agent(f"[STUCK_DETECTION] Tracked {tracked_tool_count} tool calls for loop detection")
+
+        # ═══════════════════════════════════════════════════════════════
+        # DETECT STUCK LOOPS (AFTER tracking, so we have current loop's data)
+        # ═══════════════════════════════════════════════════════════════
+        is_stuck = False
+        stuck_reason = ""
+        stuck_tool = ""
+        if total_loops >= 3:  # Need at least 3 loops of history
+            is_stuck, stuck_reason = self.error_handler.detect_stuck_loop()
+            if is_stuck:
+                # Extract tool name from reason if present
+                if "Tool '" in stuck_reason:
+                    stuck_tool = stuck_reason.split("Tool '")[1].split("'")[0]
+                log_agent(f"[STUCK] Loop pattern detected: {stuck_reason}", "WARNING")
+                log_console(f"⚠️ STUCK LOOP: {stuck_reason}", "WARNING")
+                log_summary(f"STUCK LOOP DETECTED: {stuck_reason}")
 
         # Track progress
         todo_progress = calculate_todo_progress(project_path)
@@ -599,6 +698,53 @@ class SupervisorMigrationOrchestrator:
             # Agent used tools - reset thinking counter
             thinking_loops = 0
 
+        # Determine if stuck - either via loop pattern detection OR no progress for too long
+        # KEY FIX: Progress TRUMPS pattern detection to prevent false positives
+        # The fleetman-webapp bug: commit_changes called 3x (healthy - different files each time)
+        # was flagged as stuck even though TODO count was increasing (5/34 tasks done)
+        stuck_via_pattern = is_stuck  # From detect_stuck_loop()
+        stuck_via_no_progress = new_loops_without_progress >= MAX_LOOPS_WITHOUT_PROGRESS
+
+        # CRITICAL: If progress was made, DON'T flag as stuck (even if pattern detected)
+        # This prevents healthy migrations from being killed by naive tool counting
+        if progress_made:
+            if stuck_via_pattern:
+                log_agent(f"[STUCK] Pattern detected but PROGRESS MADE ({last_todo_count} -> {current_todo_count}) - FALSE POSITIVE, ignoring")
+            is_stuck_now = False  # Progress trumps pattern detection
+        else:
+            is_stuck_now = stuck_via_pattern or stuck_via_no_progress
+
+        # Determine stuck type for router
+        if is_stuck_now and stuck_via_pattern:
+            stuck_type = "tool_loop"
+        elif is_stuck_now and stuck_via_no_progress:
+            stuck_type = "no_progress"
+        else:
+            stuck_type = "none"
+
+        # Track stuck loop attempts (for router to decide when to give up)
+        # IMPORTANT: Only reset to 0 if we made ACTUAL PROGRESS (TODO count increased)
+        # This prevents premature reset when detection briefly returns False
+        prev_stuck_attempts = state.get("stuck_loop_attempts", 0)
+        progress_made = current_todo_count > last_todo_count
+
+        if is_stuck_now:
+            new_stuck_attempts = prev_stuck_attempts + 1
+            log_agent(f"[STUCK] Stuck attempt #{new_stuck_attempts} (pattern={stuck_via_pattern}, no_progress={stuck_via_no_progress})")
+        elif progress_made:
+            # Only reset if we actually made progress
+            new_stuck_attempts = 0
+            log_agent(f"[STUCK] Progress made, resetting stuck_loop_attempts to 0")
+        else:
+            # No progress but not detected as stuck yet - maintain counter
+            new_stuck_attempts = prev_stuck_attempts
+
+        # Preserve or reset stuck_failed_approaches based on progress
+        if progress_made:
+            new_failed_approaches = ""  # Reset on progress
+        else:
+            new_failed_approaches = state.get("stuck_failed_approaches", "")  # Preserve
+
         return {
             "messages": messages,
             "analysis_done": state.get("analysis_done", False),
@@ -607,11 +753,19 @@ class SupervisorMigrationOrchestrator:
             "last_todo_count": current_todo_count,
             "loops_without_progress": new_loops_without_progress,
             "total_execution_loops": total_loops,
-            "stuck_intervention_active": new_loops_without_progress >= MAX_LOOPS_WITHOUT_PROGRESS,
+            # Stuck detection state - used by router
+            "is_stuck": is_stuck_now,
+            "stuck_type": stuck_type,
+            "stuck_tool": stuck_tool if is_stuck_now else "",
+            "stuck_loop_attempts": new_stuck_attempts,
+            "stuck_reason": stuck_reason if is_stuck_now else "",
+            "stuck_failed_approaches": new_failed_approaches,
+            # Build error state
             "has_build_error": has_error,
             "error_type": error_type,
             "error_count": state.get("error_count", 0) + (1 if has_error else 0),
             "last_error_message": error_msg if has_error else "",
+            # Other state
             "no_tool_call_loops": new_no_tool_loops,
             "thinking_loops": thinking_loops,
             "test_failure_count": new_test_failure_count,
@@ -619,26 +773,216 @@ class SupervisorMigrationOrchestrator:
         }
 
     def _wrap_error_node(self, state: State):
-        """Wrapper for error agent with error resolution tracking"""
+        """
+        Wrapper for error agent with error resolution tracking.
+
+        For STUCK LOOPS: error_expert gets 3 consecutive attempts with escalating strategies.
+        Each attempt has different guidance to ensure varied approaches.
+
+        For BUILD ERRORS: Standard error resolution flow.
+        """
+        import json
+
         error_count = state.get("error_count", 0)
         project_path = state.get("project_path", "")
         prev_error_type = state.get("error_type", "none")
 
-        log_agent(f"[WRAPPER] Running error_expert (attempt {error_count}/3, type={prev_error_type})")
-        log_summary(f"ERROR RESOLUTION: error_expert attempting fix (attempt {error_count}/3)")
+        # Check if we're here due to stuck loop vs build error
+        is_stuck = state.get("is_stuck", False)
+        stuck_type = state.get("stuck_type", "none")
+        stuck_reason = state.get("stuck_reason", "")
+        stuck_tool = state.get("stuck_tool", "")
+        stuck_loop_attempts = state.get("stuck_loop_attempts", 0)
+        stuck_failed_approaches = state.get("stuck_failed_approaches", "")
 
         error_agent = self.migration_workers[2]
         current_messages = state.get("messages", [])
 
-        # Build clean error context
-        current_error = self._extract_latest_error(current_messages)
-        error_history = self.state_file_manager.read_file("ERROR_HISTORY.md")
+        if is_stuck:
+            # ═══════════════════════════════════════════════════════════════
+            # STUCK LOOP HANDLING - 3 consecutive attempts with escalation
+            # ═══════════════════════════════════════════════════════════════
+            log_agent(f"[WRAPPER] Running error_expert for STUCK LOOP (attempt {stuck_loop_attempts}/3, type={stuck_type})")
+            log_summary(f"STUCK LOOP RESOLUTION: error_expert attempt {stuck_loop_attempts}/3")
 
-        # Include error type in context to help error_expert
-        if prev_error_type == 'pom':
-            error_type_hint = "POM/CONFIGURATION ERROR"
-            verification_cmd = "mvn_compile"
-            extra_guidance = """
+            # Parse previous failed approaches
+            try:
+                failed_list = json.loads(stuck_failed_approaches) if stuck_failed_approaches else []
+            except json.JSONDecodeError:
+                failed_list = []
+
+            # Get current task
+            current_task_content = self.state_file_manager.read_file("VISIBLE_TASKS.md")
+            current_task = self.task_manager.extract_current_task(current_task_content) if current_task_content else "Unknown task"
+
+            # ESCALATING STRATEGIES based on attempt number
+            if stuck_loop_attempts == 1:
+                # ATTEMPT 1: Try a different tool/approach
+                strategy = "STRATEGY 1: USE A DIFFERENT APPROACH"
+                if stuck_tool == "find_replace":
+                    specific_guidance = f"""
+The find_replace tool keeps failing with "NO MATCH". The search string doesn't exist in the file.
+
+YOUR TASK FOR THIS ATTEMPT:
+1. FIRST: Use read_file to see the ACTUAL content of the file
+2. THEN: Identify what text actually exists that you need to modify
+3. FINALLY: Use find_replace with a search string that ACTUALLY EXISTS in the file
+
+Example: If looking for '<version>1.0</version>' but file has '<version>1.0.0</version>',
+search for the actual text '<version>1.0.0</version>' instead.
+
+DO NOT use the same search pattern that failed."""
+                else:
+                    specific_guidance = f"""
+The {stuck_tool} tool is not working for this task.
+
+YOUR TASK FOR THIS ATTEMPT:
+1. Analyze WHY {stuck_tool} is failing
+2. Try a COMPLETELY DIFFERENT tool or approach
+3. If modifying a file, try read_file first to understand the content
+
+DO NOT repeat the same {stuck_tool} call."""
+
+            elif stuck_loop_attempts == 2:
+                # ATTEMPT 2: Use write_file to rewrite the section/file
+                strategy = "STRATEGY 2: REWRITE USING write_file"
+                specific_guidance = f"""
+Previous approach failed: {failed_list[-1] if failed_list else 'Unknown'}
+
+Since find_replace/targeted edits are not working, USE write_file INSTEAD:
+1. Use read_file to get the current file content
+2. Modify the content in your response (mentally or in a code block)
+3. Use write_file to write the ENTIRE corrected file
+
+This bypasses the pattern matching issues entirely.
+
+IMPORTANT: When using write_file, include ALL the original content plus your changes.
+Do not write a partial file."""
+
+            else:  # stuck_loop_attempts >= 3
+                # ATTEMPT 3: Skip the task and move on
+                strategy = "STRATEGY 3: SKIP THIS TASK AND MOVE ON"
+                specific_guidance = f"""
+Previous approaches failed:
+{chr(10).join(f'  - {a}' for a in failed_list) if failed_list else '  - (unknown)'}
+
+This task appears to be BLOCKED. You MUST skip it now:
+
+1. Use find_replace to update TODO.md:
+   - Find the current task line
+   - Replace "- [ ]" with "- [x] SKIPPED:"
+   - Add reason: "Unable to complete - {stuck_reason}"
+
+2. Example:
+   OLD: - [ ] Update guava dependency version
+   NEW: - [x] SKIPPED: Update guava dependency version (blocked: find_replace pattern not found in file)
+
+3. After marking skipped, the system will move to the next task.
+
+DO NOT try to fix this task again. Mark it skipped and move on."""
+
+            # Build the prompt with escalating guidance
+            clean_messages = [
+                HumanMessage(content=f"""STUCK LOOP INTERVENTION - Project: {project_path}
+Attempt: {stuck_loop_attempts}/3
+
+## ISSUE: {stuck_reason}
+
+## CURRENT TASK:
+{current_task}
+
+## {strategy}
+{specific_guidance}
+
+## PREVIOUS FAILED APPROACHES:
+{chr(10).join(f'- {a}' for a in failed_list) if failed_list else 'None yet - this is your first attempt.'}
+
+⚠️ CRITICAL: You MUST try something DIFFERENT from previous attempts.
+Use your tools now to either fix the issue OR skip this task (on attempt 3).""")
+            ]
+
+            # Run error_expert
+            state_with_context = dict(state)
+            state_with_context["messages"] = clean_messages
+            result = error_agent.invoke(state_with_context)
+
+            messages = result.get("messages", [])
+            still_has_error, error_msg, new_error_type = self.error_handler.detect_build_error(messages)
+
+            # Check if we made progress
+            todo_progress = calculate_todo_progress(project_path)
+            current_todo_count = todo_progress['completed']
+            prev_todo_count = state.get("last_todo_count", 0)
+            made_progress = current_todo_count > prev_todo_count
+
+            # Extract what approach was tried this time (for tracking)
+            approach_tried = self._extract_approach_from_messages(messages, stuck_loop_attempts)
+            failed_list.append(approach_tried)
+            new_failed_approaches = json.dumps(failed_list)
+
+            if made_progress:
+                log_agent(f"[WRAPPER] Stuck loop RESOLVED - progress made ({prev_todo_count}->{current_todo_count})")
+                log_summary("STUCK LOOP RESOLVED: Made progress on tasks")
+                return {
+                    "messages": messages,
+                    "analysis_done": state.get("analysis_done", False),
+                    "execution_done": state.get("execution_done", False),
+                    "has_build_error": still_has_error,
+                    "error_type": new_error_type if still_has_error else "none",
+                    "error_count": state.get("error_count", 0),
+                    "last_error_message": error_msg if still_has_error else "",
+                    # RESET all stuck state
+                    "is_stuck": False,
+                    "stuck_type": "none",
+                    "stuck_tool": "",
+                    "stuck_loop_attempts": 0,
+                    "stuck_reason": "",
+                    "stuck_failed_approaches": "",
+                    "last_todo_count": current_todo_count,
+                    "loops_without_progress": 0,
+                }
+            else:
+                # No progress - increment attempt counter and continue
+                new_attempts = stuck_loop_attempts + 1
+                log_agent(f"[WRAPPER] Stuck loop attempt {stuck_loop_attempts} failed, incrementing to {new_attempts}")
+
+                if new_attempts > 3:
+                    # All 3 attempts exhausted - will be caught by router as FAILED
+                    log_agent(f"[WRAPPER] All 3 stuck loop attempts exhausted", "WARNING")
+                    log_summary(f"STUCK LOOP: All 3 attempts failed - migration will fail")
+
+                return {
+                    "messages": messages,
+                    "analysis_done": state.get("analysis_done", False),
+                    "execution_done": state.get("execution_done", False),
+                    "has_build_error": still_has_error,
+                    "error_type": new_error_type if still_has_error else "none",
+                    "error_count": state.get("error_count", 0),
+                    "last_error_message": error_msg if still_has_error else "",
+                    # Keep is_stuck=True so router sends us back for next attempt
+                    "is_stuck": True,
+                    "stuck_type": stuck_type,
+                    "stuck_tool": stuck_tool,
+                    "stuck_loop_attempts": new_attempts,
+                    "stuck_reason": stuck_reason,
+                    "stuck_failed_approaches": new_failed_approaches,
+                }
+
+        else:
+            # ═══════════════════════════════════════════════════════════════
+            # REGULAR BUILD ERROR HANDLING
+            # ═══════════════════════════════════════════════════════════════
+            log_agent(f"[WRAPPER] Running error_expert (attempt {error_count}/3, type={prev_error_type})")
+            log_summary(f"ERROR RESOLUTION: error_expert attempting fix (attempt {error_count}/3)")
+
+            current_error = self._extract_latest_error(current_messages)
+            error_history = self.state_file_manager.read_file("ERROR_HISTORY.md")
+
+            # Include error type in context to help error_expert
+            if prev_error_type == 'pom':
+                error_type_hint = "POM/CONFIGURATION ERROR"
+                verification_cmd = "mvn_compile"
+                extra_guidance = """
 This is a POM configuration error. Common fixes include:
 - Adding missing version tags to dependencies
 - Fixing XML syntax errors (unclosed tags, typos)
@@ -647,24 +991,24 @@ This is a POM configuration error. Common fixes include:
 - Resolving dependency version conflicts
 
 Use read_file to examine pom.xml, then use find_replace or write_file to fix the issue."""
-        elif prev_error_type == 'test':
-            error_type_hint = "TEST FAILURE"
-            verification_cmd = "mvn_test"
-            extra_guidance = """
+            elif prev_error_type == 'test':
+                error_type_hint = "TEST FAILURE"
+                verification_cmd = "mvn_test"
+                extra_guidance = """
 This is a test failure. Analyze the test error and fix the test or the code being tested.
 Do NOT delete tests - fix them or use @Disabled with documentation if truly incompatible."""
-        else:
-            error_type_hint = "COMPILATION ERROR"
-            verification_cmd = "mvn_compile"
-            extra_guidance = """
+            else:
+                error_type_hint = "COMPILATION ERROR"
+                verification_cmd = "mvn_compile"
+                extra_guidance = """
 This is a compilation error. Common fixes include:
 - Adding missing imports
 - Fixing type mismatches
 - Adding missing method implementations
 - Updating deprecated API usage"""
 
-        clean_messages = [
-            HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
+            clean_messages = [
+                HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
 
 ## ERROR TYPE: {error_type_hint}
 
@@ -678,42 +1022,65 @@ This is a compilation error. Common fixes include:
 Do NOT repeat failed approaches. Try something different.
 Analyze the error, then EXECUTE the fix using your tools.
 Run {verification_cmd} to verify it works.""")
-        ]
+            ]
 
-        state_with_context = dict(state)
-        state_with_context["messages"] = clean_messages
-        result = error_agent.invoke(state_with_context)
+            state_with_context = dict(state)
+            state_with_context["messages"] = clean_messages
+            result = error_agent.invoke(state_with_context)
 
-        messages = result.get("messages", [])
-        still_has_error, error_msg, new_error_type = self.error_handler.detect_build_error(messages)
+            messages = result.get("messages", [])
+            still_has_error, error_msg, new_error_type = self.error_handler.detect_build_error(messages)
 
-        # Log error attempt
-        self.error_handler.log_error_attempt(
-            error=current_error,
-            attempt_num=error_count,
-            was_successful=not still_has_error
-        )
+            # Log error attempt
+            self.error_handler.log_error_attempt(
+                error=current_error,
+                attempt_num=error_count,
+                was_successful=not still_has_error
+            )
 
-        if still_has_error:
-            log_agent(f"[WRAPPER] Build error still present (type={new_error_type})")
+            if still_has_error:
+                log_agent(f"[WRAPPER] Build error still present (type={new_error_type})")
+            else:
+                log_agent("[WRAPPER] Build error RESOLVED")
+                log_summary("ERROR RESOLVED: Build errors fixed")
+
+            return {
+                "messages": messages,
+                "analysis_done": state.get("analysis_done", False),
+                "execution_done": state.get("execution_done", False),
+                "has_build_error": still_has_error,
+                "error_type": new_error_type if still_has_error else "none",
+                # INCREMENT error_count when error_expert fails, reset to 0 when fixed
+                "error_count": state.get("error_count", 0) + 1 if still_has_error else 0,
+                "last_error_message": error_msg if still_has_error else "",
+                # Reset test failure count when error is resolved
+                "test_failure_count": state.get("test_failure_count", 0) if still_has_error else 0,
+                "last_test_failure_task": state.get("last_test_failure_task", "") if still_has_error else "",
+                # Clear stuck state since this was a build error resolution
+                "is_stuck": False,
+                "stuck_type": "none",
+                "stuck_loop_attempts": 0 if not still_has_error else state.get("stuck_loop_attempts", 0),
+                "stuck_failed_approaches": "",
+            }
+
+    def _extract_approach_from_messages(self, messages: List[BaseMessage], attempt_num: int) -> str:
+        """Extract a description of what approach was tried from the agent's messages."""
+        tools_used = []
+        for msg in messages:
+            # Check for tool calls in AI messages
+            tool_calls = getattr(msg, 'tool_calls', None) or []
+            additional_kwargs = getattr(msg, 'additional_kwargs', {}) or {}
+            additional_tool_calls = additional_kwargs.get('tool_calls', [])
+
+            for tc in tool_calls + additional_tool_calls:
+                tool_name = tc.get('name', 'unknown') if isinstance(tc, dict) else getattr(tc, 'name', 'unknown')
+                if tool_name not in tools_used:
+                    tools_used.append(tool_name)
+
+        if tools_used:
+            return f"Attempt {attempt_num}: Used {', '.join(tools_used)}"
         else:
-            log_agent("[WRAPPER] Build error RESOLVED")
-            log_summary("ERROR RESOLVED: Build errors fixed")
-
-        return {
-            "messages": messages,
-            "analysis_done": state.get("analysis_done", False),
-            "execution_done": state.get("execution_done", False),
-            "has_build_error": still_has_error,
-            "error_type": new_error_type if still_has_error else "none",
-            # FIX: INCREMENT error_count when error_expert fails, reset to 0 when fixed
-            # Bug was: error_count stayed at 1 forever, router's "error_count >= 3" check never triggered
-            "error_count": state.get("error_count", 0) + 1 if still_has_error else 0,
-            "last_error_message": error_msg if still_has_error else "",
-            # Reset test failure count when error is resolved
-            "test_failure_count": state.get("test_failure_count", 0) if still_has_error else 0,
-            "last_test_failure_task": state.get("last_test_failure_task", "") if still_has_error else "",
-        }
+            return f"Attempt {attempt_num}: No tools used"
 
     def _apply_phase_transition(self, state: State) -> List[BaseMessage]:
         """Apply phase transition pruning from analysis to execution"""
@@ -756,6 +1123,105 @@ Run {verification_cmd} to verify it works.""")
             if 'BUILD FAILURE' in content or 'ERROR' in content:
                 return content[:500]
         return "Unknown error"
+
+    def _extract_and_track_tool_calls(self, messages: List[BaseMessage], current_task: str = "") -> int:
+        """
+        Extract tool calls from messages and track them via error_handler.
+        This enables SIGNATURE-BASED stuck loop detection.
+
+        A signature consists of (tool_name, args_hash, result_category).
+        This allows distinguishing between:
+        - Healthy: commit_changes called 5x with DIFFERENT args/SUCCESS results
+        - Stuck: commit_changes called 3x with SAME args/EMPTY results
+
+        Returns:
+            Number of tool calls tracked
+        """
+        tracked_count = 0
+
+        # Find AI messages with tool_calls and their corresponding ToolMessage results
+        for i, msg in enumerate(messages):
+            msg_type = getattr(msg, 'type', None) or type(msg).__name__
+
+            if msg_type == 'ai' or 'AIMessage' in type(msg).__name__:
+                tool_calls = getattr(msg, 'tool_calls', None) or []
+                additional_kwargs = getattr(msg, 'additional_kwargs', {}) or {}
+                additional_tool_calls = additional_kwargs.get('tool_calls', [])
+
+                all_tool_calls = tool_calls + additional_tool_calls
+
+                for tc in all_tool_calls:
+                    tool_name = tc.get('name', 'unknown') if isinstance(tc, dict) else getattr(tc, 'name', 'unknown')
+                    tool_id = tc.get('id', '') if isinstance(tc, dict) else getattr(tc, 'id', '')
+
+                    # Extract tool arguments for hashing
+                    tool_args = tc.get('args', {}) if isinstance(tc, dict) else getattr(tc, 'args', {})
+                    args_hash = hash_tool_args(tool_args)
+
+                    # Find the corresponding ToolMessage result
+                    tool_result = ""
+                    is_success = False
+                    for result_msg in messages[i+1:]:
+                        result_type = getattr(result_msg, 'type', None) or type(result_msg).__name__
+                        if result_type == 'tool' or 'ToolMessage' in type(result_msg).__name__:
+                            result_tool_id = getattr(result_msg, 'tool_call_id', '')
+                            if result_tool_id == tool_id:
+                                tool_result = str(getattr(result_msg, 'content', ''))
+                                # Determine success based on result content
+                                is_success = self._determine_tool_success(tool_name, tool_result)
+                                break
+
+                    # Categorize the result for signature-based detection
+                    result_category = categorize_tool_result(tool_name, tool_result)
+
+                    # Track the action with full signature
+                    self.error_handler.track_action(
+                        tool_name=tool_name,
+                        args_hash=args_hash,
+                        result_category=result_category,
+                        todo_item=current_task,
+                        logged_to_completed=is_success
+                    )
+                    tracked_count += 1
+
+                    # Log for debugging (more detailed now)
+                    log_agent(
+                        f"[TRACK_ACTION] {tool_name} | args={args_hash} | result={result_category} | "
+                        f"success={is_success} | task={current_task[:40] if current_task else 'N/A'}..."
+                    )
+
+        return tracked_count
+
+    def _determine_tool_success(self, tool_name: str, result: str) -> bool:
+        """
+        Determine if a tool call was successful based on its result.
+        """
+        result_lower = result.lower()
+
+        # Common failure patterns
+        failure_patterns = [
+            'error', 'failed', 'exception', 'no occurrences', 'no match',
+            'not found', 'build failure', 'return code: 1', 'blocked'
+        ]
+
+        # Common success patterns
+        success_patterns = [
+            'success', 'return code: 0', 'build success', 'committed',
+            'created', 'updated', 'configured', 'added'
+        ]
+
+        # Check for failure first
+        for pattern in failure_patterns:
+            if pattern in result_lower:
+                return False
+
+        # Check for success
+        for pattern in success_patterns:
+            if pattern in result_lower:
+                return True
+
+        # Default: assume success if no clear failure
+        return True
 
     def _count_no_tool_response(self, messages: List[BaseMessage], prev_count: int) -> int:
         """
@@ -979,11 +1445,13 @@ Run {verification_cmd} to verify it works.""")
 
         # For ACKNOWLEDGING, CONFUSED, excessive THINKING, or UNKNOWN with high count:
         # Immediate re-invoke with directive
+        # NOTE: For "unknown" responses, we wait for 5 consecutive no-tool responses
+        # before re-invoking, to give the model more chances to self-correct
         should_reinvoke = (
             response_type == "acknowledging" or
             response_type == "confused" or
             (response_type == "thinking" and state.get("thinking_loops", 0) >= 2) or
-            (response_type == "unknown" and no_tool_count >= 2)
+            (response_type == "unknown" and no_tool_count >= 5)
         )
 
         if not should_reinvoke:
@@ -1163,13 +1631,23 @@ Run {verification_cmd} to verify it works.""")
                 "last_todo_count": 0,
                 "loops_without_progress": 0,
                 "total_execution_loops": 0,
-                "stuck_intervention_active": False,
+                # Stuck loop detection state
+                "is_stuck": False,
+                "stuck_type": "none",
+                "stuck_tool": "",
+                "stuck_loop_attempts": 0,
+                "stuck_reason": "",
+                "stuck_failed_approaches": "",
+                # Build error state
                 "has_build_error": False,
                 "error_count": 0,
                 "last_error_message": "",
                 "error_type": "none",
                 "test_failure_count": 0,
                 "last_test_failure_task": "",
+                # No-tool tracking
+                "no_tool_call_loops": 0,
+                "thinking_loops": 0,
             }, {"recursion_limit": 500}):
                 step_count += 1
                 last_chunk = chunk
