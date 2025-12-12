@@ -106,16 +106,25 @@ def commit_changes(repo_path: str, message: str, add_all: bool = True) -> str:
 
         if not is_valid:
             # Block the commit - test preservation violated
-            return f"""COMMIT BLOCKED - TEST PRESERVATION VIOLATION
+            # NOTE: The marker "TEST_PRESERVATION_VIOLATION" is detected by error_handler.py
+            # which routes to error_expert for recovery
+            return f"""TEST_PRESERVATION_VIOLATION: COMMIT BLOCKED
 
 {verification_msg}
 
-Your commit was NOT created. You must:
-1. Revert changes to test files
-2. Fix the APPLICATION code instead
-3. Use @Disabled annotation if a test truly cannot work
+Your commit was NOT created because test methods were modified.
 
-DO NOT rename, delete, or rewrite test methods."""
+This error will be handled by the error_expert who has the tools to fix this.
+The error_expert will:
+1. Revert the test file changes
+2. Guide you on how to fix the APPLICATION code instead
+3. Help you understand why tests must remain unchanged
+
+⚠️ CRITICAL RULES:
+- Test method NAMES must remain identical to baseline
+- Test method LOGIC defines the behavioral contract
+- Fix APPLICATION code to make tests pass, not vice versa
+- If truly impossible, use @Disabled("reason") annotation"""
 
         # STEP 2: Proceed with commit if verification passed
         repo = Repo(repo_path)

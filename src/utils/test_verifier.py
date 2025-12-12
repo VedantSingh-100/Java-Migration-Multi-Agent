@@ -373,11 +373,43 @@ class TestMethodVerifier:
                 lines.append(f"  ❌ {file}")
             lines.append("")
 
+        # Collect affected files for revert commands
+        affected_files = set()
+        for file, _, _ in result.renamed_methods:
+            affected_files.add(file)
+        for file, _ in result.deleted_methods:
+            affected_files.add(file)
+        for file in result.deleted_files:
+            affected_files.add(file)
+
         lines.extend([
-            "HOW TO FIX:",
-            "1. REVERT your test file changes",
-            "2. Fix the APPLICATION code instead to make tests pass",
-            "3. If a test truly cannot work, use @Disabled annotation",
+            "=" * 70,
+            "🔧 HOW TO FIX (FOLLOW THESE STEPS):",
+            "=" * 70,
+            "",
+            "STEP 1: REVERT the test file changes using these EXACT commands:",
+            "",
+        ])
+
+        # Add specific git checkout commands
+        for file in sorted(affected_files):
+            lines.append(f"    git checkout HEAD -- {file}")
+
+        lines.extend([
+            "",
+            "STEP 2: Understand WHY the test was failing:",
+            "  - If it's a compilation error: Fix the APPLICATION code, not the test",
+            "  - If test references old API: Update imports/method calls in APPLICATION code",
+            "  - If test expects old behavior: The APPLICATION code change broke it - fix app code",
+            "",
+            "STEP 3: If a test TRULY cannot work after migration (rare):",
+            "  - Add @Disabled(\"Reason: <explain why>\") annotation BEFORE @Test",
+            "  - Example:",
+            "      @Disabled(\"Incompatible with Jakarta namespace - requires manual review\")",
+            "      @Test",
+            "      public void originalTestName() { ... }",
+            "",
+            "⚠️  NEVER rename, delete, or rewrite test method signatures!",
             "",
             f"Baseline: {result.baseline_method_count} methods",
             f"Current:  {result.current_method_count} methods",
@@ -425,26 +457,43 @@ class TestMethodVerifier:
         methods = []
         lines = content.split('\n')
 
+        # Pattern to find method declarations (without requiring @Test on same line)
+        method_pattern = r'(?:public\s+)?void\s+(\w+)\s*\('
+
         for i, line in enumerate(lines):
-            for pattern in self.TEST_METHOD_PATTERNS:
-                match = re.search(pattern, line)
-                if match:
-                    method_name = match.group(1)
+            # Skip non-method lines quickly
+            if 'void' not in line:
+                continue
 
-                    # Extract annotations from preceding lines
-                    annotations = []
-                    for j in range(max(0, i - 5), i + 1):
-                        for ann_pattern in self.ANNOTATION_PATTERNS:
-                            if re.search(ann_pattern, lines[j]):
-                                annotations.append(ann_pattern.replace('\\', ''))
+            match = re.search(method_pattern, line)
+            if not match:
+                continue
 
-                    methods.append(TestMethod(
-                        name=method_name,
-                        file_path=file_path,
-                        line_number=i + 1,
-                        annotations=list(set(annotations))
-                    ))
-                    break
+            method_name = match.group(1)
+
+            # Check preceding lines (up to 10) for test annotations
+            # This handles @Test, @Disabled, @ParameterizedTest etc on separate lines
+            annotations = []
+            has_test_annotation = False
+
+            for j in range(max(0, i - 10), i + 1):
+                line_j = lines[j]
+                for ann_pattern in self.ANNOTATION_PATTERNS:
+                    if re.search(ann_pattern, line_j):
+                        ann_name = ann_pattern.replace('\\', '')
+                        annotations.append(ann_name)
+                        # Check if it's a test-indicating annotation
+                        if ann_name in ['@Test', '@ParameterizedTest', '@RepeatedTest', '@TestFactory']:
+                            has_test_annotation = True
+
+            # Only include methods that have a test annotation
+            if has_test_annotation:
+                methods.append(TestMethod(
+                    name=method_name,
+                    file_path=file_path,
+                    line_number=i + 1,
+                    annotations=list(set(annotations))
+                ))
 
         if not methods:
             return None
@@ -517,3 +566,62 @@ def verify_test_preservation_before_commit(project_path: str) -> Tuple[bool, str
         return True, f"✅ Test preservation verified: {result.current_method_count} methods intact"
     else:
         return False, verifier.get_violation_message(result)
+
+
+def verify_final_test_invariance(project_path: str, base_commit: str) -> Tuple[bool, str]:
+    """
+    Final verification using MigrationBench's exact evaluation logic.
+    Called before marking migration as complete.
+
+    This uses the SAME function that check_build_test_comprehensive.py uses,
+    guaranteeing alignment between prevention and evaluation.
+
+    Args:
+        project_path: Path to the repository
+        base_commit: Original commit hash before migration started
+
+    Returns:
+        (is_valid, message) - True if test methods match baseline
+    """
+    try:
+        from eval.lang.java.eval import parse_repo
+
+        log_agent(f"[TEST_VERIFIER] Running final test invariance check against base_commit: {base_commit}")
+
+        # Run the exact same check that evaluation uses
+        all_same, num_files, tests_same = parse_repo.same_repo_test_files(
+            project_path,
+            lhs_branch=base_commit
+        )
+
+        if tests_same:
+            log_agent(f"[TEST_VERIFIER] ✅ Final test invariance verified: {num_files} test files match baseline")
+            log_summary(f"FINAL_TEST_CHECK: PASS - {num_files} test files match baseline")
+            return True, f"✅ Final test invariance verified: {num_files} test files match baseline"
+        else:
+            log_agent(f"[TEST_VERIFIER] ❌ Final test invariance FAILED: test methods changed", "ERROR")
+            log_summary(f"FINAL_TEST_CHECK: FAIL - test methods have changed compared to {base_commit}")
+            return False, (
+                "=" * 70 + "\n"
+                "❌ FINAL TEST INVARIANCE CHECK FAILED\n"
+                "=" * 70 + "\n\n"
+                "Test methods have changed compared to base_commit.\n"
+                "This migration will FAIL evaluation.\n\n"
+                "The evaluation script uses parse_repo.same_repo_test_files()\n"
+                f"to compare current state against base_commit: {base_commit}\n\n"
+                "You must revert test file changes before completing.\n"
+                "Test method NAMES must remain identical to baseline.\n"
+                "Only update test IMPLEMENTATIONS, not method signatures.\n"
+                "=" * 70
+            )
+
+    except ImportError as e:
+        log_agent(f"[TEST_VERIFIER] MigrationBench eval module not available: {e}", "WARNING")
+        log_summary(f"FINAL_TEST_CHECK: FALLBACK - MigrationBench not available, using local verifier")
+        # Fall back to local verifier if MigrationBench not installed
+        return verify_test_preservation_before_commit(project_path)
+
+    except Exception as e:
+        log_agent(f"[TEST_VERIFIER] Final verification error: {e}", "ERROR")
+        log_summary(f"FINAL_TEST_CHECK: ERROR - {e}")
+        return False, f"Final test verification failed: {e}"

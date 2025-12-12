@@ -32,6 +32,13 @@ def migrate(repo: str, base_commit: str, csv_path: str):
     log_console("Starting migration orchestrator...")
     log_summary("APPROACH: Initializing SupervisorMigrationOrchestrator")
 
+    # Set environment variables for test invariance verification
+    # These are used by completion_tools.py to run final MigrationBench check
+    os.environ['MIGRATION_BASE_COMMIT'] = base_commit
+    os.environ['MIGRATION_REPO_PATH'] = repo_path
+    log_summary(f"Set MIGRATION_BASE_COMMIT={base_commit}")
+    log_summary(f"Set MIGRATION_REPO_PATH={repo_path}")
+
     # Import and reset token counter for this migration
     from supervisor_orchestrator_refactored import tc, MAX_LLM_CALLS
     tc.reset()

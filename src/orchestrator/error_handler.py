@@ -186,6 +186,9 @@ class MavenErrorType(Enum):
     # Generic build failure (catch-all)
     GENERIC_BUILD_FAILURE = "generic_build_failure"
 
+    # Test preservation violation (commit blocked due to test method changes)
+    TEST_PRESERVATION_VIOLATION = "test_preservation_violation"
+
     # Control states
     UNKNOWN = "unknown"
     SUCCESS = "success"
@@ -280,7 +283,8 @@ class MavenErrorType(Enum):
             cls.ARTIFACT_NOT_FOUND, cls.DEPENDENCY_CONFLICT, cls.VERSION_MISMATCH,
             cls.COMPILATION_ERROR, cls.TEST_FAILURE, cls.POM_SYNTAX_ERROR,
             cls.JAVA_VERSION_ERROR, cls.SPRING_MIGRATION_ERROR, cls.JAKARTA_MIGRATION_ERROR,
-            cls.RUNTIME_ERROR, cls.GENERIC_BUILD_FAILURE, cls.UNKNOWN
+            cls.RUNTIME_ERROR, cls.GENERIC_BUILD_FAILURE, cls.UNKNOWN,
+            cls.TEST_PRESERVATION_VIOLATION  # Commit blocked due to test method changes
         }
         return error_type in requires_expert
 
@@ -289,8 +293,21 @@ class MavenErrorType(Enum):
 # PATTERN DEFINITIONS - Comprehensive regex patterns for error detection
 # =============================================================================
 
-# Priority order: Migration-specific → Infrastructure → Build → Fallback
+# Priority order: Test Preservation → Migration-specific → Infrastructure → Build → Fallback
 # More specific patterns are checked first
+
+# Test preservation violations (HIGHEST priority - blocks commits)
+# These patterns detect when commit_changes() was blocked due to test method changes
+TEST_PRESERVATION_PATTERNS = [
+    r'TEST_PRESERVATION_VIOLATION',
+    r'TEST PRESERVATION VIOLATION',
+    r'COMMIT BLOCKED.*TEST',
+    r'Test preservation.*violated',
+    r'test methods have changed',
+    r'TEST METHOD RENAMED',
+    r'TEST METHOD DELETED',
+    r'TEST FILE DELETED',
+]
 
 # Migration-specific errors (highest priority - most actionable)
 JAKARTA_MIGRATION_PATTERNS = [
@@ -806,11 +823,17 @@ class UnifiedErrorClassifier:
         Pattern-based classification with priority ordering.
 
         Priority (most specific first):
+        0. Test preservation violations (HIGHEST - commit blocking)
         1. Migration-specific (jakarta, spring, java version)
         2. Infrastructure (SSL, auth, network)
         3. Dependency (artifact, conflict, version)
         4. Build (compilation, test, POM)
         """
+        # Test preservation violations (HIGHEST priority - commit blocking)
+        for pattern in TEST_PRESERVATION_PATTERNS:
+            if re.search(pattern, output, re.IGNORECASE):
+                return MavenErrorType.TEST_PRESERVATION_VIOLATION
+
         # Migration-specific errors (highest priority - most actionable)
         for pattern in JAKARTA_MIGRATION_PATTERNS:
             if re.search(pattern, output, re.IGNORECASE):
@@ -1087,10 +1110,12 @@ class ErrorHandler:
         """
         Map new MavenErrorType to legacy error type strings for backwards compatibility.
 
-        Legacy types: 'compile', 'test', 'pom', 'none'
+        Legacy types: 'compile', 'test', 'pom', 'test_violation', 'none'
         """
         if error_type == MavenErrorType.SUCCESS:
             return 'none'
+        elif error_type == MavenErrorType.TEST_PRESERVATION_VIOLATION:
+            return 'test_violation'  # New type: commit blocked due to test method changes
         elif error_type == MavenErrorType.TEST_FAILURE:
             return 'test'
         elif error_type == MavenErrorType.POM_SYNTAX_ERROR:

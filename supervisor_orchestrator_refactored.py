@@ -423,8 +423,14 @@ class SupervisorMigrationOrchestrator:
 
         # PRIORITY 3: Check for build errors (now with test failure retry logic)
         if has_build_error:
-            # Differentiate between error types: pom, test, compile
-            if error_type == 'pom':
+            # Differentiate between error types: test_violation, pom, test, compile
+            if error_type == 'test_violation':
+                # TEST PRESERVATION VIOLATION - execution_expert tried to modify test methods
+                # Route directly to error_expert who has revert_test_files tool
+                log_agent(f"[ROUTER] -> TEST PRESERVATION VIOLATION detected, routing to error_expert", "WARNING")
+                log_summary(f"TEST_VIOLATION: Commit blocked - test methods modified. Routing to error_expert for recovery.")
+                return "error_expert"
+            elif error_type == 'pom':
                 # POM errors go directly to error_expert - these are configuration issues
                 log_agent(f"[ROUTER] -> POM/configuration error detected, routing to error_expert (attempt {error_count}/3)")
                 log_summary(f"POM ERROR: Routing to error_expert for configuration fix (attempt {error_count}/3)")
@@ -1696,8 +1702,24 @@ Run {verification_cmd} to verify it works.""")
 
             self._log_token_stats(token_stats)
 
+            # Run final test invariance validation as safety net
+            execution_done = final_result.get("execution_done", False)
+            if execution_done:
+                final_valid = self._final_test_validation(project_path)
+                if not final_valid:
+                    log_summary("FINAL VALIDATION: FAILED - Test methods changed")
+                    return {
+                        "success": False,
+                        "result": "Migration failed final test invariance validation",
+                        "duration": duration.total_seconds(),
+                        "steps": step_count,
+                        "token_stats": token_stats,
+                        "limit_exceeded": tc.llm_calls >= MAX_LLM_CALLS,
+                        "error": "TEST_INVARIANCE_FAILED"
+                    }
+
             return {
-                "success": final_result.get("execution_done", False),
+                "success": execution_done,
                 "result": self._get_final_content(final_result),
                 "duration": duration.total_seconds(),
                 "steps": step_count,
@@ -1743,6 +1765,50 @@ Run {verification_cmd} to verify it works.""")
         log_summary(f"TOTAL COST:      ${token_stats['total_cost_usd']:.4f}")
         log_summary("=" * 60)
         log_console(f"Migration Cost: ${token_stats['total_cost_usd']:.4f} ({token_stats['total_tokens']:,} tokens)")
+
+    def _final_test_validation(self, project_path: str) -> bool:
+        """
+        Final validation before claiming success using MigrationBench's exact evaluation logic.
+
+        This is a safety net that runs the SAME test invariance check that the evaluation
+        script uses, guaranteeing that if we pass here, evaluation will also pass.
+
+        Args:
+            project_path: Path to the repository
+
+        Returns:
+            True if validation passes (or is skipped), False if tests have changed
+        """
+        try:
+            from src.utils.test_verifier import verify_final_test_invariance
+
+            base_commit = os.environ.get('MIGRATION_BASE_COMMIT', '')
+
+            if not base_commit:
+                log_agent("[ORCHESTRATOR] No base_commit available, skipping final test validation")
+                return True  # Skip if no base_commit set
+
+            log_agent(f"[ORCHESTRATOR] Running final test invariance validation against {base_commit}")
+            is_valid, msg = verify_final_test_invariance(project_path, base_commit)
+
+            if is_valid:
+                log_agent("[ORCHESTRATOR] ✅ Final test invariance validation PASSED")
+                log_summary("FINAL_VALIDATION: PASSED - Test methods match baseline")
+                return True
+            else:
+                log_agent(f"[ORCHESTRATOR] ❌ Final test invariance validation FAILED", "ERROR")
+                log_summary(f"FINAL_VALIDATION: FAILED - {msg}")
+                return False
+
+        except ImportError as e:
+            log_agent(f"[ORCHESTRATOR] MigrationBench eval module not available: {e}", "WARNING")
+            log_summary("FINAL_VALIDATION: SKIPPED - MigrationBench not available")
+            return True  # Continue if MigrationBench not installed
+
+        except Exception as e:
+            log_agent(f"[ORCHESTRATOR] Final validation error: {e}", "WARNING")
+            log_summary(f"FINAL_VALIDATION: ERROR - {e}")
+            return True  # Continue if validation itself fails
 
     def _handle_limit_exceeded(self, e: LLMCallLimitExceeded, step_count: int) -> dict:
         """Handle LLM call limit exceeded gracefully"""

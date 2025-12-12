@@ -293,6 +293,8 @@ EXECUTION_TOOL_NAMES: Set[str] = {
 ERROR_TOOL_NAMES: Set[str] = {
     # File operations - error_expert needs to fix code!
     'read_file', 'write_file', 'file_exists', 'find_replace',
+    # Test preservation recovery - for reverting test file modifications
+    'revert_test_files',
     # Build/diagnostic tools
     'mvn_compile', 'mvn_test',
     # Git operations (diagnostic)
