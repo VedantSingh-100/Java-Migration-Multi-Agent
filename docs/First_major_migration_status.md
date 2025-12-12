@@ -407,6 +407,103 @@ But when using file operations, the agent sometimes defaults to the current work
 
 ---
 
+## ✅ ISSUE 2: IMPLEMENTATION STATUS - COMPLETED
+
+**Implementation Date:** December 12, 2025
+**Files Modified:**
+- `src/tools/file_operations.py`
+- `supervisor_orchestrator_refactored.py`
+
+### Solution Implemented: Tool-Level Path Enforcement
+
+Added automatic path resolution at the tool level, so agents don't need to worry about absolute vs relative paths.
+
+#### New Functions Added (`src/tools/file_operations.py`)
+
+```python
+# Global project path - set by orchestrator before tool execution
+_current_project_path: str = None
+
+def set_project_path(path: str):
+    """Set the current project path for file operations."""
+    global _current_project_path
+    _current_project_path = path
+
+def _resolve_path(file_path: str) -> str:
+    """Resolve file_path relative to project_path if not absolute.
+
+    - Relative paths: prefix with project_path
+    - Absolute paths within project: pass through
+    - Absolute paths outside project: BLOCKED (raises ValueError)
+    """
+    # ... implementation details ...
+```
+
+#### Tools Updated
+
+All 6 file operation tools now call `_resolve_path()` before any file operation:
+- `read_file()` - line 67
+- `write_file()` - line 84
+- `find_replace()` - line 97
+- `list_java_files()` - line 117
+- `search_files()` - line 130
+- `file_exists()` - line 155
+
+#### Orchestrator Integration (`supervisor_orchestrator_refactored.py`)
+
+Added import at line 94:
+```python
+from src.tools.file_operations import set_project_path as set_file_ops_project_path
+```
+
+Added call in `_set_project_path()` method (lines 370-373):
+```python
+# Set project path for file operations tools (Issue 2 fix)
+set_file_ops_project_path(project_path)
+log_agent(f"[PATH] Set file_operations project_path to: {project_path}")
+```
+
+### Test Results
+
+All 7 tests passed:
+
+| Test | Scenario | Result |
+|------|----------|--------|
+| 1 | No project path (backwards compat) | ✅ Returns unchanged |
+| 2 | Relative path `pom.xml` | ✅ Resolves to `{project}/pom.xml` |
+| 3 | Nested relative path | ✅ Resolves correctly |
+| 4 | Absolute path within project | ✅ Allowed |
+| 5 | Path to `/tmp` | ✅ **BLOCKED** |
+| 6 | Path to parent directory | ✅ **BLOCKED** |
+| 7 | `TODO.md` (Issue 2 scenario) | ✅ Resolves to project directory |
+
+### Expected Behavior After Fix
+
+**Before:**
+```
+Agent: read_file("pom.xml")
+Result: FILE READ ERROR: No such file or directory
+Agent: [wastes 1-3 LLM calls figuring out the path]
+Agent: read_file("/full/path/to/repo/pom.xml")
+Result: Success
+```
+
+**After:**
+```
+Agent: read_file("pom.xml")
+Log: PATH RESOLVED: 'pom.xml' -> '/full/path/to/repo/pom.xml'
+Result: Success (automatic resolution)
+```
+
+**Blocking Outside Paths:**
+```
+Agent: write_file("/tmp/debug.txt", content)
+Log: PATH BLOCKED: Path '/tmp/debug.txt' is outside project root
+Result: Error returned to agent (file not created)
+```
+
+---
+
 ## 9. Long-term Solution
 
 To permanently solve these issues, we should:
@@ -2758,6 +2855,198 @@ print(f'Result: {result.value}')  # Should print: compilation_error
 
 ---
 
-**Report Date:** December 10-11, 2025
+## ✅ ISSUE 1: IMPLEMENTATION COMPLETE - Test Preservation Violation Routing
+
+**Implementation Date:** December 12, 2025
+**Status:** IMPLEMENTED AND TESTED
+
+### Problem Recap
+
+The execution agent was renaming/rewriting test methods to make tests pass, violating the fundamental rule that test structure must remain unchanged. The original solution (blocking commits + suggesting `revert_test_files`) had critical bugs:
+
+1. **BUG 1:** `revert_test_files` tool was NOT available to execution_expert (not in tool set)
+2. **BUG 2:** Manual `git checkout HEAD -- file` commands were BLOCKED by safety patterns
+3. **BUG 3:** Agent had NO WAY to recover from blocked commits → infinite loop
+
+### Solution: Route to Error Expert (Option B)
+
+Instead of giving execution_expert the recovery tool (which could be misused), we route TEST_PRESERVATION_VIOLATION errors to error_expert who has the proper tools and guidance.
+
+### Implementation Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ STEP 1: Execution Expert modifies test method                       │
+│         testInfo() → testHealth()                                   │
+└────────────────────────────┬────────────────────────────────────────┘
+                             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│ STEP 2: Execution Expert calls commit_changes()                     │
+│         → verify_test_preservation_before_commit() detects violation│
+│         → Returns: "TEST_PRESERVATION_VIOLATION: COMMIT BLOCKED"    │
+└────────────────────────────┬────────────────────────────────────────┘
+                             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│ STEP 3: Error Handler detects pattern                               │
+│         → Pattern: "TEST_PRESERVATION_VIOLATION"                    │
+│         → Classifies as: MavenErrorType.TEST_PRESERVATION_VIOLATION │
+│         → Legacy type: "test_violation"                             │
+└────────────────────────────┬────────────────────────────────────────┘
+                             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│ STEP 4: Router sees has_build_error=True, error_type='test_violation│
+│         → Routes to: error_expert (NOT back to execution_expert)    │
+└────────────────────────────┬────────────────────────────────────────┘
+                             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│ STEP 5: Error Expert receives context with TEST_PRESERVATION_VIOLATION
+│         Has tools: revert_test_files, read_file, write_file, etc.  │
+│                                                                     │
+│         Error Expert Actions:                                       │
+│         1. Calls revert_test_files(repo_path) → Tests restored      │
+│         2. Runs mvn_compile → Sees actual compilation errors        │
+│         3. Fixes APPLICATION code (not tests!)                      │
+│         4. Returns control to execution_expert                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `src/orchestrator/error_handler.py` | Added `TEST_PRESERVATION_VIOLATION` to MavenErrorType enum, added detection patterns, added to `requires_error_expert()`, added legacy mapping to `test_violation` |
+| `src/tools/git_operations.py` | Updated `commit_changes()` error message with detectable marker "TEST_PRESERVATION_VIOLATION: COMMIT BLOCKED" |
+| `src/orchestrator/tool_registry.py` | Added `revert_test_files` to `ERROR_TOOL_NAMES` (error_expert only, NOT execution_expert) |
+| `prompts/error_expert.yaml` | Added comprehensive TEST_PRESERVATION_VIOLATION handling instructions as highest priority error type |
+| `supervisor_orchestrator_refactored.py` | Added router case for `test_violation` error type → routes directly to error_expert |
+
+### Key Design Decisions
+
+1. **Error Expert Only Has `revert_test_files`**
+   - Execution expert cannot misuse the tool to repeatedly revert and retry
+   - Error expert understands the rules and won't try to modify tests again
+
+2. **Direct Routing (No Retry for Execution Expert)**
+   - Unlike test failures (which get 1 retry), test_violation goes directly to error_expert
+   - This is a rule violation, not a transient error
+
+3. **Clear Guidance in Error Expert Prompt**
+   - Step-by-step instructions for handling TEST_PRESERVATION_VIOLATION
+   - Explicit FORBIDDEN actions list
+   - Emphasis on fixing APPLICATION code, not tests
+
+### Test Results
+
+```
+============================================================
+Testing Error Classification & Routing
+============================================================
+
+1. Error Classification:
+   Input: TEST_PRESERVATION_VIOLATION message
+   Result: test_preservation_violation
+   Status: ✅ CORRECT
+
+2. Requires Error Expert:
+   Result: True
+   Status: ✅ CORRECT
+
+3. Legacy Error Type (for router):
+   Result: test_violation
+   Status: ✅ CORRECT
+
+Router Decision: ✅ Routes to error_expert
+============================================================
+
+============================================================
+Full Integration Test
+============================================================
+1. ✅ Created test repo with AppTest.java (testInfo, testHealth methods)
+2. ✅ Captured baseline: 1 test file, 2 methods
+3. ✅ Initial verification: PASS
+4. ✅ Simulated rename: testInfo → testInfoRenamed
+5. ✅ Verification after rename: BLOCKED (correct!)
+6. ✅ revert_test_files tool: Successfully reverted 1 file
+7. ✅ Final verification after revert: PASS
+============================================================
+```
+
+### Validation Commands
+
+```bash
+# Activate environment
+conda activate java_migration
+
+# Test pattern detection
+python3 -c "
+import sys
+sys.path.insert(0, '/home/vhsingh/Java_Migration')
+from src.orchestrator.error_handler import UnifiedErrorClassifier, MavenErrorType
+
+classifier = UnifiedErrorClassifier()
+result = classifier.classify('TEST_PRESERVATION_VIOLATION: COMMIT BLOCKED', return_code=1)
+print(f'Classification: {result.value}')  # Should print: test_preservation_violation
+print(f'Requires error_expert: {MavenErrorType.requires_error_expert(result)}')  # Should print: True
+"
+
+# Test full flow with mock repo
+python3 << 'EOF'
+import tempfile, os, subprocess, shutil, sys
+sys.path.insert(0, '/home/vhsingh/Java_Migration')
+
+# Create test repo
+test_dir = tempfile.mkdtemp()
+os.makedirs(f"{test_dir}/src/test/java")
+with open(f"{test_dir}/src/test/java/AppTest.java", 'w') as f:
+    f.write("@Test\npublic void testOriginal() {}")
+
+subprocess.run(["git", "init"], cwd=test_dir, capture_output=True)
+subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=test_dir, capture_output=True)
+subprocess.run(["git", "config", "user.name", "Test"], cwd=test_dir, capture_output=True)
+subprocess.run(["git", "add", "."], cwd=test_dir, capture_output=True)
+subprocess.run(["git", "commit", "-m", "init"], cwd=test_dir, capture_output=True)
+
+from src.utils.test_verifier import TestMethodVerifier
+verifier = TestMethodVerifier(test_dir)
+verifier.capture_baseline()
+
+# Rename test method
+with open(f"{test_dir}/src/test/java/AppTest.java", 'w') as f:
+    f.write("@Test\npublic void testRenamed() {}")
+
+from src.utils.test_verifier import verify_test_preservation_before_commit
+is_valid, msg = verify_test_preservation_before_commit(test_dir)
+print(f"Blocked: {not is_valid}")  # Should print: True
+
+from src.tools.file_operations import revert_test_files
+revert_test_files.invoke({"repo_path": test_dir})
+
+is_valid, msg = verify_test_preservation_before_commit(test_dir)
+print(f"After revert: {is_valid}")  # Should print: True
+
+shutil.rmtree(test_dir)
+EOF
+```
+
+### Why This Is Better Than Original Solution
+
+| Aspect | Original (Broken) | New (Fixed) |
+|--------|-------------------|-------------|
+| **Recovery Tool** | Suggested to execution_expert but not available | Given to error_expert only |
+| **Misuse Risk** | High - agent could revert and retry same violation | Low - error_expert understands rules |
+| **Manual Git Commands** | Blocked by safety patterns | Not needed - tool handles it |
+| **Agent Understanding** | Execution expert lacks context on WHY | Error expert has detailed guidance |
+| **Loop Prevention** | None - could loop forever | Error expert fixes root cause |
+
+### Impact
+
+- **Test Preservation:** Now enforced at commit time with proper recovery path
+- **Agent Behavior:** Clear separation - execution executes, error handles violations
+- **Migration Quality:** Tests remain unchanged, ensuring behavioral contract preserved
+- **Verification Pass Rate:** Migrations won't fail due to test method changes
+
+---
+
+**Report Date:** December 10-12, 2025
 **Author:** Vedant Singh
-**Status:** Critical Issues - Require Immediate Fix
+**Status:** Critical Issues - Issue 1 RESOLVED, Others Require Immediate Fix

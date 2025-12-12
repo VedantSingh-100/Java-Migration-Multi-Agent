@@ -18,6 +18,7 @@ import json
 import time
 import random
 import asyncio
+from enum import Enum
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
 
@@ -91,6 +92,7 @@ from src.utils.completion_detector import detect_analysis_complete
 
 from src.tools import all_tools_flat
 from src.tools.state_management import set_state_tracker
+from src.tools.file_operations import set_project_path as set_file_ops_project_path
 from prompts.prompt_loader import (
     get_supervisor_prompt,
     get_migration_request,
@@ -191,6 +193,17 @@ class CircuitBreakerChatBedrock(ChatBedrock):
                         raise
                 else:
                     raise
+
+
+class MigrationStatus(Enum):
+    """
+    Deterministic migration result classification.
+    Used by _classify_migration_result() - NO LLM involvement.
+    """
+    SUCCESS = "success"              # >= 90% complete, build passes, tests pass
+    PARTIAL_SUCCESS = "partial"      # >= 50% complete, build passes, tests pass
+    FAILURE = "failure"              # Build fails OR tests fail OR < 50%
+    INCOMPLETE = "incomplete"        # Terminated early (LLM limit, timeout)
 
 
 class SupervisorMigrationOrchestrator:
@@ -365,6 +378,11 @@ class SupervisorMigrationOrchestrator:
         self.action_logger.set_project_path(project_path)
         self.error_handler.set_project_path(project_path)
         self.tool_wrapper.set_project_path(project_path)
+
+        # Set project path for file operations tools (Issue 2 fix - Working Directory Confusion)
+        # This ensures all file operations are constrained to the project directory
+        set_file_ops_project_path(project_path)
+        log_agent(f"[PATH] Set file_operations project_path to: {project_path}")
 
         # Create external memory builder now that we have project_path
         self.external_memory_builder = ExternalMemoryBuilder(
@@ -1702,14 +1720,39 @@ Run {verification_cmd} to verify it works.""")
 
             self._log_token_stats(token_stats)
 
-            # Run final test invariance validation as safety net
-            execution_done = final_result.get("execution_done", False)
-            if execution_done:
+            # ═══════════════════════════════════════════════════════════════════
+            # FINAL RESULT CLASSIFICATION (Deterministic, No LLM)
+            # ═══════════════════════════════════════════════════════════════════
+
+            # Determine termination reason
+            termination_reason = "normal"
+            if tc.llm_calls >= MAX_LLM_CALLS:
+                termination_reason = "llm_limit"
+            elif final_result.get("current_phase") == "EXECUTION_TIMEOUT":
+                termination_reason = "timeout"
+            elif final_result.get("error_count", 0) >= 3:
+                termination_reason = "error_max"
+            elif final_result.get("stuck_loop_attempts", 0) >= 3:
+                termination_reason = "stuck_max"
+
+            # Run deterministic classification
+            status, reason, success = self._classify_migration_result(
+                project_path=project_path,
+                final_state=final_result,
+                termination_reason=termination_reason
+            )
+
+            log_summary(f"CLASSIFICATION: {status.value.upper()}")
+            log_summary(f"REASON: {reason}")
+
+            # Run test invariance validation only for SUCCESS/PARTIAL_SUCCESS
+            if success:
                 final_valid = self._final_test_validation(project_path)
                 if not final_valid:
                     log_summary("FINAL VALIDATION: FAILED - Test methods changed")
                     return {
                         "success": False,
+                        "status": MigrationStatus.FAILURE.value,
                         "result": "Migration failed final test invariance validation",
                         "duration": duration.total_seconds(),
                         "steps": step_count,
@@ -1719,8 +1762,9 @@ Run {verification_cmd} to verify it works.""")
                     }
 
             return {
-                "success": execution_done,
-                "result": self._get_final_content(final_result),
+                "success": success,
+                "status": status.value,
+                "result": reason,  # Use classification reason, not agent message
                 "duration": duration.total_seconds(),
                 "steps": step_count,
                 "token_stats": token_stats,
@@ -1809,6 +1853,184 @@ Run {verification_cmd} to verify it works.""")
             log_agent(f"[ORCHESTRATOR] Final validation error: {e}", "WARNING")
             log_summary(f"FINAL_VALIDATION: ERROR - {e}")
             return True  # Continue if validation itself fails
+
+    def _classify_migration_result(
+        self,
+        project_path: str,
+        final_state: dict,
+        termination_reason: str = "normal"
+    ) -> tuple:
+        """
+        Deterministic classification of migration result.
+
+        NO LLM INVOLVEMENT - Pure code logic.
+
+        Args:
+            project_path: Path to the repository
+            final_state: Final workflow state dict
+            termination_reason: Why workflow ended ("normal", "llm_limit", "timeout", "error_max", "stuck_max")
+
+        Returns:
+            Tuple of (MigrationStatus, reason_message, success_bool)
+
+        Priority Order (STRICT):
+            1. Check termination reason (LLM limit, timeout → INCOMPLETE)
+            2. Check build status (mvn compile)
+            3. Check test status (mvn test)
+            4. Check error state (unresolved errors → FAILURE)
+            5. Check progress percentage
+        """
+        from src.tools.command_executor import mvn_compile, mvn_test
+
+        # ═══════════════════════════════════════════════════════════════════
+        # PRIORITY 1: Termination Reason (highest priority)
+        # ═══════════════════════════════════════════════════════════════════
+        progress = calculate_todo_progress(project_path)
+
+        if termination_reason == "llm_limit":
+            return (
+                MigrationStatus.INCOMPLETE,
+                f"LLM call limit reached. Progress: {progress['completed']}/{progress['total']} tasks ({progress['percent']:.0f}%)",
+                False
+            )
+
+        if termination_reason == "timeout":
+            return (
+                MigrationStatus.INCOMPLETE,
+                f"Execution timeout. Progress: {progress['completed']}/{progress['total']} tasks ({progress['percent']:.0f}%)",
+                False
+            )
+
+        if termination_reason == "error_max":
+            return (
+                MigrationStatus.FAILURE,
+                f"Max error resolution attempts (3) exceeded. Progress: {progress['completed']}/{progress['total']} tasks ({progress['percent']:.0f}%)",
+                False
+            )
+
+        if termination_reason == "stuck_max":
+            return (
+                MigrationStatus.FAILURE,
+                f"Max stuck loop attempts (3) exceeded. Progress: {progress['completed']}/{progress['total']} tasks ({progress['percent']:.0f}%)",
+                False
+            )
+
+        # ═══════════════════════════════════════════════════════════════════
+        # PRIORITY 2: Build Status (mvn compile)
+        # ═══════════════════════════════════════════════════════════════════
+        log_agent("[CLASSIFY] Running build verification...")
+        build_passes = None
+        try:
+            compile_result = mvn_compile.invoke({"project_path": project_path})
+            build_passes = "BUILD SUCCESS" in compile_result or "Success" in compile_result
+            if not build_passes and "BUILD FAILURE" in compile_result:
+                return (
+                    MigrationStatus.FAILURE,
+                    "Build failed (mvn compile). Migration cannot be considered successful.",
+                    False
+                )
+        except Exception as e:
+            log_agent(f"[CLASSIFY] Build check failed with exception: {e}", "WARNING")
+            # If we can't verify build, check if last known state had errors
+            if final_state.get("has_build_error", False):
+                return (
+                    MigrationStatus.FAILURE,
+                    f"Build verification failed: {str(e)}",
+                    False
+                )
+            # Otherwise continue to other checks
+            build_passes = None  # Unknown
+
+        # ═══════════════════════════════════════════════════════════════════
+        # PRIORITY 3: Test Status (mvn test)
+        # ═══════════════════════════════════════════════════════════════════
+        log_agent("[CLASSIFY] Running test verification...")
+        tests_pass = None
+        try:
+            test_result = mvn_test.invoke({"project_path": project_path})
+            tests_pass = "BUILD SUCCESS" in test_result or "Success" in test_result
+            if not tests_pass and "BUILD FAILURE" in test_result:
+                return (
+                    MigrationStatus.FAILURE,
+                    "Tests failed (mvn test). Migration cannot be considered successful.",
+                    False
+                )
+        except Exception as e:
+            log_agent(f"[CLASSIFY] Test check failed with exception: {e}", "WARNING")
+            # If we can't verify tests, check state
+            if final_state.get("test_failure_count", 0) > 0:
+                return (
+                    MigrationStatus.FAILURE,
+                    f"Test verification failed: {str(e)}",
+                    False
+                )
+            tests_pass = None  # Unknown
+
+        # ═══════════════════════════════════════════════════════════════════
+        # PRIORITY 4: Unresolved Error State
+        # ═══════════════════════════════════════════════════════════════════
+        error_count = final_state.get("error_count", 0)
+        has_build_error = final_state.get("has_build_error", False)
+
+        # If state shows unresolved errors but build passed above, trust the build
+        # (state might be stale)
+        if has_build_error and build_passes is False:
+            return (
+                MigrationStatus.FAILURE,
+                f"Unresolved build errors (error_count={error_count})",
+                False
+            )
+
+        # ═══════════════════════════════════════════════════════════════════
+        # PRIORITY 5: Progress Percentage (TODO.md)
+        # ═══════════════════════════════════════════════════════════════════
+        percent = progress['percent']
+        completed = progress['completed']
+        total = progress['total']
+
+        log_agent(f"[CLASSIFY] Progress: {completed}/{total} ({percent:.0f}%)")
+        log_agent(f"[CLASSIFY] Build: {'PASS' if build_passes else 'UNKNOWN' if build_passes is None else 'FAIL'}")
+        log_agent(f"[CLASSIFY] Tests: {'PASS' if tests_pass else 'UNKNOWN' if tests_pass is None else 'FAIL'}")
+
+        # ═══════════════════════════════════════════════════════════════════
+        # CLASSIFICATION MATRIX (Deterministic)
+        # ═══════════════════════════════════════════════════════════════════
+        #
+        # | Progress | Build | Tests | Result          |
+        # |----------|-------|-------|-----------------|
+        # | >= 90%   | PASS  | PASS  | SUCCESS         |
+        # | >= 50%   | PASS  | PASS  | PARTIAL_SUCCESS |
+        # | < 50%    | PASS  | PASS  | FAILURE         |
+        # | Any      | FAIL  | Any   | FAILURE         |
+        # | Any      | Any   | FAIL  | FAILURE         |
+        # | Any      | UNK   | UNK   | Based on %      |
+        #
+        # ═══════════════════════════════════════════════════════════════════
+
+        # SUCCESS: >= 90% AND build passes AND tests pass
+        if percent >= 90:
+            if build_passes is not False and tests_pass is not False:
+                return (
+                    MigrationStatus.SUCCESS,
+                    f"Migration complete. {completed}/{total} tasks ({percent:.0f}%). Build passes, tests pass.",
+                    True
+                )
+
+        # PARTIAL_SUCCESS: >= 50% AND build passes AND tests pass
+        if percent >= 50:
+            if build_passes is not False and tests_pass is not False:
+                return (
+                    MigrationStatus.PARTIAL_SUCCESS,
+                    f"Migration partially complete. {completed}/{total} tasks ({percent:.0f}%). Build passes, tests pass.",
+                    True  # success=True so it's not logged as FAILURE (CSV handling is separate)
+                )
+
+        # FAILURE: < 50% OR build/test issues
+        return (
+            MigrationStatus.FAILURE,
+            f"Migration incomplete. {completed}/{total} tasks ({percent:.0f}%).",
+            False
+        )
 
     def _handle_limit_exceeded(self, e: LLMCallLimitExceeded, step_count: int) -> dict:
         """Handle LLM call limit exceeded gracefully"""

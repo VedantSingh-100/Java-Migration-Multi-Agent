@@ -90,99 +90,65 @@ analysis_expert_prompt: |
   3. TODO.md - Execution plan (see format below)
 
   ═══════════════════════════════════════════════════════════════════════════════
-  TODO.md FORMAT
+  TODO.md CREATION - BASED ON YOUR ANALYSIS
   ═══════════════════════════════════════════════════════════════════════════════
 
-  CRITICAL RULES:
-  - COARSE-GRAINED tasks (max 4 per phase)
-  - Each phase: Action → Compile → Test → Commit
-  - ONLY include phases that apply to THIS repo
-  - Total: 15-25 tasks typically
+  Your TODO.md must reflect YOUR findings from Steps 1-4, not a template.
 
-  TEMPLATE (include only relevant phases):
+  STEP 1: Determine what migrations are needed based on your analysis:
+  - Java upgrade? (if version < 21)
+  - Spring Boot migration? (if < 3.0)
+  - Jakarta migration? (if javax.* imports found)
+  - JUnit 5 migration? (if JUnit 4 patterns found)
 
-  ## PHASE 1: BASELINE AND SETUP
-  Always include - execution agent establishes baseline
-  - [ ] Establish build baseline (mvn compile, mvn test) and record test count
-  - [ ] Create migration branch and commit any uncommitted changes
+  STEP 2: Create tasks at the right granularity
 
-  ## PHASE 2: OPENREWRITE SETUP
-  Always include - needed to run recipes
-  - [ ] Add OpenRewrite Maven plugin with recipes: [LIST RECIPES NEEDED]
-  - [ ] Verify compilation passes (mvn compile)
-  - [ ] Verify tests pass (mvn test)
-  - [ ] Commit OpenRewrite setup
+  TASK SIZE: One logical step = action + verification + commit
+  - GOOD: "Upgrade to Java 21 and verify (compile + test pass)"
+  - BAD: "Run recipe" then "Run compile" then "Run test" (too granular)
+  - BAD: "Complete all migrations" (too coarse)
 
-  ## PHASE 3: JAVA 21 UPGRADE
-  Include IF: Java version < 21
-  - [ ] Execute Java 21 migration (recipe: org.openrewrite.java.migrate.UpgradeToJava21)
-  - [ ] Verify compilation passes (mvn compile)
-  - [ ] Verify tests pass (mvn test)
-  - [ ] Commit Java upgrade
+  TARGET: 15-25 total tasks, 2-4 tasks per applicable phase
 
-  ## PHASE 4: SPRING BOOT 3 MIGRATION
-  Include IF: Spring Boot < 3.0 found
-  SKIP IF: No Spring Boot in project
-  - [ ] Execute Spring Boot 3 migration (recipe: org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_x)
-  - [ ] Verify compilation passes (mvn compile)
-  - [ ] Verify tests pass (mvn test)
+  IMPORTANT - DO NOT include recipe names in tasks:
+  - GOOD: "Upgrade to Java 21 and verify"
+  - BAD: "Execute recipe org.openrewrite.java.migrate.UpgradeToJava21"
+  The execution agent determines which recipes to use. Define WHAT, not HOW.
+
+  PHASE STRUCTURE (include only phases that apply):
+
+  ## BASELINE (always include)
+  - [ ] Establish build baseline and record test count
+
+  ## OPENREWRITE SETUP (always include)
+  - [ ] Add OpenRewrite Maven plugin and verify compilation
+
+  ## JAVA 21 MIGRATION (if Java < 21)
+  - [ ] Upgrade to Java 21 and verify (compile + test pass)
+  - [ ] Commit Java 21 changes
+
+  ## SPRING BOOT 3 MIGRATION (if Spring Boot < 3.0, skip if no Spring Boot)
+  - [ ] Migrate to Spring Boot 3 and verify (compile + test pass)
   - [ ] Commit Spring Boot 3 changes
 
-  ## PHASE 5: JAKARTA MIGRATION
-  Include IF: javax.* imports found
-  SKIP IF: No javax.* imports
-  - [ ] Execute Jakarta migration (recipe: org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta)
-  - [ ] Verify compilation passes (mvn compile)
-  - [ ] Verify tests pass (mvn test)
+  ## JAKARTA MIGRATION (if javax.* imports found, skip if none)
+  - [ ] Migrate javax.* to jakarta.* and verify (compile + test pass)
   - [ ] Commit Jakarta changes
 
-  ## PHASE 6: JUNIT 5 MIGRATION
-  Include IF: JUnit 4 patterns found
-  SKIP IF: Already JUnit 5 or no tests
-  - [ ] Execute JUnit 5 migration (recipe: org.openrewrite.java.testing.junit5.JUnit4to5Migration)
-  - [ ] Verify compilation passes (mvn compile)
-  - [ ] Verify tests pass (mvn test)
+  ## JUNIT 5 MIGRATION (if JUnit 4 found, skip if already JUnit 5 or no tests)
+  - [ ] Migrate to JUnit 5 and verify (compile + test pass)
   - [ ] Commit JUnit 5 changes
 
-  ## PHASE 7: FINAL VALIDATION
-  Always include
-  - [ ] Run full validation (mvn clean compile test)
-  - [ ] Verify test count matches baseline
-  - [ ] Create MigrationReport.md
+  ## FINAL VALIDATION (always include)
+  - [ ] Run full validation and confirm test count matches baseline
+  - [ ] Generate MigrationReport.md
 
-  ═══════════════════════════════════════════════════════════════════════════════
-  EXAMPLES OF SKIPPING PHASES
-  ═══════════════════════════════════════════════════════════════════════════════
-
-  Example: Repo has Java 8, NO Spring Boot, JUnit 4, javax.* imports
-
-  Your TODO.md should have:
-  - Phase 1: Baseline ✓
-  - Phase 2: OpenRewrite Setup ✓
-  - Phase 3: Java 21 ✓ (Java 8 needs upgrade)
-  - Phase 4: Spring Boot 3 ✗ SKIP (no Spring Boot!)
-  - Phase 5: Jakarta ✓ (javax.* found)
-  - Phase 6: JUnit 5 ✓ (JUnit 4 found)
-  - Phase 7: Validation ✓
-
-  Total: ~18 tasks instead of 26
-
-  ═══════════════════════════════════════════════════════════════════════════════
-  BAD PATTERNS
-  ═══════════════════════════════════════════════════════════════════════════════
-
-  ✗ Including phases that don't apply:
-    "Phase 4: Spring Boot 3" when there's no Spring Boot!
-
-  ✗ Too fine-grained:
-    - [ ] Update Vehicle.java imports
-    - [ ] Update Service.java imports
-    (Let recipe handle all files at once!)
-
-  ✗ Missing test verification:
-    - [ ] Run recipe
-    - [ ] Commit
-    (Always verify tests before commit!)
+  TEST PRESERVATION (CRITICAL):
+  - NEVER delete test files or methods
+  - NEVER rename test methods
+  - ONLY update imports, assertions, annotations
+  - If test is incompatible: use @Disabled("reason"), do NOT delete
+  - Final test count MUST equal baseline
 
   ═══════════════════════════════════════════════════════════════════════════════
   COMPLETION

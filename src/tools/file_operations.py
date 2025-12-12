@@ -8,12 +8,65 @@ from src.utils.logging_config import log_summary
 import re
 
 
+# Global project path - set by orchestrator before tool execution
+_current_project_path: str = None
+
+
+def set_project_path(path: str):
+    """Set the current project path for file operations.
+
+    This is called by the orchestrator at migration start to ensure
+    all file operations are constrained to the project directory.
+    """
+    global _current_project_path
+    _current_project_path = path
+    log_summary(f"FILE_OPS: Project path set to '{path}'")
+
+
+def _resolve_path(file_path: str) -> str:
+    """Resolve file_path relative to project_path if not absolute.
+
+    - Relative paths: prefix with project_path
+    - Absolute paths within project: pass through
+    - Absolute paths outside project: BLOCKED (raises ValueError)
+
+    This prevents agents from accidentally reading/writing files
+    outside the repository being migrated.
+    """
+    global _current_project_path
+
+    if not _current_project_path:
+        # No project context, use path as-is (backwards compatibility)
+        return file_path
+
+    path = Path(file_path)
+    project = Path(_current_project_path).resolve()
+
+    # If relative path, prefix with project_path
+    if not path.is_absolute():
+        resolved = project / file_path
+        log_summary(f"PATH RESOLVED: '{file_path}' -> '{resolved}'")
+        return str(resolved)
+
+    # If absolute, verify it's within project - BLOCK if outside
+    resolved = path.resolve()
+    try:
+        resolved.relative_to(project)
+        return str(resolved)
+    except ValueError:
+        # Path is outside project - BLOCK this operation
+        error_msg = f"BLOCKED: Path '{file_path}' is outside project root '{project}'"
+        log_summary(f"PATH BLOCKED: {error_msg}")
+        raise ValueError(error_msg)
+
+
 @tool
 def read_file(file_path: str) -> str:
     """Read content from a file."""
     try:
-        content = Path(file_path).read_text(encoding='utf-8')
-        log_summary(f"FILE READ SUCCESS: {len(content)} characters from {file_path}")
+        resolved_path = _resolve_path(file_path)
+        content = Path(resolved_path).read_text(encoding='utf-8')
+        log_summary(f"FILE READ SUCCESS: {len(content)} characters from {resolved_path}")
         return content
     except Exception as e:
         log_summary(f"FILE READ ERROR: {str(e)} for {file_path}")
@@ -28,9 +81,10 @@ def write_file(file_path: str, content: str) -> str:
     Field required [type=missing, input_value={'file_path': '*.java'}, input_type=dict]
     """
     try:
-        Path(file_path).write_text(content, encoding='utf-8')
-        log_summary(f"FILE WRITE SUCCESS: {file_path}")
-        return f"Successfully wrote to {file_path}"
+        resolved_path = _resolve_path(file_path)
+        Path(resolved_path).write_text(content, encoding='utf-8')
+        log_summary(f"FILE WRITE SUCCESS: {resolved_path}")
+        return f"Successfully wrote to {resolved_path}"
     except Exception as e:
         log_summary(f"FILE WRITE ERROR: {str(e)} for {file_path}")
         return f"Error writing file: {str(e)}"
@@ -40,16 +94,17 @@ def write_file(file_path: str, content: str) -> str:
 def find_replace(file_path: str, find_text: str, replace_text: str) -> str:
     """Find and replace text in a file."""
     try:
-        content = Path(file_path).read_text(encoding='utf-8')
+        resolved_path = _resolve_path(file_path)
+        content = Path(resolved_path).read_text(encoding='utf-8')
         count = content.count(find_text)
         if count > 0:
             new_content = content.replace(find_text, replace_text)
-            Path(file_path).write_text(new_content, encoding='utf-8')
-            log_summary(f"FIND REPLACE SUCCESS: {count} replacements in {file_path} - '{find_text}' -> '{replace_text}'")
-            return f"Made {count} replacements in {file_path}"
+            Path(resolved_path).write_text(new_content, encoding='utf-8')
+            log_summary(f"FIND REPLACE SUCCESS: {count} replacements in {resolved_path} - '{find_text}' -> '{replace_text}'")
+            return f"Made {count} replacements in {resolved_path}"
         else:
-            log_summary(f"FIND REPLACE NO MATCH: No occurrences of '{find_text}' found in {file_path} (intended replace: '{replace_text}')")
-            return f"No occurrences of '{find_text}' found in {file_path}"
+            log_summary(f"FIND REPLACE NO MATCH: No occurrences of '{find_text}' found in {resolved_path} (intended replace: '{replace_text}')")
+            return f"No occurrences of '{find_text}' found in {resolved_path}"
     except Exception as e:
         log_summary(f"FIND REPLACE ERROR: {str(e)} for {file_path} - '{find_text}' -> '{replace_text}'")
         return f"Error: {str(e)}"
@@ -59,8 +114,9 @@ def find_replace(file_path: str, find_text: str, replace_text: str) -> str:
 def list_java_files(directory: str) -> str:
     """List all Java files in a directory and subdirectories."""
     try:
-        java_files = [str(f) for f in Path(directory).rglob("*.java")]
-        log_summary(f"LIST JAVA FILES SUCCESS: Found {len(java_files)} files in {directory}")
+        resolved_dir = _resolve_path(directory)
+        java_files = [str(f) for f in Path(resolved_dir).rglob("*.java")]
+        log_summary(f"LIST JAVA FILES SUCCESS: Found {len(java_files)} files in {resolved_dir}")
         return f"Found {len(java_files)} Java files:\n" + "\n".join(java_files)
     except Exception as e:
         log_summary(f"LIST JAVA FILES ERROR: {str(e)} for {directory}")
@@ -71,8 +127,9 @@ def list_java_files(directory: str) -> str:
 def search_files(directory: str, pattern: str) -> str:
     """Search for a regex pattern in Java files."""
     try:
+        resolved_dir = _resolve_path(directory)
         matches = []
-        java_files = [str(f) for f in Path(directory).rglob("*.java")]
+        java_files = [str(f) for f in Path(resolved_dir).rglob("*.java")]
 
         for file_path in java_files:
             content = Path(file_path).read_text(encoding='utf-8')
@@ -81,10 +138,10 @@ def search_files(directory: str, pattern: str) -> str:
                     matches.append(f"{file_path}:{line_num}: {line.strip()}")
 
         if matches:
-            log_summary(f"SEARCH FILES SUCCESS: {len(matches)} matches for '{pattern}' in {directory}")
+            log_summary(f"SEARCH FILES SUCCESS: {len(matches)} matches for '{pattern}' in {resolved_dir}")
             return f"Found {len(matches)} matches:\n" + "\n".join(matches[:20])
         else:
-            log_summary(f"SEARCH FILES NO MATCHES: Pattern '{pattern}' not found in {directory}")
+            log_summary(f"SEARCH FILES NO MATCHES: Pattern '{pattern}' not found in {resolved_dir}")
             return f"No matches found for pattern '{pattern}'"
     except Exception as e:
         log_summary(f"SEARCH FILES ERROR: {str(e)} for pattern '{pattern}' in {directory}")
@@ -94,9 +151,14 @@ def search_files(directory: str, pattern: str) -> str:
 @tool
 def file_exists(file_path: str) -> str:
     """Check if a file exists."""
-    exists = str(Path(file_path).exists())
-    log_summary(f"FILE EXISTS RESULT: {file_path} exists={exists}")
-    return exists
+    try:
+        resolved_path = _resolve_path(file_path)
+        exists = str(Path(resolved_path).exists())
+        log_summary(f"FILE EXISTS RESULT: {resolved_path} exists={exists}")
+        return exists
+    except Exception as e:
+        log_summary(f"FILE EXISTS ERROR: {str(e)} for {file_path}")
+        return f"Error: {str(e)}"
 
 
 @tool

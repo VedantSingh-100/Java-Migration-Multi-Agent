@@ -49,21 +49,17 @@ def migrate(repo: str, base_commit: str, csv_path: str):
     log_summary("APPROACH: Running multi-agent migration process")
     result = orchestrator.migrate_project(repo_path)
     success = result.get("success", False)
-    outcome = result.get("result", "<no-result>")
+    status = result.get("status", "unknown")
+    reason = result.get("result", "<no-result>")
 
-    if success:
-        log_console(f"Migration successful for {repo}", "SUCCESS")
-        log_summary(f"RESULT: Migration completed successfully")
-        log_summary(f"OUTCOME: {outcome}")
-
-        # Log token statistics if available
+    # Helper function to log token stats
+    def log_token_stats_if_available():
         if "token_stats" in result:
             token_stats = result["token_stats"]
             log_console(f"\nTotal Migration Cost: ${token_stats['total_cost_usd']:.4f}")
             log_console(f"Total Tokens: {token_stats['total_tokens']:,}")
             log_console(f"LLM Calls: {token_stats['llm_calls']:,}")
 
-            # Log detailed token breakdown to summary file
             log_summary("\n" + "="*60)
             log_summary("FINAL TOKEN USAGE SUMMARY")
             log_summary("="*60)
@@ -77,23 +73,50 @@ def migrate(repo: str, base_commit: str, csv_path: str):
             log_summary(f"TOTAL COST:      ${token_stats['total_cost_usd']:.4f}")
             log_summary("="*60)
 
-        # Mark migrated in CSV
-        df.loc[df["repo"] == repo, "migrated"] = True
-        df.to_csv(csv_path, index=False)
-        log_summary(f"CSV STATUS UPDATE: Marked {repo} as migrated")
+    if success:
+        if status == "partial":
+            # PARTIAL_SUCCESS: Build passes, tests pass, but < 90% tasks complete
+            log_console(f"Migration PARTIAL SUCCESS for {repo}", "SUCCESS")
+            log_summary(f"RESULT: Migration partially complete")
+            log_summary(f"STATUS: PARTIAL_SUCCESS")
+            log_summary(f"DETAILS: {reason}")
+            # Do NOT mark as migrated in CSV - only full SUCCESS counts
+            log_summary(f"CSV STATUS: Kept as 'attempted' (partial success does not mark migrated)")
+            log_token_stats_if_available()
+        else:
+            # Full SUCCESS: >= 90% tasks complete, build passes, tests pass
+            log_console(f"Migration successful for {repo}", "SUCCESS")
+            log_summary(f"RESULT: Migration completed successfully")
+            log_summary(f"STATUS: SUCCESS")
+            log_summary(f"DETAILS: {reason}")
+            log_token_stats_if_available()
+            # Mark migrated in CSV - only for full SUCCESS
+            df.loc[df["repo"] == repo, "migrated"] = True
+            df.to_csv(csv_path, index=False)
+            log_summary(f"CSV STATUS UPDATE: Marked {repo} as migrated")
     else:
-        # Check if failure was due to LLM call limit
+        # Handle different failure types
         limit_exceeded = result.get("limit_exceeded", False)
+
         if limit_exceeded:
             log_console(f"Migration stopped for {repo} - LLM call limit reached", "WARNING")
             log_summary(f"RESULT: Migration incomplete - LLM call limit exceeded")
-            log_summary(f"LIMIT INFO: {result.get('warning', 'LLM call limit reached')}")
+            log_summary(f"STATUS: INCOMPLETE")
+            log_summary(f"DETAILS: {reason}")
+        elif status == "incomplete":
+            log_console(f"Migration incomplete for {repo}", "WARNING")
+            log_summary(f"RESULT: Migration incomplete")
+            log_summary(f"STATUS: INCOMPLETE")
+            log_summary(f"DETAILS: {reason}")
         else:
             log_console(f"Migration failed for {repo}", "ERROR")
             log_summary(f"RESULT: Migration failed")
-            log_summary(f"FAILURE REASON: {outcome}")
+            log_summary(f"STATUS: FAILURE")
+            log_summary(f"FAILURE REASON: {reason}")  # Now contains actual error, not agent message
 
-    print(f"Result for {repo}: success={success}, detail={outcome}")
+        log_token_stats_if_available()
+
+    print(f"Result for {repo}: success={success}, status={status}, detail={reason}")
     if result.get("limit_exceeded"):
         print(f"⚠ WARNING: {result.get('warning', 'LLM call limit exceeded')}")
     return success
