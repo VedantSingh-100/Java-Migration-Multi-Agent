@@ -7,12 +7,147 @@ import re
 import time
 import os
 import shutil
+import hashlib
+import glob
 import xml.etree.ElementTree as ET
+from datetime import datetime
+from typing import Dict, Optional, Tuple, Set
 from src.utils.logging_config import log_summary
 from langchain_core.tools import tool
 
 # Import unified error classification system (Single Source of Truth)
 from src.orchestrator.error_handler import unified_classifier, MavenErrorType
+
+
+# =============================================================================
+# POM CHANGE TRACKER - Forces clean builds after pom.xml modifications
+# =============================================================================
+
+class PomChangeTracker:
+    """
+    Singleton tracker for pom.xml modifications.
+
+    Forces clean builds when pom.xml changes to prevent:
+    - Maven incremental compilation hiding breaking API changes
+    - Cached .class files masking dependency version conflicts
+    - False positive "BUILD SUCCESS" after version bumps
+
+    See: docs/Recent_Issues.md - "Maven Incremental Compilation Hiding Breaking Changes"
+    """
+
+    _instance: Optional['PomChangeTracker'] = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+
+    def __init__(self):
+        if self._initialized:
+            return
+        self.pom_hashes: Dict[str, str] = {}  # project_path -> combined hash of all poms
+        self.clean_required: Set[str] = set()  # Project paths requiring clean
+        self.last_check_time: Dict[str, datetime] = {}
+        self._initialized = True
+        log_summary("[POM_TRACKER] Initialized PomChangeTracker singleton")
+
+    @classmethod
+    def get_instance(cls) -> 'PomChangeTracker':
+        return cls()
+
+    @classmethod
+    def reset(cls):
+        """Reset singleton for testing"""
+        cls._instance = None
+
+    def _compute_all_poms_hash(self, project_path: str) -> str:
+        """Compute combined MD5 hash of all pom.xml files in project"""
+        pom_files = sorted(glob.glob(os.path.join(project_path, '**/pom.xml'), recursive=True))
+        hasher = hashlib.md5()
+
+        for pom_path in pom_files:
+            try:
+                with open(pom_path, 'rb') as f:
+                    hasher.update(f.read())
+            except Exception:
+                pass
+
+        return hasher.hexdigest()
+
+    def capture_baseline(self, project_path: str) -> str:
+        """
+        Capture baseline state of all pom.xml files.
+        Call this at the START of migration before any changes.
+
+        Returns:
+            Combined hash of all pom.xml files
+        """
+        combined_hash = self._compute_all_poms_hash(project_path)
+        self.pom_hashes[project_path] = combined_hash
+        self.last_check_time[project_path] = datetime.now()
+
+        pom_count = len(glob.glob(os.path.join(project_path, '**/pom.xml'), recursive=True))
+        log_summary(f"[POM_TRACKER] Captured baseline for {pom_count} pom.xml files (hash: {combined_hash[:8]}...)")
+
+        return combined_hash
+
+    def check_for_changes(self, project_path: str) -> Tuple[bool, str]:
+        """
+        Check if any pom.xml files have changed since baseline/last check.
+
+        Returns:
+            (has_changes, reason_message)
+        """
+        current_hash = self._compute_all_poms_hash(project_path)
+
+        if project_path not in self.pom_hashes:
+            # First time seeing this project - capture baseline
+            self.pom_hashes[project_path] = current_hash
+            self.last_check_time[project_path] = datetime.now()
+            return False, "First check - baseline captured"
+
+        if self.pom_hashes[project_path] != current_hash:
+            old_hash = self.pom_hashes[project_path]
+            self.pom_hashes[project_path] = current_hash
+            self.clean_required.add(project_path)
+            self.last_check_time[project_path] = datetime.now()
+
+            log_summary(f"[POM_TRACKER] 🔄 pom.xml CHANGED (hash: {old_hash[:8]}... -> {current_hash[:8]}...) - CLEAN BUILD REQUIRED")
+            return True, f"pom.xml changed (hash: {old_hash[:8]}... -> {current_hash[:8]}...)"
+
+        return False, "No changes detected"
+
+    def needs_clean_build(self, project_path: str) -> bool:
+        """Check if project needs a clean build due to pom.xml changes"""
+        # First check for any new changes
+        has_changes, _ = self.check_for_changes(project_path)
+        return project_path in self.clean_required
+
+    def mark_clean_completed(self, project_path: str):
+        """Mark that a clean build was completed for this project"""
+        if project_path in self.clean_required:
+            self.clean_required.discard(project_path)
+            log_summary(f"[POM_TRACKER] ✅ Clean build completed - requirement cleared")
+
+    def get_status(self, project_path: str) -> Dict:
+        """Get current tracking status for a project"""
+        pom_count = len(glob.glob(os.path.join(project_path, '**/pom.xml'), recursive=True))
+        return {
+            "tracked_poms": pom_count,
+            "current_hash": self.pom_hashes.get(project_path, "not captured")[:8] + "...",
+            "needs_clean": project_path in self.clean_required,
+            "last_check": self.last_check_time.get(project_path, None)
+        }
+
+
+# Global singleton instance
+_pom_tracker = PomChangeTracker.get_instance()
+
+
+def get_pom_tracker() -> PomChangeTracker:
+    """Get the global PomChangeTracker instance"""
+    return _pom_tracker
 
 
 # Add blocked commands for safety
@@ -387,11 +522,12 @@ def handle_authorization_error(command: str, cwd: str, timeout: int) -> tuple:
         return False, f"Exception during 403 handling: {str(e)}"
 
 
-def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries: int = 2) -> str:
+def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries: int = 2, force_clean: bool = False) -> str:
     """
     Run a Maven command with multi-layered error handling for SSL, authorization, and dependency issues.
 
     Strategy:
+    0. CHECK POM CHANGES - if pom.xml changed since last build, force 'mvn clean' first
     1. Try to resolve dependencies first with retries
     2. Execute the main Maven command
     3. If failed, classify error type (SSL, 403/401, 404, etc.)
@@ -402,8 +538,29 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
     5. Return detailed results with context about what happened
 
     This creates a progressive fallback system that handles most common Maven errors automatically.
+
+    CRITICAL FIX (2025-12-13): Force clean builds after pom.xml changes to prevent:
+    - Maven incremental compilation hiding breaking API changes
+    - Cached .class files masking dependency version conflicts
+    - False positive "BUILD SUCCESS" after version bumps
+    See: docs/Recent_Issues.md - "Maven Incremental Compilation Hiding Breaking Changes"
     """
     log_summary(f"MVN_WITH_RETRY: {command} (max_retries={max_retries})")
+
+    # STEP 0: Check if pom.xml changed - force clean if so
+    pom_tracker = get_pom_tracker()
+    needs_clean = force_clean or pom_tracker.needs_clean_build(cwd)
+
+    if needs_clean and 'clean' not in command:
+        # Insert 'clean' into the command
+        # e.g., "mvn compile -B" -> "mvn clean compile -B"
+        # e.g., "mvn test -B" -> "mvn clean test -B"
+        original_command = command
+        if command.startswith('mvn '):
+            command = command.replace('mvn ', 'mvn clean ', 1)
+        log_summary(f"[POM_TRACKER] 🔄 Forcing clean build due to pom.xml changes")
+        log_summary(f"[POM_TRACKER] Original: {original_command}")
+        log_summary(f"[POM_TRACKER] Modified: {command}")
 
     # Get Maven environment (finds Maven in non-standard locations)
     maven_env = get_maven_env()
@@ -605,6 +762,10 @@ def run_maven_with_retry(command: str, cwd: str, timeout: int = 300, max_retries
         log_summary(f"MVN_COMMAND: Failed with return code {result.returncode}, error_type={error_type.value}")
     else:
         log_summary(f"MVN_COMMAND: Success")
+        # Mark clean as completed if we did a forced clean
+        if needs_clean:
+            pom_tracker.mark_clean_completed(cwd)
+            output = f"[POM_CHANGE_DETECTED] Forced clean build completed successfully.\n" + output
 
     return output
 

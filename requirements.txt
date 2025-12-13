@@ -31,3 +31,7 @@ pandas>=2.0.0
 
 # Environment variables
 python-dotenv>=1.0.0
+
+# Web Search (Tavily)
+# 🔔 REMINDER: Replace with BNY internal framework later
+tavily-python>=0.3.0

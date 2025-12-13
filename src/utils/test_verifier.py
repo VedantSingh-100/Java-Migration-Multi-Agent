@@ -1,15 +1,20 @@
 """
-Test Method Preservation Verifier
+Test Method Preservation Verifier & Build Verification Utilities
 
-This module provides deterministic verification that test methods are preserved
-during migration. It captures baseline test signatures and verifies they remain
-unchanged throughout the migration process.
+This module provides:
+1. Test method preservation verification during migration
+2. Bytecode version audit to catch Kotlin/AspectJ/Scala issues
+3. Technology detection for proactive migration research
 
 CRITICAL RULES ENFORCED:
 - Test method names must remain identical
 - Test method count must remain constant
 - Test files must not be deleted
 - New test methods should not be added
+
+ADDITIONAL VERIFICATIONS (2025-12-13):
+- Bytecode version consistency across all .class files
+- Detection of Kotlin, AspectJ, Scala for special handling
 
 Usage:
     verifier = TestMethodVerifier(project_path)
@@ -19,17 +24,335 @@ Usage:
     is_valid, violations = verifier.verify_preservation()
     if not is_valid:
         # Block commit, report violations
+
+See: docs/Recent_Issues.md for why these verifications are needed
 """
 
 import os
 import re
 import json
+import glob
+import struct
 import hashlib
+from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple, Set, Optional
 from dataclasses import dataclass, asdict
 
 from src.utils.logging_config import log_agent, log_summary
+
+
+# =============================================================================
+# BYTECODE VERSION AUDIT
+# =============================================================================
+
+# Java bytecode major version mapping
+JAVA_BYTECODE_VERSIONS = {
+    45: 1,   # Java 1.1
+    46: 2,   # Java 1.2
+    47: 3,   # Java 1.3
+    48: 4,   # Java 1.4
+    49: 5,   # Java 5
+    50: 6,   # Java 6
+    51: 7,   # Java 7
+    52: 8,   # Java 8
+    53: 9,   # Java 9
+    54: 10,  # Java 10
+    55: 11,  # Java 11
+    56: 12,  # Java 12
+    57: 13,  # Java 13
+    58: 14,  # Java 14
+    59: 15,  # Java 15
+    60: 16,  # Java 16
+    61: 17,  # Java 17
+    62: 18,  # Java 18
+    63: 19,  # Java 19
+    64: 20,  # Java 20
+    65: 21,  # Java 21
+    66: 22,  # Java 22
+    67: 23,  # Java 23
+}
+
+
+def read_class_major_version(class_file_path: str) -> Optional[int]:
+    """
+    Read the major version from a Java .class file.
+
+    Class file format:
+    - Bytes 0-3: Magic number (0xCAFEBABE)
+    - Bytes 4-5: Minor version
+    - Bytes 6-7: Major version
+
+    Returns:
+        Major version number or None if file can't be read
+    """
+    try:
+        with open(class_file_path, 'rb') as f:
+            # Read magic number (4 bytes)
+            magic = f.read(4)
+            if magic != b'\xCA\xFE\xBA\xBE':
+                return None  # Not a valid class file
+
+            # Read minor version (2 bytes) - skip
+            f.read(2)
+
+            # Read major version (2 bytes, big-endian)
+            major_bytes = f.read(2)
+            major_version = struct.unpack('>H', major_bytes)[0]
+
+            return major_version
+    except Exception:
+        return None
+
+
+def audit_bytecode_versions(project_path: str, expected_java_version: int = 21) -> Tuple[bool, str, Dict]:
+    """
+    Audit all compiled .class files to verify bytecode version consistency.
+
+    This catches issues like:
+    - Kotlin compiling to Java 8 when jvmTarget not updated
+    - AspectJ using old bundled compiler
+    - Mixed bytecode versions in multi-module projects
+
+    Args:
+        project_path: Path to the project root
+        expected_java_version: Expected Java version (default 21)
+
+    Returns:
+        (all_match, message, details_dict)
+    """
+    project_dir = Path(project_path)
+    if not project_dir.exists():
+        return False, f"Error: Project path not found: {project_path}", {}
+
+    expected_bytecode = expected_java_version + 44  # Java 21 = bytecode 65
+
+    # Find all .class files in target directories
+    class_patterns = [
+        '**/target/classes/**/*.class',
+        '**/target/test-classes/**/*.class',
+        '**/build/classes/**/*.class',  # Gradle projects
+    ]
+
+    class_files = []
+    for pattern in class_patterns:
+        class_files.extend(project_dir.glob(pattern))
+
+    if not class_files:
+        log_agent(f"[BYTECODE_AUDIT] No .class files found in {project_path}")
+        return True, "No compiled .class files found. Run 'mvn compile' first.", {}
+
+    # Audit each class file
+    version_counts: Dict[int, int] = {}
+    mismatches: List[Dict] = []
+
+    for class_file in class_files:
+        major_version = read_class_major_version(str(class_file))
+        if major_version is None:
+            continue
+
+        version_counts[major_version] = version_counts.get(major_version, 0) + 1
+
+        if major_version != expected_bytecode:
+            java_version = JAVA_BYTECODE_VERSIONS.get(major_version, f"unknown({major_version})")
+            rel_path = str(class_file.relative_to(project_dir))
+            mismatches.append({
+                "file": rel_path,
+                "bytecode_version": major_version,
+                "java_version": java_version,
+            })
+
+    total_files = sum(version_counts.values())
+    all_match = len(mismatches) == 0
+
+    # Build result details
+    details = {
+        "total_files": total_files,
+        "expected_java": expected_java_version,
+        "expected_bytecode": expected_bytecode,
+        "version_distribution": {
+            JAVA_BYTECODE_VERSIONS.get(bv, f"unknown({bv})"): cnt
+            for bv, cnt in version_counts.items()
+        },
+        "mismatches": mismatches[:20],  # Limit to first 20
+        "mismatch_count": len(mismatches),
+    }
+
+    if all_match:
+        msg = f"✅ BYTECODE AUDIT PASSED: All {total_files} files compiled for Java {expected_java_version}"
+        log_summary(f"BYTECODE_AUDIT: ✅ All {total_files} files match Java {expected_java_version}")
+    else:
+        # Group by Java version for cleaner output
+        by_version: Dict[int, int] = {}
+        for m in mismatches:
+            ver = m['java_version']
+            by_version[ver] = by_version.get(ver, 0) + 1
+
+        msg = f"❌ BYTECODE AUDIT FAILED: {len(mismatches)} files have wrong bytecode version\n"
+        msg += f"Expected: Java {expected_java_version} (bytecode {expected_bytecode})\n"
+        msg += "Found:\n"
+        for java_ver, cnt in sorted(by_version.items()):
+            msg += f"  - Java {java_ver}: {cnt} files\n"
+        msg += "\nCommon causes:\n"
+        msg += "  - Kotlin: jvmTarget not set to " + str(expected_java_version) + "\n"
+        msg += "  - AspectJ: bundled compiler version doesn't support Java " + str(expected_java_version) + "\n"
+        msg += "  - Scala: scalac target version mismatch\n"
+        msg += "\nUse web_search to find fix for your specific technology."
+
+        log_summary(f"BYTECODE_AUDIT: ❌ {len(mismatches)} files have wrong version")
+
+    return all_match, msg, details
+
+
+# =============================================================================
+# TECHNOLOGY DETECTION
+# =============================================================================
+
+# Technology detection signals
+TECHNOLOGY_SIGNALS = {
+    "kotlin": {
+        "file_patterns": ["**/*.kt", "**/*.kts"],
+        "pom_patterns": ["kotlin-maven-plugin", "kotlin-stdlib", "org.jetbrains.kotlin"],
+        "migration_concerns": [
+            "jvmTarget must be explicitly set (doesn't inherit java.version)",
+            "kotlin.version may need updating for Java 21 compatibility",
+        ],
+        "research_queries": [
+            "Kotlin jvmTarget Java 21 Maven configuration",
+            "kotlin-maven-plugin Java 21 settings",
+        ]
+    },
+    "aspectj": {
+        "file_patterns": ["**/*.aj"],
+        "pom_patterns": ["aspectj-maven-plugin", "jcabi-maven-plugin", "org.aspectj"],
+        "migration_concerns": [
+            "AspectJ compiler version must support Java 21 bytecode",
+            "jcabi-maven-plugin bundles old AspectJ 1.9.1 internally",
+            "Aspect weaving can fail silently with version mismatches",
+        ],
+        "research_queries": [
+            "AspectJ Java 21 compatibility",
+            "jcabi-maven-plugin AspectJ version bundled",
+        ]
+    },
+    "scala": {
+        "file_patterns": ["**/*.scala"],
+        "pom_patterns": ["scala-maven-plugin", "org.scala-lang"],
+        "migration_concerns": [
+            "Scala version must be compatible with Java 21",
+            "Scala 3.x recommended for Java 21",
+        ],
+        "research_queries": [
+            "Scala Java 21 compatibility",
+            "scala-maven-plugin Java 21",
+        ]
+    },
+    "groovy": {
+        "file_patterns": ["**/*.groovy"],
+        "pom_patterns": ["groovy-maven-plugin", "gmavenplus-plugin", "org.codehaus.groovy"],
+        "migration_concerns": [
+            "Groovy version must support Java 21",
+            "targetBytecode configuration required",
+        ],
+        "research_queries": [
+            "Groovy Java 21 compatibility",
+            "GMavenPlus Java 21 configuration",
+        ]
+    },
+    "lombok": {
+        "file_patterns": [],
+        "pom_patterns": ["lombok", "org.projectlombok"],
+        "migration_concerns": [
+            "Lombok version must support Java 21",
+            "Annotation processing may need updates",
+        ],
+        "research_queries": [
+            "Lombok Java 21 compatibility",
+        ]
+    },
+}
+
+
+def detect_project_technologies(project_path: str) -> Tuple[List[str], str, Dict]:
+    """
+    Detect non-standard JVM technologies that require special migration handling.
+
+    Scans for Kotlin, AspectJ, Scala, Groovy, Lombok, etc. and provides:
+    - Detection signals (what was found)
+    - Known migration concerns
+    - Suggested research queries for web search
+
+    Args:
+        project_path: Path to the project root
+
+    Returns:
+        (detected_tech_names, message, details_dict)
+    """
+    project_dir = Path(project_path)
+    if not project_dir.exists():
+        return [], f"Error: Project path not found: {project_path}", {}
+
+    # Read all pom.xml content
+    pom_content = ""
+    pom_files = list(project_dir.glob("**/pom.xml"))
+    for pom_file in pom_files:
+        try:
+            pom_content += pom_file.read_text(encoding='utf-8')
+        except Exception:
+            pass
+
+    detected = []
+    details = {"technologies": {}}
+
+    for tech_name, signals in TECHNOLOGY_SIGNALS.items():
+        found_signals = []
+
+        # Check file patterns
+        for pattern in signals.get("file_patterns", []):
+            matches = list(project_dir.glob(pattern))
+            if matches:
+                found_signals.append(f"Found {len(matches)} {pattern.split('*')[-1]} files")
+
+        # Check pom.xml patterns
+        for pom_pattern in signals.get("pom_patterns", []):
+            if pom_pattern.lower() in pom_content.lower():
+                found_signals.append(f"Found '{pom_pattern}' in pom.xml")
+
+        if found_signals:
+            detected.append(tech_name)
+            details["technologies"][tech_name] = {
+                "signals": found_signals,
+                "concerns": signals.get("migration_concerns", []),
+                "research_queries": signals.get("research_queries", []),
+            }
+
+    # Build message
+    if not detected:
+        msg = "✅ No special technologies detected. Standard Java/Maven project."
+        log_summary(f"TECH_DETECT: No special technologies detected")
+    else:
+        msg = f"⚠️ DETECTED {len(detected)} TECHNOLOGY/TECHNOLOGIES REQUIRING ATTENTION:\n"
+        all_queries = []
+
+        for tech_name in detected:
+            tech_info = details["technologies"][tech_name]
+            msg += f"\n📦 {tech_name.upper()}\n"
+            msg += f"   Signals: {', '.join(tech_info['signals'])}\n"
+            msg += f"   Concerns:\n"
+            for concern in tech_info['concerns']:
+                msg += f"     ⚠️ {concern}\n"
+            all_queries.extend(tech_info['research_queries'])
+
+        msg += f"\n🔍 RECOMMENDED RESEARCH (use web_search):\n"
+        for i, query in enumerate(all_queries[:5], 1):
+            msg += f"   {i}. {query}\n"
+
+        log_summary(f"TECH_DETECT: Found {len(detected)} technologies: {detected}")
+
+    details["detected"] = detected
+    details["pom_count"] = len(pom_files)
+
+    return detected, msg, details
 
 
 @dataclass
@@ -482,8 +805,10 @@ class TestMethodVerifier:
                     if re.search(ann_pattern, line_j):
                         ann_name = ann_pattern.replace('\\', '')
                         annotations.append(ann_name)
-                        # Check if it's a test-indicating annotation
-                        if ann_name in ['@Test', '@ParameterizedTest', '@RepeatedTest', '@TestFactory']:
+                        # Check if it's a test-indicating or lifecycle annotation
+                        if ann_name in ['@Test', '@ParameterizedTest', '@RepeatedTest', '@TestFactory',
+                                        '@Before', '@After', '@BeforeEach', '@AfterEach',
+                                        '@BeforeAll', '@AfterAll']:
                             has_test_annotation = True
 
             # Only include methods that have a test annotation

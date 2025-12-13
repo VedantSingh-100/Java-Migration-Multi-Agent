@@ -76,6 +76,10 @@ class State(AgentState):
     test_failure_count: int = 0  # Consecutive test failures on current task
     last_test_failure_task: str = ""  # Track which task caused the failure
 
+    # Analysis agent stuck detection and reset
+    analysis_no_tool_count: int = 0  # Consecutive responses without tool calls
+    analysis_reset_count: int = 0  # Number of times analysis agent has been reset (max 2)
+
 
 class StateFileManager:
     """

@@ -424,10 +424,34 @@ class ErrorNodeWrapper:
             # Map new MavenErrorType values to appropriate guidance
             error_type_hint, verification_cmd, extra_guidance = self._get_error_guidance(prev_error_type)
 
+            # Add mandatory web search reminder
+            # Trigger on first error_expert invocation since internal loops don't increment error_count
+            web_search_reminder = ""
+            if error_count >= 1:
+                # Build a suggested search query from the error
+                error_snippet = current_error[:200] if current_error else "unknown error"
+                suggested_query = self._build_search_query(error_snippet)
+                web_search_reminder = f"""
+⚠️ MANDATORY WEB SEARCH REQUIRED ⚠️
+════════════════════════════════════════════════════
+You have attempted {error_count} fixes without success.
+
+BEFORE trying another fix, you MUST:
+1. Call web_search_tool with a specific query
+2. Include the error message + framework versions + "fix"
+
+SUGGESTED QUERY:
+  web_search_tool("{suggested_query}")
+
+DO NOT skip this step. Search first, then fix.
+════════════════════════════════════════════════════
+"""
+                log_agent(f"[WEB_SEARCH_ENFORCE] Injecting mandatory web search reminder (attempt {error_count})")
+
             # Build clean error context
             clean_messages = [
                 HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
-
+{web_search_reminder}
 ## ERROR TYPE: {error_type_hint}
 
 ## CURRENT ERROR:
@@ -438,6 +462,7 @@ class ErrorNodeWrapper:
 {extra_guidance}
 
 Do NOT repeat failed approaches. Try something different.
+{'USE web_search_tool FIRST to find the correct solution.' if error_count >= 1 else ''}
 
 Analyze the error, then EXECUTE the fix using your tools.
 Run {verification_cmd} to verify it works.""")
@@ -667,3 +692,56 @@ This is a compilation error. Common fixes include:
                     return True
 
         return False
+
+    def _build_search_query(self, error_text: str) -> str:
+        """Build a web search query from error text.
+
+        Extracts key error terms and adds migration context for better search results.
+        """
+        import re
+
+        # Extract key error patterns
+        query_parts = []
+
+        # Common Java error patterns to extract
+        patterns = [
+            r'(NoClassDefFoundError[:\s]+[\w\.]+)',  # NoClassDefFoundError: class.name
+            r'(ClassNotFoundException[:\s]+[\w\.]+)',  # ClassNotFoundException: class.name
+            r'(NoSuchMethodError[:\s]+[\w\.]+)',  # NoSuchMethodError: method
+            r'(NoSuchFieldError[:\s]+[\w\.]+)',  # NoSuchFieldError: field
+            r'(UnsupportedClassVersionError)',  # JDK version mismatch
+            r'(javax\.\w+)',  # javax package references
+            r'(jakarta\.\w+)',  # jakarta package references
+            r'(cglib\.[\w\.]+)',  # CGLIB proxy issues
+            r'(Spring\s*Boot\s*[\d\.]+)',  # Spring Boot version
+            r'(Spring\s*Framework\s*[\d\.]+)',  # Spring Framework version
+        ]
+
+        for pattern in patterns:
+            matches = re.findall(pattern, error_text, re.IGNORECASE)
+            query_parts.extend(matches[:2])  # Take at most 2 matches per pattern
+
+        # If we found specific patterns, use them
+        if query_parts:
+            # Deduplicate while preserving order
+            seen = set()
+            unique_parts = []
+            for p in query_parts:
+                if p.lower() not in seen:
+                    seen.add(p.lower())
+                    unique_parts.append(p)
+
+            base_query = " ".join(unique_parts[:4])  # Max 4 terms
+            return f"{base_query} Java migration fix solution"
+
+        # Fallback: extract first meaningful error line
+        lines = error_text.split('\n')
+        for line in lines:
+            line = line.strip()
+            if line and len(line) > 20 and ('Error' in line or 'Exception' in line):
+                # Clean up and truncate
+                clean_line = re.sub(r'[^a-zA-Z0-9\.\s]', ' ', line)
+                return f"{clean_line[:80]} Java fix solution"
+
+        # Last resort: generic query
+        return "Java Spring Boot migration error fix"

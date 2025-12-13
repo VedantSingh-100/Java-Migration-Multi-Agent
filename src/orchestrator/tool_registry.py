@@ -299,9 +299,10 @@ ERROR_TOOL_NAMES: Set[str] = {
     'mvn_compile', 'mvn_test',
     # Git operations (diagnostic)
     'git_status', 'get_log', 'list_branches',
+    # Web search - MANDATORY for error resolution when fixes fail
+    'web_search_tool',
     # NOTE: run_command intentionally excluded (too dangerous - agent did manual sed/find edits)
     # NOTE: check_migration_state excluded (confuses agent about current phase)
-    # NOTE: web_search_tool and call_openrewrite_agent are BNY-specific, not available here
 }
 
 # Supervisor agent tools - read-only for oversight

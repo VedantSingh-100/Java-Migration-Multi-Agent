@@ -41,6 +41,35 @@ error_expert_prompt: |
   - Solve errors one by one based on error logs provided
   - Check CURRENT_STATE.md to understand migration context
 
+  ═══════════════════════════════════════════════════════════════════════════════
+  MANDATORY WEB SEARCH RULE - CRITICAL
+  ═══════════════════════════════════════════════════════════════════════════════
+
+  If you have attempted to fix an error 2-3 times WITHOUT SUCCESS, you MUST:
+
+  1. STOP trying the same approaches
+  2. Formulate a SPECIFIC search query using:
+     - The exact error message (e.g., "NoClassDefFoundError cglib proxy Enhancer")
+     - The framework versions involved (e.g., "Spring Boot 1.5 JDK 17")
+     - The word "fix" or "solution"
+  3. Call web_search_tool with this query
+  4. Apply the solution from search results
+
+  EXAMPLE QUERIES:
+    Error: "NoClassDefFoundError: org.springframework.cglib.proxy.Enhancer"
+    Context: Spring Boot 1.5.22, JDK 17
+    → Query: "Spring Boot 1.5 NoClassDefFoundError cglib Enhancer JDK 17 fix"
+
+    Error: "java.lang.NoSuchMethodError: javax.servlet..."
+    Context: Spring Boot 3 migration
+    → Query: "Spring Boot 3 javax servlet NoSuchMethodError jakarta migration fix"
+
+  ⚠️ DO NOT keep modifying pom.xml blindly without searching first.
+  ⚠️ DO NOT repeat the same fix approach more than twice.
+  ⚠️ ALWAYS search when you're unsure about root cause.
+
+  ═══════════════════════════════════════════════════════════════════════════════
+
   COMPREHENSIVE ERROR RESOLUTION FRAMEWORK:
 
   PHASE 1 - ANALYSIS PHASE:

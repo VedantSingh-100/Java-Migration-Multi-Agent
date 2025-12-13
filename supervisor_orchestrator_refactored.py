@@ -89,6 +89,7 @@ from src.utils.logging_config import log_agent, log_summary, log_console, log_ll
 from src.utils.TokenCounter import TokenCounter
 from src.utils.migration_state_tracker import MigrationStateTracker
 from src.utils.completion_detector import detect_analysis_complete
+from src.utils.search_processor import setup_search_context_from_pom, reset_search_processor
 
 from src.tools import all_tools_flat
 from src.tools.state_management import set_state_tracker
@@ -384,6 +385,11 @@ class SupervisorMigrationOrchestrator:
         set_file_ops_project_path(project_path)
         log_agent(f"[PATH] Set file_operations project_path to: {project_path}")
 
+        # Setup search context from pom.xml (for web search optimization)
+        # This detects Java/Spring versions and sets environment variables
+        reset_search_processor()  # Reset for new migration
+        setup_search_context_from_pom(project_path)
+
         # Create external memory builder now that we have project_path
         self.external_memory_builder = ExternalMemoryBuilder(
             self.state_file_manager,
@@ -484,15 +490,101 @@ class SupervisorMigrationOrchestrator:
             return "execution_expert"
 
     def _wrap_analysis_node(self, state: State):
-        """Wrapper for analysis agent using AnalysisNodeWrapper logic"""
-        log_agent("[WRAPPER] Running analysis_expert")
+        """
+        Wrapper for analysis agent with stuck detection and auto-reset.
 
+        If agent returns 5 consecutive responses without tool calls,
+        reset to fresh context. Max 2 resets before failing.
+        """
+        project_path = state.get("project_path", "")
+        no_tool_count = state.get("analysis_no_tool_count", 0)
+        reset_count = state.get("analysis_reset_count", 0)
+
+        log_agent(f"[WRAPPER] Running analysis_expert (no_tool: {no_tool_count}, resets: {reset_count})")
+
+        # Check if we need to reset due to stuck loop
+        if no_tool_count >= 5:
+            if reset_count >= 2:
+                # Max resets exceeded - fail the migration
+                log_agent("[ANALYSIS_RESET] Max resets (2) exceeded - analysis failed", "ERROR")
+                log_summary("ANALYSIS FAILED: Agent stuck without tool calls after 2 resets")
+                return {
+                    "messages": state.get("messages", []),
+                    "analysis_done": False,
+                    "current_phase": "FAILED",
+                    "analysis_no_tool_count": 0,
+                    "analysis_reset_count": reset_count,
+                }
+
+            # Reset the agent with fresh context
+            reset_count += 1
+            log_agent(f"[ANALYSIS_RESET] Resetting analysis agent (reset #{reset_count}/2)", "WARNING")
+            log_summary(f"ANALYSIS RESET: Agent stuck for 5 responses without tools - reset #{reset_count}")
+
+            # Create fresh start message
+            fresh_message = HumanMessage(content=f"""SYSTEM RESET: Previous analysis attempt failed to use tools.
+
+You MUST use tools to analyze this project. Start NOW.
+
+Project path: {project_path}
+
+IMMEDIATE ACTION REQUIRED:
+1. Call find_all_poms("{project_path}") to discover project structure
+2. Call read_pom("{project_path}") to analyze dependencies
+3. Call mvn_compile("{project_path}") to establish build baseline
+
+Execute find_all_poms NOW. Do not respond with text - USE THE TOOL.""")
+
+            # Reset messages to just the fresh start
+            reset_messages = [fresh_message]
+
+            # Invoke agent with reset context
+            analysis_agent = self.migration_workers[0]
+            result = analysis_agent.invoke({
+                **state,
+                "messages": reset_messages,
+            })
+
+            messages = result.get("messages", [])
+
+            # Check if agent used tools after reset
+            has_tools = self._check_analysis_has_tools(messages)
+            new_no_tool_count = 0 if has_tools else 1
+
+            if has_tools:
+                log_agent("[ANALYSIS_RESET] Agent recovered - using tools after reset")
+                log_summary("ANALYSIS RESET: Recovery successful - agent now using tools")
+            else:
+                log_agent("[ANALYSIS_RESET] Agent still not using tools after reset", "WARNING")
+
+            # Check completion
+            analysis_complete = detect_analysis_complete(project_path, messages)
+
+            return {
+                "messages": messages,
+                "analysis_done": analysis_complete,
+                "current_phase": "ANALYSIS_COMPLETE" if analysis_complete else "ANALYSIS",
+                "analysis_no_tool_count": new_no_tool_count,
+                "analysis_reset_count": reset_count,
+            }
+
+        # Normal execution path
         analysis_agent = self.migration_workers[0]
         result = analysis_agent.invoke(state)
 
-        # Auto-detect completion
-        project_path = state.get("project_path", "")
         messages = result.get("messages", [])
+
+        # Check if agent used tools
+        has_tools = self._check_analysis_has_tools(messages)
+
+        if has_tools:
+            new_no_tool_count = 0
+            log_agent("[WRAPPER] Analysis agent used tools - counter reset")
+        else:
+            new_no_tool_count = no_tool_count + 1
+            log_agent(f"[WRAPPER] Analysis agent NO TOOLS - counter: {new_no_tool_count}/5", "WARNING")
+
+        # Auto-detect completion
         analysis_complete = detect_analysis_complete(project_path, messages)
 
         if analysis_complete:
@@ -502,8 +594,28 @@ class SupervisorMigrationOrchestrator:
         return {
             "messages": messages,
             "analysis_done": analysis_complete,
-            "current_phase": "ANALYSIS_COMPLETE" if analysis_complete else "ANALYSIS"
+            "current_phase": "ANALYSIS_COMPLETE" if analysis_complete else "ANALYSIS",
+            "analysis_no_tool_count": new_no_tool_count,
+            "analysis_reset_count": reset_count,
         }
+
+    def _check_analysis_has_tools(self, messages: List[BaseMessage]) -> bool:
+        """Check if the latest AI message in the analysis response has tool calls."""
+        if not messages:
+            return False
+
+        # Find the last AI message
+        for msg in reversed(messages):
+            msg_type = getattr(msg, 'type', None) or type(msg).__name__
+            if msg_type == 'ai' or 'AIMessage' in type(msg).__name__:
+                tool_calls = getattr(msg, 'tool_calls', None) or []
+                additional_kwargs = getattr(msg, 'additional_kwargs', {}) or {}
+                additional_tool_calls = additional_kwargs.get('tool_calls', [])
+
+                has_tools = len(tool_calls) > 0 or len(additional_tool_calls) > 0
+                return has_tools
+
+        return False
 
     def _wrap_execution_node(self, state: State):
         """
@@ -1031,6 +1143,29 @@ This is a compilation error. Common fixes include:
 - Adding missing method implementations
 - Updating deprecated API usage"""
 
+            # Add mandatory web search reminder after first failed attempt
+            web_search_reminder = ""
+            if error_count >= 1:
+                error_snippet = current_error[:200] if current_error else "unknown error"
+                suggested_query = self._build_search_query(error_snippet)
+                web_search_reminder = f"""
+
+⚠️ MANDATORY WEB SEARCH REQUIRED ⚠️
+════════════════════════════════════════════════════════════════════
+You have attempted {error_count} fix(es) without success.
+
+BEFORE trying another fix, you MUST:
+1. Call web_search_tool with a specific query about this error
+2. Include the error message + framework versions + "fix"
+
+SUGGESTED QUERY:
+  web_search_tool("{suggested_query}")
+
+DO NOT skip this step. Search first, then apply the solution.
+════════════════════════════════════════════════════════════════════
+"""
+                log_agent(f"[WEB_SEARCH_ENFORCE] Injecting mandatory web search reminder (attempt {error_count})")
+
             clean_messages = [
                 HumanMessage(content=f"""ERROR FIX REQUIRED - Project: {project_path}
 
@@ -1042,7 +1177,7 @@ This is a compilation error. Common fixes include:
 ## PREVIOUS ATTEMPTS:
 {error_history if error_history else 'No previous attempts - this is your first try.'}
 {extra_guidance}
-
+{web_search_reminder}
 Do NOT repeat failed approaches. Try something different.
 Analyze the error, then EXECUTE the fix using your tools.
 Run {verification_cmd} to verify it works.""")
@@ -1105,6 +1240,35 @@ Run {verification_cmd} to verify it works.""")
             return f"Attempt {attempt_num}: Used {', '.join(tools_used)}"
         else:
             return f"Attempt {attempt_num}: No tools used"
+
+    def _build_search_query(self, error_snippet: str) -> str:
+        """Build a search query from an error snippet for web search."""
+        # Extract key error terms
+        import re
+
+        # Common error patterns to extract
+        patterns = [
+            r'(NoClassDefFoundError[:\s]+[\w\.]+)',
+            r'(ClassNotFoundException[:\s]+[\w\.]+)',
+            r'(NoSuchMethodError[:\s]+[\w\.]+)',
+            r'(cannot find symbol[:\s]+[\w\.]+)',
+            r'(package [\w\.]+ does not exist)',
+            r'(incompatible types[:\s]+[\w\.<>]+)',
+        ]
+
+        key_terms = []
+        for pattern in patterns:
+            match = re.search(pattern, error_snippet, re.IGNORECASE)
+            if match:
+                key_terms.append(match.group(1))
+
+        if key_terms:
+            base_query = key_terms[0]
+        else:
+            # Just use first 100 chars of error
+            base_query = error_snippet[:100].replace('\n', ' ').strip()
+
+        return f"Java Spring Boot migration {base_query} fix solution"
 
     def _apply_phase_transition(self, state: State) -> List[BaseMessage]:
         """Apply phase transition pruning from analysis to execution"""
@@ -1697,9 +1861,12 @@ Run {verification_cmd} to verify it works.""")
                 "error_type": "none",
                 "test_failure_count": 0,
                 "last_test_failure_task": "",
-                # No-tool tracking
+                # No-tool tracking (execution agent)
                 "no_tool_call_loops": 0,
                 "thinking_loops": 0,
+                # Analysis agent stuck detection
+                "analysis_no_tool_count": 0,
+                "analysis_reset_count": 0,
             }, {"recursion_limit": 500}):
                 step_count += 1
                 last_chunk = chunk
