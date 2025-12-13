@@ -10,6 +10,31 @@ def clone_and_prepare_repo(github_repo: str, base_commit: str, dest_dir: str, br
     """
     repo_url = f"https://github.com/{github_repo}.git"
     if os.path.exists(dest_dir):
+        # Ensure we're on a proper branch (not detached HEAD)
+        orig_cwd = os.getcwd()
+        try:
+            os.chdir(dest_dir)
+            # Check current branch state
+            result = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True)
+            current_branch = result.stdout.strip()
+
+            if not current_branch:  # Empty means detached HEAD
+                print(f"[REPO_UTILS] Repository in detached HEAD state, checking out to {branch_name}")
+                # Check if branch exists
+                branch_check = subprocess.run(["git", "branch", "--list", branch_name], capture_output=True, text=True)
+                if branch_check.stdout.strip():
+                    # Branch exists, checkout to it
+                    subprocess.run(["git", "checkout", branch_name], check=True)
+                else:
+                    # Branch doesn't exist, create it from current HEAD
+                    subprocess.run(["git", "checkout", "-b", branch_name], check=True)
+                print(f"[REPO_UTILS] Now on branch: {branch_name}")
+
+            os.chdir(orig_cwd)
+        except subprocess.CalledProcessError as e:
+            print(f"[REPO_UTILS] Warning: Could not fix branch state: {e}")
+            os.chdir(orig_cwd)
+
         # Ensure TODO.md and CURRENT_STATE.md exist in the project path
         for fname in ["TODO.md", "CURRENT_STATE.md"]:
             fpath = os.path.join(dest_dir, fname)

@@ -19,15 +19,10 @@ from tqdm import tqdm
 # Add eval directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from eval import (
-    final_eval,
-    maven_utils,
-    hash_utils,
-    git_repo,
-    eval_utils,
-    parse_repo,
-    utils,
-)
+# Import from correct submodule paths
+from eval.eval import final_eval
+from eval.common import maven_utils, hash_utils, git_repo, eval_utils, utils
+from eval.lang.java.eval import parse_repo
 
 # Initialize colorama
 init()
@@ -78,14 +73,15 @@ class ComprehensiveEvaluator:
 
     def get_repo_path(self, repo_name: str) -> str:
         """Convert repo name to local path."""
-        # Repo format: owner/name -> owner__name
-        safe_name = repo_name.replace("/", "__")
+        # Repo format: owner/name -> owner_name (single underscore)
+        safe_name = repo_name.replace("/", "_")
         return os.path.join(self.repos_dir, safe_name)
 
     def get_log_dir(self, repo_name: str) -> str:
         """Get log directory for a repository."""
+        # Logs use double underscore
         safe_name = repo_name.replace("/", "__")
-        return os.path.join("migration/logs", safe_name)
+        return os.path.join("logs", safe_name)
 
     def extract_migration_metrics(self, repo_name: str) -> Optional[Dict]:
         """Extract migration metrics from log files."""
@@ -536,9 +532,10 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Comprehensive evaluation of migrated Java repositories")
-    parser.add_argument("--csv", default="migration/selected.csv", help="Path to CSV file")
-    parser.add_argument("--repos-dir", default="migration/repositories", help="Repositories directory")
+    parser.add_argument("--csv", default="dataframes/java-selected.csv", help="Path to CSV file")
+    parser.add_argument("--repos-dir", default="repositories", help="Repositories directory")
     parser.add_argument("--results-dir", default="evaluation_results", help="Results output directory")
+    parser.add_argument("--repo", type=str, help="Evaluate single repo (e.g., 'serpro69/kotlin-aspectj-maven-example')")
     parser.add_argument("--all", action="store_true", help="Evaluate all repos (not just migrated)")
     parser.add_argument("--no-build", action="store_true", help="Skip build check")
     parser.add_argument("--no-version", action="store_true", help="Skip Java version check")
@@ -556,16 +553,56 @@ def main():
         results_dir=args.results_dir
     )
 
-    # Run evaluation
-    evaluator.evaluate_all(
-        only_migrated=not args.all,
-        check_build=not args.no_build,
-        check_java_version=not args.no_version,
-        check_test_count=not args.no_test_count,
-        check_test_invariance=not args.no_test_invariance,
-        check_maximal=args.check_maximal,
-        java_version=args.java_version
-    )
+    # Check if single repo evaluation
+    if args.repo:
+        # Find repo in CSV
+        repo_rows = evaluator.df[evaluator.df['repo'] == args.repo]
+        if len(repo_rows) == 0:
+            print(f"{Fore.RED}Error: Repo '{args.repo}' not found in CSV{Style.RESET_ALL}")
+            print(f"Trying with partial match...")
+            repo_rows = evaluator.df[evaluator.df['repo'].str.contains(args.repo.split('/')[-1], case=False)]
+            if len(repo_rows) == 0:
+                print(f"{Fore.RED}No matching repo found. Available repos:{Style.RESET_ALL}")
+                for r in evaluator.df['repo'].head(10):
+                    print(f"  - {r}")
+                sys.exit(1)
+
+        row = repo_rows.iloc[0]
+        print(f"{Fore.CYAN}Evaluating single repo: {row['repo']}{Style.RESET_ALL}")
+
+        result = evaluator.evaluate_single_repo(
+            row,
+            check_build=not args.no_build,
+            check_java_version=not args.no_version,
+            check_test_count=not args.no_test_count,
+            check_test_invariance=not args.no_test_invariance,
+            check_maximal=args.check_maximal,
+            java_version=args.java_version
+        )
+        evaluator.results.append(result)
+        evaluator.summary_stats['total'] = 1
+        if result['build_success']:
+            evaluator.summary_stats['build_success'] = 1
+        if result['java_version_correct']:
+            evaluator.summary_stats['java_version_correct'] = 1
+        if result['test_count_maintained']:
+            evaluator.summary_stats['test_count_maintained'] = 1
+        if result['test_methods_invariant']:
+            evaluator.summary_stats['test_methods_invariant'] = 1
+        if result['overall_pass']:
+            evaluator.summary_stats['fully_passing'] = 1
+        evaluator._print_repo_result(result)
+    else:
+        # Run evaluation on all
+        evaluator.evaluate_all(
+            only_migrated=not args.all,
+            check_build=not args.no_build,
+            check_java_version=not args.no_version,
+            check_test_count=not args.no_test_count,
+            check_test_invariance=not args.no_test_invariance,
+            check_maximal=args.check_maximal,
+            java_version=args.java_version
+        )
 
     # Print summary
     evaluator.print_summary()

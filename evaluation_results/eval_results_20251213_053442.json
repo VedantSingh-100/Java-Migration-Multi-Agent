@@ -1,0 +1,39 @@
+{
+  "timestamp": "20251213_053442",
+  "summary": {
+    "total": 1,
+    "build_success": 0,
+    "java_version_correct": 0,
+    "test_count_maintained": 0,
+    "test_methods_invariant": 0,
+    "maximal_migration": 0,
+    "fully_passing": 0
+  },
+  "metrics_summary": {
+    "total_llm_calls": 0,
+    "total_duration_seconds": 0,
+    "total_cost_usd": 0.0,
+    "total_tokens": 0
+  },
+  "results": [
+    {
+      "repo": "serpro69/kotlin-aspectj-maven-example",
+      "base_commit": "c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d",
+      "repo_path": "repositories/serpro69_kotlin-aspectj-maven-example",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at c05c595). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    }
+  ]
+}
