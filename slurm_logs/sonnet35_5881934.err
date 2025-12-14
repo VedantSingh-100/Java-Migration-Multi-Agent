@@ -430,3 +430,306 @@ Traceback (most recent call last):
   File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
     raise error_class(parsed_response, operation_name)
 botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 05:35:02.199 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 05:35:02.380 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/uzxmx_javasist-demo'...
+Note: switching to 'a83c84e81d437383fbf1592b429ece32344727c2'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at a83c84e Add JavasistUtils and unit tests
+Switched to a new branch 'migration-base'
+2025-12-14 05:53:28.813 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 05:53:28.842 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/SimpleProgramming_spring-boot-ehCache-CacheManager'...
+Note: switching to '447e53f8abe9aeff330b544a48b0e740ede750ac'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 447e53f Update README.md
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 06:50:57.527 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 06:50:57.610 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/jenkinsci_chef-identity-plugin'...
+Note: switching to 'bb784cd67b245a97c06e51e6dc477fe21355d8d7'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at bb784cd Merge pull request #4 from daniel-beck-bot/https-urls-pom
+Switched to a new branch 'migration-base'
+2025-12-14 08:51:02.629 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 08:51:02.650 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/hzpz_mongeez-spring-boot-starter'...
+Note: switching to '15366a4b02bc743f31cd030636872bd276259811'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 15366a4 Updated README after release
+Switched to a new branch 'migration-base'
+2025-12-14 10:50:51.590 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 10:50:51.606 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/fbeaufume_spring-graphql-sample'...
+Note: switching to 'd61fe282d8cd1372e5f6a152f77fdce8cb535dd1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at d61fe28 Create LICENSE
+Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+ERROR:root:Unable to parse `/home/vhsingh/Java_Migration/repositories_sonnet35/fbeaufume_spring-graphql-sample/src/test/java/com/adeliosys/sample/GraphQLApplicationTests.java`: ``.
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 1345, in parse_block_statement
+    statement = self.parse_local_variable_declaration_statement()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 1356, in parse_local_variable_declaration_statement
+    self.accept(';')
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 131, in accept
+    self.illegal("Expected '%s'" % (accept,))
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 119, in illegal
+    raise JavaSyntaxError(description, at)
+javalang.parser.JavaSyntaxError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vhsingh/Java_Migration/migration_bench/lang/java/eval/parse_file.py", line 23, in get_classes_and_methods
+    tree = javalang.parse.parse(content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parse.py", line 53, in parse
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 110, in parse
+    return self.parse_compilation_unit()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 302, in parse_compilation_unit
+    type_declaration = self.parse_type_declaration()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 347, in parse_type_declaration
+    return self.parse_class_or_interface_declaration()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 356, in parse_class_or_interface_declaration
+    type_declaration = self.parse_normal_class_declaration()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 394, in parse_normal_class_declaration
+    body = self.parse_class_body()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 768, in parse_class_body
+    declaration = self.parse_class_body_declaration()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 791, in parse_class_body_declaration
+    return self.parse_member_declaration()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 801, in parse_member_declaration
+    member = self.parse_void_method_declarator_rest()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 905, in parse_void_method_declarator_rest
+    body = self.parse_block()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 1274, in parse_block
+    statement = self.parse_block_statement()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 1349, in parse_block_statement
+    return self.parse_statement()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 1542, in parse_statement
+    self.accept(';')
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 131, in accept
+    self.illegal("Expected '%s'" % (accept,))
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 119, in illegal
+    raise JavaSyntaxError(description, at)
+javalang.parser.JavaSyntaxError
+ERROR:root:Unable to parse `/home/vhsingh/Java_Migration/repositories_sonnet35/fbeaufume_spring-graphql-sample/src/test/java/com/adeliosys/sample/GraphQLApplicationTests.java`: `'NoneType' object has no attribute 'decode'`.
+Traceback (most recent call last):
+  File "/home/vhsingh/Java_Migration/migration_bench/lang/java/eval/parse_file.py", line 23, in get_classes_and_methods
+    tree = javalang.parse.parse(content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parse.py", line 52, in parse
+    parser = Parser(tokens)
+             ^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/parser.py", line 95, in __init__
+    self.tokens = util.LookAheadListIterator(tokens)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/util.py", line 92, in __init__
+    self.list = list(iterable)
+                ^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/tokenizer.py", line 493, in tokenize
+    self.pre_tokenize()
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/tokenizer.py", line 433, in pre_tokenize
+    data = self.decode_data()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/javalang/tokenizer.py", line 397, in decode_data
+    data = self.data.decode(codec)
+           ^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'decode'
+WARNING:root:Test mismatch for files (len = 000/002): `[]`
+  test files len = 0: `[]`.
+2025-12-14 12:13:28.717 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 12:13:28.734 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/jobmission_oauth2-client'...
+Note: switching to '6e792b57816b586ca1755dde0b1fa5b93a1eaad9'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 6e792b5 Delete src/main/resources/static/assets/jquery-3.4.1.min.js
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 12:54:03.518 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 12:54:03.535 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/jarlehansen_springfox-loader'...
+Note: switching to 'cdd05aff73e94bfbb7fc21f0b5fcd78c13eab5c5'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at cdd05af try to avoid unnecessary dependencies
+Switched to a new branch 'migration-base'

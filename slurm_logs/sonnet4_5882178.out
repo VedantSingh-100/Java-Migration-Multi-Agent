@@ -10847,3 +10847,2493 @@ Result for spring-cloud-services-samples/traveler: success=False, status=unknown
 
 [32m05:17:32[0m | [1mINFO    [0m | [1m================================================================================[0m
 
+[32m05:17:52[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: rupert-madden-abbott/jcommander-spring-boot-starter[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mTimestamp: 20251214_051752[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/rupert-madden-abbott__jcommander-spring-boot-starter[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mMIGRATION TARGET: rupert-madden-abbott/jcommander-spring-boot-starter[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mBASE COMMIT: 9724d009990daddd60d025cdf1fe614bfc82343a[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mStarting migration for rupert-madden-abbott/jcommander-spring-boot-starter[0m
+
+[32m05:17:52[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking rupert-madden-abbott/jcommander-spring-boot-starter as attempted[0m
+
+[32m05:17:53[0m | [1mINFO    [0m | [1mPreparing repository: rupert-madden-abbott/jcommander-spring-boot-starter at 9724d009990daddd60d025cdf1fe614bfc82343a[0m
+
+[32m05:17:53[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=9724d009990daddd60d025cdf1fe614bfc82343a[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:17:57[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:18:11[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:18:11[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:18:11[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:18:11[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter'[0m
+
+[32m05:18:12[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:18:16[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 1 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:18:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:18:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:18:47[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: jcommander-spring-boot-starter (Java 8, 4 dependencies)[0m
+
+[32m05:18:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:19:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:19:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:19:27[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter/pom.xml[0m
+
+[32m05:19:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:19:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m05:20:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m05:20:06[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 4 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter/pom.xml[0m
+
+[32m05:20:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m05:20:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m05:20:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:20:46[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1503 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter/pom.xml[0m
+
+[32m05:20:59[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m05:21:06[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m05:21:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m05:21:31[0m | [1mINFO    [0m | [1mPATH BLOCKED: BLOCKED: Path '/home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter/../parent/pom.xml' is outside project root '/home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter'[0m
+
+[32m05:21:31[0m | [1mINFO    [0m | [1mFILE EXISTS ERROR: BLOCKED: Path '/home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter/../parent/pom.xml' is outside project root '/home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter' for /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter/../parent/pom.xml[0m
+
+[32m05:21:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:21:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m05:22:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:22:21[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 19 files in /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:22:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m05:22:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m05:22:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m05:23:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m05:23:16[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern 'javax\.' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:23:24[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m05:23:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:23:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m05:23:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.3s[0m
+
+[32m05:24:09[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 2 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:24:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m05:24:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m05:24:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:24:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.2s[0m
+
+[32m05:25:11[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern '@RunWith' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/rupert-madden-abbott_jcommander-spring-boot-starter[0m
+
+[32m05:25:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m05:25:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m05:25:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:25:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m05:26:10[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:26:10[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:26:10[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for rupert-madden-abbott/jcommander-spring-boot-starter[0m
+
+[32m05:26:10[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m05:26:10[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m05:26:10[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for rupert-madden-abbott/jcommander-spring-boot-starter: success=False, status=unknown, detail=<no-result>
+[32m05:26:10[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m05:26:10[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m05:26:10[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: poetix/ambivalence[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mTimestamp: 20251214_052631[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/poetix__ambivalence[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mMIGRATION TARGET: poetix/ambivalence[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mBASE COMMIT: 09b34ccdb07541449588804031c8415d4a80c046[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mStarting migration for poetix/ambivalence[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking poetix/ambivalence as attempted[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mPreparing repository: poetix/ambivalence at 09b34ccdb07541449588804031c8415d4a80c046[0m
+
+[32m05:26:31[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=09b34ccdb07541449588804031c8415d4a80c046[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:26:33[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:26:46[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:26:46[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:26:46[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:26:46[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence'[0m
+
+[32m05:26:46[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:26:51[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 1 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:27:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m05:27:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:27:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:27:26[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: ambivalence (Java Unknown, 2 dependencies)[0m
+
+[32m05:27:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m05:27:45[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:27:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m05:28:04[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence/pom.xml[0m
+
+[32m05:28:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m05:28:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:28:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:28:44[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 2 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence/pom.xml[0m
+
+[32m05:28:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:28:59[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m05:29:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m05:29:24[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 20 files in /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:29:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m05:29:45[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m05:29:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:30:05[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern 'javax\.' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:30:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:30:22[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m05:30:35[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:30:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.3s[0m
+
+[32m05:30:59[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 7 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:31:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:31:22[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m05:31:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m05:31:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.4s[0m
+
+[32m05:31:50[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern '@RunWith' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence[0m
+
+[32m05:31:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m05:32:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m05:32:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m05:32:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m05:32:41[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 3810 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence/src/test/java/com/codepoetics/ambivalence/EitherTest.java[0m
+
+[32m05:32:53[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m05:33:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:33:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m05:33:27[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.8s[0m
+
+[32m05:33:39[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1952 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/poetix_ambivalence/pom.xml[0m
+
+[32m05:33:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:34:05[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:34:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m05:34:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.2s[0m
+
+[32m05:34:34[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:34:34[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:34:34[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for poetix/ambivalence[0m
+
+[32m05:34:34[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m05:34:34[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m05:34:34[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for poetix/ambivalence: success=False, status=unknown, detail=<no-result>
+[32m05:34:34[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m05:34:34[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m05:34:34[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: DickChesterwood/fleetman-webapp[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mTimestamp: 20251214_053505[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/DickChesterwood__fleetman-webapp[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mMIGRATION TARGET: DickChesterwood/fleetman-webapp[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mBASE COMMIT: 8bb27b695219979d0da44b13b927c320885d26d9[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mStarting migration for DickChesterwood/fleetman-webapp[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking DickChesterwood/fleetman-webapp as attempted[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mPreparing repository: DickChesterwood/fleetman-webapp at 8bb27b695219979d0da44b13b927c320885d26d9[0m
+
+[32m05:35:05[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=8bb27b695219979d0da44b13b927c320885d26d9[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:35:09[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:35:15[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:35:15[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:35:15[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:35:15[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp'[0m
+
+[32m05:35:15[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:35:20[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 1 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:35:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:35:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:35:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m05:35:57[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: fleetman (Java Unknown, 24 dependencies)[0m
+
+[32m05:36:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m05:36:16[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:36:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m05:36:34[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp/pom.xml[0m
+
+[32m05:36:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:36:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:37:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:37:15[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 24 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp/pom.xml[0m
+
+[32m05:37:27[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:37:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:37:53[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 6609 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp/pom.xml[0m
+
+[32m05:38:06[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:38:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:38:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:38:39[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 13 files in /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:38:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:38:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:39:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:39:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.5s[0m
+
+[32m05:39:44[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 6 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:39:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m05:40:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m05:40:22[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m05:40:35[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.8s[0m
+
+[32m05:40:58[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 2 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/DickChesterwood_fleetman-webapp[0m
+
+[32m05:41:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m05:41:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m05:41:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:41:43[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m05:42:04[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:42:04[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:42:04[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for DickChesterwood/fleetman-webapp[0m
+
+[32m05:42:04[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m05:42:04[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m05:42:04[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for DickChesterwood/fleetman-webapp: success=False, status=unknown, detail=<no-result>
+[32m05:42:04[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m05:42:04[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m05:42:04[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: jzheaux/resolutions[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mTimestamp: 20251214_054221[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/jzheaux__resolutions[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mMIGRATION TARGET: jzheaux/resolutions[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mBASE COMMIT: 5632a44cc9673bbf7b43e807b97d38c89b6bc1bf[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mStarting migration for jzheaux/resolutions[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking jzheaux/resolutions as attempted[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mPreparing repository: jzheaux/resolutions at 5632a44cc9673bbf7b43e807b97d38c89b6bc1bf[0m
+
+[32m05:42:21[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=5632a44cc9673bbf7b43e807b97d38c89b6bc1bf[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:42:24[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:42:33[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:42:33[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:42:33[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:42:33[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions'[0m
+
+[32m05:42:33[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:42:44[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 1 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:42:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m05:43:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m05:43:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m05:43:21[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: resolutions (Java 1.8, 5 dependencies)[0m
+
+[32m05:43:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m05:43:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m05:43:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.0s[0m
+
+[32m05:44:01[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions/pom.xml[0m
+
+[32m05:44:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:44:27[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:44:38[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 5 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions/pom.xml[0m
+
+[32m05:44:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m05:44:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m05:45:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m05:45:20[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1819 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions/pom.xml[0m
+
+[32m05:45:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:45:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:45:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m05:46:01[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 12 files in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:46:08[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m05:46:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:46:27[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m05:46:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m05:46:49[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 16 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:46:59[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:47:15[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m05:47:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:47:48[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 1 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:48:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:48:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m05:48:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m05:48:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m05:48:52[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern '@RunWith' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions[0m
+
+[32m05:49:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:49:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m05:49:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:49:45[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m05:49:57[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 234 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/jzheaux_resolutions/src/test/java/io/jzheaux/springsecurity/resolutions/ResolutionsApplicationTests.java[0m
+
+[32m05:50:06[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:50:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:50:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m05:50:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.5s[0m
+
+[32m05:50:55[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:50:55[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:50:55[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for jzheaux/resolutions[0m
+
+[32m05:50:55[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m05:50:55[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m05:50:55[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for jzheaux/resolutions: success=False, status=unknown, detail=<no-result>
+[32m05:50:55[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m05:50:55[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m05:50:55[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: knes1/springmockedtests[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mTimestamp: 20251214_055122[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/knes1__springmockedtests[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mMIGRATION TARGET: knes1/springmockedtests[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mBASE COMMIT: 10bba566a28c3a26404dd4af5d02a2b26ced7687[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mStarting migration for knes1/springmockedtests[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking knes1/springmockedtests as attempted[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mPreparing repository: knes1/springmockedtests at 10bba566a28c3a26404dd4af5d02a2b26ced7687[0m
+
+[32m05:51:22[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=10bba566a28c3a26404dd4af5d02a2b26ced7687[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:51:27[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:51:40[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:51:40[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:51:40[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:51:40[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests'[0m
+
+[32m05:51:40[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:51:45[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 1 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:51:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m05:52:09[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: spring-mocked-tests (Java 8, 14 dependencies)[0m
+
+[32m05:52:16[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:52:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m05:52:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m05:52:51[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests/pom.xml[0m
+
+[32m05:53:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:53:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m05:53:28[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 14 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests/pom.xml[0m
+
+[32m05:53:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m05:53:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:54:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m05:54:11[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 3592 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests/pom.xml[0m
+
+[32m05:54:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m05:54:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m05:54:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m05:54:54[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 16 files in /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:55:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m05:55:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m05:55:25[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m05:55:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m05:55:47[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 7 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:56:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m05:56:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m05:56:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m05:56:34[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.1s[0m
+
+[32m05:56:46[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 3 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/knes1_springmockedtests[0m
+
+[32m05:56:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:57:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m05:57:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m05:57:31[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m05:57:49[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:57:49[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:57:49[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for knes1/springmockedtests[0m
+
+[32m05:57:49[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m05:57:49[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m05:57:49[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for knes1/springmockedtests: success=False, status=unknown, detail=<no-result>
+[32m05:57:49[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m05:57:49[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m05:57:49[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: 284885166/spring-boot-hashids[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mTimestamp: 20251214_055804[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/284885166__spring-boot-hashids[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mMIGRATION TARGET: 284885166/spring-boot-hashids[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mBASE COMMIT: 4973285e49b48be7b10818fae530159c55af267a[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mStarting migration for 284885166/spring-boot-hashids[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking 284885166/spring-boot-hashids as attempted[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mPreparing repository: 284885166/spring-boot-hashids at 4973285e49b48be7b10818fae530159c55af267a[0m
+
+[32m05:58:04[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=4973285e49b48be7b10818fae530159c55af267a[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:58:05[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:58:18[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:58:18[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:58:18[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:58:18[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids'[0m
+
+[32m05:58:18[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:58:30[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 3 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m05:58:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m05:58:45[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:58:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:59:07[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: springframework (Java Unknown, 0 dependencies)[0m
+
+[32m05:59:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m05:59:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m05:59:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m05:59:45[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 803 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids/pom.xml[0m
+
+[32m05:59:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:59:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m06:00:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m06:00:23[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1810 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids/demo/pom.xml[0m
+
+[32m06:00:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m06:00:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:00:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m06:01:08[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1470 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids/spring-boot-hashids/pom.xml[0m
+
+[32m06:01:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:01:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:01:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:01:57[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 11 files in /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m06:02:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:02:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m06:02:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m06:02:44[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.2s[0m
+
+[32m06:02:55[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 1 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m06:03:05[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m06:03:16[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m06:03:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m06:03:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m06:03:49[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 2 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m06:03:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:04:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:04:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:04:27[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.5s[0m
+
+[32m06:04:51[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 1 matches for '@RunWith' in /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids[0m
+
+[32m06:05:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:05:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:05:25[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m06:05:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.4s[0m
+
+[32m06:05:51[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 332 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids/demo/src/test/java/org/yanshen/demo/DemoApplicationTests.java[0m
+
+[32m06:06:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m06:06:15[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:06:25[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:06:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m06:06:55[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2770 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/284885166_spring-boot-hashids/demo/src/main/java/org/yanshen/demo/controller/MemberController.java[0m
+
+[32m06:07:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:07:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:07:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m06:07:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.3s[0m
+
+[32m06:07:58[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:07:58[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:07:58[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for 284885166/spring-boot-hashids[0m
+
+[32m06:07:58[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:07:58[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:07:58[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for 284885166/spring-boot-hashids: success=False, status=unknown, detail=<no-result>
+[32m06:07:58[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:07:58[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:07:58[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: xebia-os/xebia-archunit-extension[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mTimestamp: 20251214_060818[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/xebia-os__xebia-archunit-extension[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mMIGRATION TARGET: xebia-os/xebia-archunit-extension[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mBASE COMMIT: de7cdd4d36f2fd30b5a7167d3711f18d8a9f6064[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mStarting migration for xebia-os/xebia-archunit-extension[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking xebia-os/xebia-archunit-extension as attempted[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mPreparing repository: xebia-os/xebia-archunit-extension at de7cdd4d36f2fd30b5a7167d3711f18d8a9f6064[0m
+
+[32m06:08:18[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=de7cdd4d36f2fd30b5a7167d3711f18d8a9f6064[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:08:20[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:08:30[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:08:30[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:08:30[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:08:30[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension'[0m
+
+[32m06:08:30[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:08:35[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 3 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension[0m
+
+[32m06:08:43[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:08:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:09:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:09:16[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: archunit-parent (Java 1.8, 0 dependencies)[0m
+
+[32m06:09:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m06:09:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m06:09:53[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension/pom.xml[0m
+
+[32m06:10:06[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m06:10:15[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m06:10:32[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES NO DEPS: No dependencies found in /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension/pom.xml[0m
+
+[32m06:10:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m06:10:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m06:10:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:11:14[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1226 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension/archunit-extension/pom.xml[0m
+
+[32m06:11:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:11:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:11:51[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:11:57[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2378 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension/spring-test-app/pom.xml[0m
+
+[32m06:12:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:12:24[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:12:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:12:43[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 15 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension[0m
+
+[32m06:12:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:13:06[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m06:13:16[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:13:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.0s[0m
+
+[32m06:13:40[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 1 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/xebia-os_xebia-archunit-extension[0m
+
+[32m06:13:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:14:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m06:14:15[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:14:24[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m06:14:39[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:14:39[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:14:39[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for xebia-os/xebia-archunit-extension[0m
+
+[32m06:14:39[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:14:39[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:14:39[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for xebia-os/xebia-archunit-extension: success=False, status=unknown, detail=<no-result>
+[32m06:14:39[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:14:39[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:14:39[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: wanwenjie1993/Emoticon[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mTimestamp: 20251214_061453[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/wanwenjie1993__Emoticon[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mMIGRATION TARGET: wanwenjie1993/Emoticon[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mBASE COMMIT: 581c474aaf51de17ca112491ef7db6e0b34b8737[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mStarting migration for wanwenjie1993/Emoticon[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking wanwenjie1993/Emoticon as attempted[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mPreparing repository: wanwenjie1993/Emoticon at 581c474aaf51de17ca112491ef7db6e0b34b8737[0m
+
+[32m06:14:53[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:14:59[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:14:59[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:14:59[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:14:59[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=581c474aaf51de17ca112491ef7db6e0b34b8737[0m
+
+[32m06:14:59[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:14:59[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:15:00[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:15:11[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:15:11[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:15:11[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:15:11[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon'[0m
+
+[32m06:15:11[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:15:18[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 2 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:15:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m06:15:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m06:15:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m06:15:57[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: xw (Java 1.8, 9 dependencies)[0m
+
+[32m06:16:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:16:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:16:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:16:38[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon/pom.xml[0m
+
+[32m06:16:44[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:16:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:17:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:17:19[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 9 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon/pom.xml[0m
+
+[32m06:17:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:17:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:17:55[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2763 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon/pom.xml[0m
+
+[32m06:18:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m06:18:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:18:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m06:18:40[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 17 files in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:18:51[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m06:18:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:19:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m06:19:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.8s[0m
+
+[32m06:19:31[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 9 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:19:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m06:19:51[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:20:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m06:20:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.2s[0m
+
+[32m06:20:31[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 2 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:20:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:20:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:21:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m06:21:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.8s[0m
+
+[32m06:21:40[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 1 matches for '@RunWith' in /home/vhsingh/Java_Migration/repositories_sonnet4/wanwenjie1993_Emoticon[0m
+
+[32m06:21:46[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m06:21:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:22:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m06:22:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m06:22:34[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:22:34[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:22:34[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for wanwenjie1993/Emoticon[0m
+
+[32m06:22:34[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:22:34[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:22:34[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for wanwenjie1993/Emoticon: success=False, status=unknown, detail=<no-result>
+[32m06:22:34[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:22:34[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:22:34[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: exabrial/form-binding[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mTimestamp: 20251214_062247[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/exabrial__form-binding[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mMIGRATION TARGET: exabrial/form-binding[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mBASE COMMIT: 5e997ef96e890918de6b10083e612af1471403dc[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mStarting migration for exabrial/form-binding[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking exabrial/form-binding as attempted[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mPreparing repository: exabrial/form-binding at 5e997ef96e890918de6b10083e612af1471403dc[0m
+
+[32m06:22:47[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=5e997ef96e890918de6b10083e612af1471403dc[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:22:49[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:22:54[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:22:54[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:22:54[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:22:54[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding'[0m
+
+[32m06:22:54[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:23:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m06:23:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m06:23:19[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 5 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding[0m
+
+[32m06:23:30[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m06:23:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:24:00[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: form-binding-parent (Java 8, 0 dependencies)[0m
+
+[32m06:24:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m06:24:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:24:35[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/pom.xml[0m
+
+[32m06:24:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:24:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:25:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:25:15[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES NO DEPS: No dependencies found in /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/pom.xml[0m
+
+[32m06:25:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:25:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:25:43[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:25:55[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 4038 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/pom.xml[0m
+
+[32m06:26:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:26:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m06:26:24[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:26:43[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 806 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/form-binding-api/pom.xml[0m
+
+[32m06:26:51[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:27:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:27:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m06:27:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.1s[0m
+
+[32m06:27:40[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1860 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/form-binding/pom.xml[0m
+
+[32m06:27:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:27:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m06:28:05[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m06:28:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m06:28:31[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1712 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/form-binding-jaxrs/pom.xml[0m
+
+[32m06:28:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m06:28:53[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m06:29:08[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m06:29:22[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.4s[0m
+
+[32m06:29:40[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 806 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/exabrial_form-binding/form-binding-test-module/pom.xml[0m
+
+[32m06:29:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:29:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:30:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m06:30:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.4s[0m
+
+[32m06:30:42[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:30:42[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:30:42[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for exabrial/form-binding[0m
+
+[32m06:30:42[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:30:42[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:30:42[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for exabrial/form-binding: success=False, status=unknown, detail=<no-result>
+[32m06:30:42[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:30:42[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:30:42[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: wangqifox/spring-demo[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mTimestamp: 20251214_063056[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/wangqifox__spring-demo[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mMIGRATION TARGET: wangqifox/spring-demo[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mBASE COMMIT: ee872c782d93748e00013193e98910f155375ead[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mStarting migration for wangqifox/spring-demo[0m
+
+[32m06:30:56[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking wangqifox/spring-demo as attempted[0m
+
+[32m06:30:57[0m | [1mINFO    [0m | [1mPreparing repository: wangqifox/spring-demo at ee872c782d93748e00013193e98910f155375ead[0m
+
+[32m06:30:57[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=ee872c782d93748e00013193e98910f155375ead[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:31:00[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:31:06[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:31:06[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:31:06[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:31:06[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo'[0m
+
+[32m06:31:06[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:31:24[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 5 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo[0m
+
+[32m06:31:31[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:31:44[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m06:31:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m06:32:02[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: spring-demo (Java 1.8, 3 dependencies)[0m
+
+[32m06:32:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m06:32:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:32:38[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/pom.xml[0m
+
+[32m06:32:46[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:32:53[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:33:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m06:33:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m06:33:25[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 3 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/pom.xml[0m
+
+[32m06:33:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m06:33:45[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:33:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:34:00[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 3703 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/pom.xml[0m
+
+[32m06:34:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m06:34:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m06:34:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m06:34:40[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 510 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/m1/pom.xml[0m
+
+[32m06:34:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:35:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m06:35:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:35:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.8s[0m
+
+[32m06:35:32[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 510 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/m2/pom.xml[0m
+
+[32m06:35:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m06:35:46[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:35:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m06:36:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.3s[0m
+
+[32m06:36:26[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 510 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/m3/pom.xml[0m
+
+[32m06:36:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:36:45[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:36:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:37:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.8s[0m
+
+[32m06:37:23[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 509 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo/m4/pom.xml[0m
+
+[32m06:37:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:37:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:37:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:38:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m06:38:21[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 35 files in /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo[0m
+
+[32m06:38:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:38:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m06:38:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:39:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m06:39:25[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern 'javax\.' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/wangqifox_spring-demo[0m
+
+[32m06:39:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m06:39:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:39:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 5.0s[0m
+
+[32m06:40:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.5s[0m
+
+[32m06:40:30[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:40:30[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:40:30[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for wangqifox/spring-demo[0m
+
+[32m06:40:30[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:40:30[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:40:30[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for wangqifox/spring-demo: success=False, status=unknown, detail=<no-result>
+[32m06:40:30[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:40:30[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:40:30[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: dabla/grizzly-spring-boot-starter[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mTimestamp: 20251214_064052[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/dabla__grizzly-spring-boot-starter[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mMIGRATION TARGET: dabla/grizzly-spring-boot-starter[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mBASE COMMIT: 16807691c69750bc9fb2e1bf07e5b97069c454ee[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mStarting migration for dabla/grizzly-spring-boot-starter[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking dabla/grizzly-spring-boot-starter as attempted[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mPreparing repository: dabla/grizzly-spring-boot-starter at 16807691c69750bc9fb2e1bf07e5b97069c454ee[0m
+
+[32m06:40:52[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=16807691c69750bc9fb2e1bf07e5b97069c454ee[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:40:53[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:41:09[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:41:09[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:41:09[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:41:09[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter'[0m
+
+[32m06:41:09[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:41:13[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 3 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter[0m
+
+[32m06:41:22[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:41:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m06:41:53[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: grizzly-spring-boot-starter-parent (Java 8, 0 dependencies)[0m
+
+[32m06:42:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:42:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:42:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:42:33[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter/pom.xml[0m
+
+[32m06:42:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:42:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:43:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m06:43:13[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES NO DEPS: No dependencies found in /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter/pom.xml[0m
+
+[32m06:43:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.4s[0m
+
+[32m06:43:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:43:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:43:54[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 8107 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter/grizzly-spring-boot-starter/pom.xml[0m
+
+[32m06:44:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m06:44:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m06:44:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.0s[0m
+
+[32m06:44:35[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2553 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter/grizzly-spring-boot-jasper/pom.xml[0m
+
+[32m06:44:42[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m06:44:51[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:45:04[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m06:45:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m06:45:34[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 8737 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/dabla_grizzly-spring-boot-starter/pom.xml[0m
+
+[32m06:45:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:45:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m06:46:03[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:46:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.2s[0m
+
+[32m06:46:32[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:46:32[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:46:32[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for dabla/grizzly-spring-boot-starter[0m
+
+[32m06:46:32[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:46:32[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:46:32[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for dabla/grizzly-spring-boot-starter: success=False, status=unknown, detail=<no-result>
+[32m06:46:32[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:46:32[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:46:32[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: camunda-community-hub/camunda-bpm-junit5[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mTimestamp: 20251214_064701[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/camunda-community-hub__camunda-bpm-junit5[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mMIGRATION TARGET: camunda-community-hub/camunda-bpm-junit5[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mBASE COMMIT: b4d14f3a981c06c47bc9071182a3c4101453c035[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mStarting migration for camunda-community-hub/camunda-bpm-junit5[0m
+
+[32m06:47:01[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking camunda-community-hub/camunda-bpm-junit5 as attempted[0m
+
+[32m06:47:02[0m | [1mINFO    [0m | [1mPreparing repository: camunda-community-hub/camunda-bpm-junit5 at b4d14f3a981c06c47bc9071182a3c4101453c035[0m
+
+[32m06:47:02[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=b4d14f3a981c06c47bc9071182a3c4101453c035[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:47:04[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:47:15[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:47:15[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:47:15[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:47:15[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5'[0m
+
+[32m06:47:15[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:47:19[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 4 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5[0m
+
+[32m06:47:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m06:47:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:47:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m06:47:57[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: camunda-bpm-junit5-parent (Java 8, 0 dependencies)[0m
+
+[32m06:48:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:48:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:48:29[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m06:48:35[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION DEFAULT: Using default version 8 for /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5/pom.xml[0m
+
+[32m06:48:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m06:48:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m06:49:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:49:13[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 3182 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5/pom.xml[0m
+
+[32m06:49:22[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:49:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:49:43[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.0s[0m
+
+[32m06:49:55[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2198 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5/core/pom.xml[0m
+
+[32m06:50:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m06:50:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:50:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:50:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.5s[0m
+
+[32m06:50:47[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2942 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/camunda-community-hub_camunda-bpm-junit5/examples/camunda-bpm-assert/pom.xml[0m
+
+[32m06:50:51[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:50:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:51:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m06:51:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m06:51:35[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:51:35[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:51:35[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for camunda-community-hub/camunda-bpm-junit5[0m
+
+[32m06:51:35[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:51:35[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:51:35[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for camunda-community-hub/camunda-bpm-junit5: success=False, status=unknown, detail=<no-result>
+[32m06:51:35[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:51:35[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:51:35[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: yyenigun/light-calendar[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mTimestamp: 20251214_065149[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/yyenigun__light-calendar[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mMIGRATION TARGET: yyenigun/light-calendar[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mBASE COMMIT: 02331f6f4db184285ce17185a33f1b286992bc1e[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mStarting migration for yyenigun/light-calendar[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking yyenigun/light-calendar as attempted[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mPreparing repository: yyenigun/light-calendar at 02331f6f4db184285ce17185a33f1b286992bc1e[0m
+
+[32m06:51:49[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=02331f6f4db184285ce17185a33f1b286992bc1e[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:51:53[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:51:58[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:51:58[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:51:58[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:51:58[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar'[0m
+
+[32m06:51:59[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:52:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:52:20[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 2 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar[0m
+
+[32m06:52:27[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m06:52:34[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:52:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m06:52:55[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: light-calendar (Java Unknown, 0 dependencies)[0m
+
+[32m06:53:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m06:53:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:53:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m06:53:33[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 866 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar/pom.xml[0m
+
+[32m06:53:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:53:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m06:54:05[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:54:13[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 3342 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar/light-calendar-api/pom.xml[0m
+
+[32m06:54:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m06:54:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m06:54:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:54:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m06:55:04[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 29 files in /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar[0m
+
+[32m06:55:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m06:55:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m06:55:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m06:55:53[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 8 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/yyenigun_light-calendar[0m
+
+[32m06:55:59[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m06:56:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m06:56:25[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m06:56:34[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.4s[0m
+
+[32m06:56:50[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:56:50[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m06:56:50[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for yyenigun/light-calendar[0m
+
+[32m06:56:50[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m06:56:50[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m06:56:50[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for yyenigun/light-calendar: success=False, status=unknown, detail=<no-result>
+[32m06:56:50[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m06:56:50[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m06:56:50[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: erhmutlu/iyzico-kafka-demo[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mTimestamp: 20251214_065701[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/erhmutlu__iyzico-kafka-demo[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mMIGRATION TARGET: erhmutlu/iyzico-kafka-demo[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mBASE COMMIT: 77ab3bef7eee59883ec2db3b2a1ef136381951ee[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mStarting migration for erhmutlu/iyzico-kafka-demo[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking erhmutlu/iyzico-kafka-demo as attempted[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mPreparing repository: erhmutlu/iyzico-kafka-demo at 77ab3bef7eee59883ec2db3b2a1ef136381951ee[0m
+
+[32m06:57:01[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=77ab3bef7eee59883ec2db3b2a1ef136381951ee[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m06:57:02[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m06:57:09[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m06:57:09[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m06:57:09[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m06:57:09[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo'[0m
+
+[32m06:57:09[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m06:57:20[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m06:57:30[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 4 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo[0m
+
+[32m06:57:38[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m06:57:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m06:57:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.0s[0m
+
+[32m06:58:07[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: iyzico-kafka-demo (Java 1.8, 2 dependencies)[0m
+
+[32m06:58:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:58:31[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m06:58:36[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.0s[0m
+
+[32m06:58:48[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo/pom.xml[0m
+
+[32m06:58:56[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m06:59:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m06:59:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.4s[0m
+
+[32m06:59:21[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m06:59:32[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 2 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo/pom.xml[0m
+
+[32m06:59:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m06:59:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m07:00:06[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2449 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo/pom.xml[0m
+
+[32m07:00:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m07:00:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 3.0s[0m
+
+[32m07:00:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m07:00:55[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 518 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo/payment-common/pom.xml[0m
+
+[32m07:01:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m07:01:12[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m07:01:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m07:01:31[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 9.0s[0m
+
+[32m07:01:42[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1398 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo/payment-rest/pom.xml[0m
+
+[32m07:01:53[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.5s[0m
+
+[32m07:02:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.5s[0m
+
+[32m07:02:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m07:02:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.3s[0m
+
+[32m07:02:37[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 1402 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo/payment-consumer/pom.xml[0m
+
+[32m07:02:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m07:03:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m07:03:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m07:03:26[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 33 files in /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo[0m
+
+[32m07:03:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m07:03:48[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m07:04:00[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m07:04:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m07:04:27[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 4 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/erhmutlu_iyzico-kafka-demo[0m
+
+[32m07:04:35[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m07:04:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m07:05:01[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.8s[0m
+
+[32m07:05:11[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.2s[0m
+
+[32m07:05:23[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m07:05:23[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m07:05:23[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for erhmutlu/iyzico-kafka-demo[0m
+
+[32m07:05:23[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m07:05:23[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m07:05:23[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for erhmutlu/iyzico-kafka-demo: success=False, status=unknown, detail=<no-result>
+[32m07:05:23[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m07:05:23[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m07:05:23[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: spring-attic/tasklauncher-dataflow[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mTimestamp: 20251214_070544[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/spring-attic__tasklauncher-dataflow[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mMIGRATION TARGET: spring-attic/tasklauncher-dataflow[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mBASE COMMIT: 7817457f63dfc22a8dc002581e4c56aa8eacab22[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mStarting migration for spring-attic/tasklauncher-dataflow[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking spring-attic/tasklauncher-dataflow as attempted[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mPreparing repository: spring-attic/tasklauncher-dataflow at 7817457f63dfc22a8dc002581e4c56aa8eacab22[0m
+
+[32m07:05:44[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=7817457f63dfc22a8dc002581e4c56aa8eacab22[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m07:05:46[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m07:05:53[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m07:05:53[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m07:05:53[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m07:05:53[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow'[0m
+
+[32m07:05:53[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m07:06:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m07:06:23[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 6 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow[0m
+
+[32m07:06:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m07:06:50[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m07:06:55[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: tasklauncher-dataflow-app-starters-build (Java 1.8, 3 dependencies)[0m
+
+[32m07:07:02[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.6s[0m
+
+[32m07:07:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m07:07:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m07:07:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m07:07:43[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow/pom.xml[0m
+
+[32m07:07:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m07:07:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m07:08:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m07:08:15[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 3 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow/pom.xml[0m
+
+[32m07:08:25[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m07:08:34[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m07:08:43[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m07:08:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.5s[0m
+
+[32m07:09:05[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 7290 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow/pom.xml[0m
+
+[32m07:09:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m07:09:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m07:09:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m07:09:45[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 12 files in /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow[0m
+
+[32m07:09:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m07:10:10[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m07:10:19[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.7s[0m
+
+[32m07:10:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.7s[0m
+
+[32m07:10:46[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 3 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/spring-attic_tasklauncher-dataflow[0m
+
+[32m07:10:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m07:11:08[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m07:11:18[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m07:11:32[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.6s[0m
+
+[32m07:11:47[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m07:11:47[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m07:11:47[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for spring-attic/tasklauncher-dataflow[0m
+
+[32m07:11:47[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m07:11:47[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m07:11:47[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for spring-attic/tasklauncher-dataflow: success=False, status=unknown, detail=<no-result>
+[32m07:11:47[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m07:11:47[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m07:11:47[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+
+======================================================================
+BATCH MIGRATION STATUS
+======================================================================
+Total repositories:     40
+Already attempted:      4
+Already migrated:       4
+Pending (to migrate):   36
+======================================================================
+
+
+======================================================================
+[5/40] MIGRATING: xVir/api-ai-java-webhook
+Base commit: ee93847a8d3fb39743a23bb094929ccda4f2c064
+Started at: 2025-12-14 01:31:51
+======================================================================
+
+
+  Result: SUCCESS
+
+======================================================================
+[6/40] MIGRATING: jonashackt/spring-boot-rest-clientcertificate
+Base commit: 8b3a6c8e1c93a42fb9dc3244b573213208f1e3c8
+Started at: 2025-12-14 01:56:41
+======================================================================
+
+
+  Result: SUCCESS
+
+======================================================================
+[7/40] MIGRATING: serpro69/kotlin-aspectj-maven-example
+Base commit: c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d
+Started at: 2025-12-14 02:12:50
+======================================================================
+
+
+  Result: SUCCESS
+
+======================================================================
+[8/40] MIGRATING: SimpleProgramming/springboot-security-simple-jwt
+Base commit: de69c334bab277be94605c4807958822b2865494
+Started at: 2025-12-14 02:35:11
+======================================================================
+
+
+  Result: SUCCESS
+
+======================================================================
+[9/40] MIGRATING: lkrnac/blog-2014-12-06-mock-spring-bean
+Base commit: 396af50db7af42d23dde0c59c0e5e74e3467eb49
+Started at: 2025-12-14 02:50:54
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[10/40] MIGRATING: BjoernKW/oauth2-with-jira
+Base commit: d24180b10d3bd803524dc858db1e01f41bfe8dfe
+Started at: 2025-12-14 03:02:33
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[11/40] MIGRATING: fromi/spring-google-openidconnect
+Base commit: 7e29fdfa27f41848dd95f3788c088bffa235888f
+Started at: 2025-12-14 03:18:21
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[12/40] MIGRATING: Artur-/a-vaadin-helper
+Base commit: 84c6e9d4d040fc04d042b7d92414844825553976
+Started at: 2025-12-14 03:29:46
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[13/40] MIGRATING: m1l4n54v1c/meetup
+Base commit: b3492a44aebc7542007a79ed263340a61026aa2c
+Started at: 2025-12-14 03:35:52
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[14/40] MIGRATING: software-space/qiyana-aggregator
+Base commit: 02c6e224a997da91b37ed8a8a720a29b12119991
+Started at: 2025-12-14 03:42:43
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[15/40] MIGRATING: TaoZhuGongBoy/enumstatemachine
+Base commit: c113642308637e8836b2abaf3514b3aa285800b7
+Started at: 2025-12-14 03:49:31
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[16/40] MIGRATING: epignosisx/spring-cloud-config-server-jwt
+Base commit: 49a923eb4c973b930bfe1d5d68f2bc5b25414ced
+Started at: 2025-12-14 03:56:20
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[17/40] MIGRATING: uzxmx/javasist-demo
+Base commit: a83c84e81d437383fbf1592b429ece32344727c2
+Started at: 2025-12-14 04:03:55
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[18/40] MIGRATING: SimpleProgramming/spring-boot-ehCache-CacheManager
+Base commit: 447e53f8abe9aeff330b544a48b0e740ede750ac
+Started at: 2025-12-14 04:11:38
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[19/40] MIGRATING: jenkinsci/chef-identity-plugin
+Base commit: bb784cd67b245a97c06e51e6dc477fe21355d8d7
+Started at: 2025-12-14 04:20:15
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[20/40] MIGRATING: hzpz/mongeez-spring-boot-starter
+Base commit: 15366a4b02bc743f31cd030636872bd276259811
+Started at: 2025-12-14 04:29:34
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[21/40] MIGRATING: fbeaufume/spring-graphql-sample
+Base commit: d61fe282d8cd1372e5f6a152f77fdce8cb535dd1
+Started at: 2025-12-14 04:37:37
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[22/40] MIGRATING: jobmission/oauth2-client
+Base commit: 6e792b57816b586ca1755dde0b1fa5b93a1eaad9
+Started at: 2025-12-14 04:46:35
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[23/40] MIGRATING: jarlehansen/springfox-loader
+Base commit: cdd05aff73e94bfbb7fc21f0b5fcd78c13eab5c5
+Started at: 2025-12-14 04:56:34
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[24/40] MIGRATING: fedefary/signer
+Base commit: 7fece3bc4a288b1e317da5100954fc229aec448d
+Started at: 2025-12-14 05:02:36
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[25/40] MIGRATING: spring-cloud-services-samples/traveler
+Base commit: 399748d9c44bd14d502b61bc0409849a3a4ceec0
+Started at: 2025-12-14 05:11:22
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[26/40] MIGRATING: rupert-madden-abbott/jcommander-spring-boot-starter
+Base commit: 9724d009990daddd60d025cdf1fe614bfc82343a
+Started at: 2025-12-14 05:17:33
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[27/40] MIGRATING: poetix/ambivalence
+Base commit: 09b34ccdb07541449588804031c8415d4a80c046
+Started at: 2025-12-14 05:26:10
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[28/40] MIGRATING: DickChesterwood/fleetman-webapp
+Base commit: 8bb27b695219979d0da44b13b927c320885d26d9
+Started at: 2025-12-14 05:34:34
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[29/40] MIGRATING: jzheaux/resolutions
+Base commit: 5632a44cc9673bbf7b43e807b97d38c89b6bc1bf
+Started at: 2025-12-14 05:42:05
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[30/40] MIGRATING: knes1/springmockedtests
+Base commit: 10bba566a28c3a26404dd4af5d02a2b26ced7687
+Started at: 2025-12-14 05:50:55
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[31/40] MIGRATING: 284885166/spring-boot-hashids
+Base commit: 4973285e49b48be7b10818fae530159c55af267a
+Started at: 2025-12-14 05:57:49
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[32/40] MIGRATING: xebia-os/xebia-archunit-extension
+Base commit: de7cdd4d36f2fd30b5a7167d3711f18d8a9f6064
+Started at: 2025-12-14 06:07:58
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[33/40] MIGRATING: wanwenjie1993/Emoticon
+Base commit: 581c474aaf51de17ca112491ef7db6e0b34b8737
+Started at: 2025-12-14 06:14:40
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[34/40] MIGRATING: exabrial/form-binding
+Base commit: 5e997ef96e890918de6b10083e612af1471403dc
+Started at: 2025-12-14 06:22:35
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[35/40] MIGRATING: wangqifox/spring-demo
+Base commit: ee872c782d93748e00013193e98910f155375ead
+Started at: 2025-12-14 06:30:43
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[36/40] MIGRATING: dabla/grizzly-spring-boot-starter
+Base commit: 16807691c69750bc9fb2e1bf07e5b97069c454ee
+Started at: 2025-12-14 06:40:30
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[37/40] MIGRATING: camunda-community-hub/camunda-bpm-junit5
+Base commit: b4d14f3a981c06c47bc9071182a3c4101453c035
+Started at: 2025-12-14 06:46:32
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[38/40] MIGRATING: yyenigun/light-calendar
+Base commit: 02331f6f4db184285ce17185a33f1b286992bc1e
+Started at: 2025-12-14 06:51:36
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[39/40] MIGRATING: erhmutlu/iyzico-kafka-demo
+Base commit: 77ab3bef7eee59883ec2db3b2a1ef136381951ee
+Started at: 2025-12-14 06:56:50
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+[40/40] MIGRATING: spring-attic/tasklauncher-dataflow
+Base commit: 7817457f63dfc22a8dc002581e4c56aa8eacab22
+Started at: 2025-12-14 07:05:24
+======================================================================
+
+
+  Result: FAILED (exit code: 1)
+
+======================================================================
+BATCH MIGRATION COMPLETE
+======================================================================
+Time elapsed:    5.7 hours
+Successful:      4
+Failed:          32
+======================================================================
+
+Final CSV Status:
+  Attempted: 40/40
+  Migrated:  8/40
+==============================================
+Completed: Sun Dec 14 07:11:47 EST 2025
+==============================================
