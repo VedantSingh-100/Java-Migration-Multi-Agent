@@ -733,3 +733,66 @@ Turn off this advice by setting config variable advice.detachedHead to false
 
 HEAD is now at cdd05af try to avoid unnecessary dependencies
 Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 001/004): `['/home/vhsingh/Java_Migration/repositories_sonnet35/jarlehansen_springfox-loader/src/test/groovy/com/github/springfox/loader/testutils/TestApplication.java']`
+  test files len = 0: `[]`.
+2025-12-14 14:47:25.858 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 14:47:25.874 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/fedefary_signer'...
+Note: switching to '7fece3bc4a288b1e317da5100954fc229aec448d'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 7fece3b Update README.md
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 15:15:35.319 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 15:15:35.342 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/spring-cloud-services-samples_traveler'...
+Updating files:  62% (31/50)Updating files:  64% (32/50)Updating files:  66% (33/50)Updating files:  68% (34/50)Updating files:  70% (35/50)Updating files:  72% (36/50)Updating files:  74% (37/50)Updating files:  76% (38/50)Updating files:  78% (39/50)Updating files:  80% (40/50)Updating files:  82% (41/50)Updating files:  84% (42/50)Updating files:  86% (43/50)Updating files:  88% (44/50)Updating files:  90% (45/50)Updating files:  92% (46/50)Updating files:  94% (47/50)Updating files:  96% (48/50)Updating files:  98% (49/50)Updating files: 100% (50/50)Updating files: 100% (50/50), done.
+Note: switching to '399748d9c44bd14d502b61bc0409849a3a4ceec0'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 399748d Update dependencies; remove separate Feign sample
+Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.

@@ -21,9 +21,9 @@ jenkinsci/chef-identity-plugin,bb784cd67b245a97c06e51e6dc477fe21355d8d7,4,491,1,
 hzpz/mongeez-spring-boot-starter,15366a4b02bc743f31cd030636872bd276259811,5,530,1,2,8,Apache-2.0,False,True
 fbeaufume/spring-graphql-sample,d61fe282d8cd1372e5f6a152f77fdce8cb535dd1,13,531,1,1,4,MIT,True,True
 jobmission/oauth2-client,6e792b57816b586ca1755dde0b1fa5b93a1eaad9,6,534,1,1,-1,MIT,True,True
-jarlehansen/springfox-loader,cdd05aff73e94bfbb7fc21f0b5fcd78c13eab5c5,10,535,1,4,17,Apache-2.0,False,True
-fedefary/signer,7fece3bc4a288b1e317da5100954fc229aec448d,13,536,1,1,1,MIT,False,False
-spring-cloud-services-samples/traveler,399748d9c44bd14d502b61bc0409849a3a4ceec0,11,549,3,0,4,Apache-2.0,False,False
+jarlehansen/springfox-loader,cdd05aff73e94bfbb7fc21f0b5fcd78c13eab5c5,10,535,1,4,17,Apache-2.0,True,True
+fedefary/signer,7fece3bc4a288b1e317da5100954fc229aec448d,13,536,1,1,1,MIT,True,True
+spring-cloud-services-samples/traveler,399748d9c44bd14d502b61bc0409849a3a4ceec0,11,549,3,0,4,Apache-2.0,False,True
 rupert-madden-abbott/jcommander-spring-boot-starter,9724d009990daddd60d025cdf1fe614bfc82343a,19,562,1,10,9,Apache-2.0,False,False
 poetix/ambivalence,09b34ccdb07541449588804031c8415d4a80c046,20,562,1,3,16,MIT,False,False
 DickChesterwood/fleetman-webapp,8bb27b695219979d0da44b13b927c320885d26d9,13,563,1,1,1,MIT,False,False
