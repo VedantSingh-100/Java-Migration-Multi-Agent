@@ -284,3 +284,111 @@ Turn off this advice by setting config variable advice.detachedHead to false
 
 HEAD is now at 7e29fdf Adding OAuth2ClientContextFilter to Spring Security Filter chain to catch "UserRedirectRequiredException" and redirect user to Google login page accordingly.
 Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 01:31:22.288 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 01:31:22.304 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/Artur-_a-vaadin-helper'...
+Note: switching to '84c6e9d4d040fc04d042b7d92414844825553976'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 84c6e9d Add GenericCrudServiceDataProvider which does not assume id is Integer (#14)
+Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+2025-12-14 02:06:21.521 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 02:06:21.603 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/m1l4n54v1c_meetup'...
+Note: switching to 'b3492a44aebc7542007a79ed263340a61026aa2c'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at b3492a4 Minor adjustments.
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/000): `[]`
+  test files len = 0: `[]`.
+2025-12-14 03:07:29.883 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 03:07:30.092 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/software-space_qiyana-aggregator'...
+Note: switching to '02c6e224a997da91b37ed8a8a720a29b12119991'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 02c6e22 Update azure-pipelines.yml for Azure Pipelines
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 04:27:07.939 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 04:27:07.956 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/TaoZhuGongBoy_enumstatemachine'...
+Note: switching to 'c113642308637e8836b2abaf3514b3aa285800b7'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at c113642 3
+Switched to a new branch 'migration-base'
