@@ -178,3 +178,109 @@ Turn off this advice by setting config variable advice.detachedHead to false
 
 HEAD is now at c05c595 Add java sources
 Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-13 23:12:17.863 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-13 23:12:17.949 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/SimpleProgramming_springboot-security-simple-jwt'...
+Note: switching to 'de69c334bab277be94605c4807958822b2865494'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at de69c33 Add files via upload
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-13 23:51:29.685 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-13 23:51:29.701 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/lkrnac_blog-2014-12-06-mock-spring-bean'...
+Note: switching to '396af50db7af42d23dde0c59c0e5e74e3467eb49'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 396af50 Changed base package
+Switched to a new branch 'migration-base'
+2025-12-14 00:18:53.272 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 00:18:53.314 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/BjoernKW_oauth2-with-jira'...
+Note: switching to 'd24180b10d3bd803524dc858db1e01f41bfe8dfe'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at d24180b Set default client ID and secret in order for build process to complete
+Switched to a new branch 'migration-base'
+2025-12-14 00:57:17.339 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 00:57:17.361 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/fromi_spring-google-openidconnect'...
+Note: switching to '7e29fdfa27f41848dd95f3788c088bffa235888f'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 7e29fdf Adding OAuth2ClientContextFilter to Spring Security Filter chain to catch "UserRedirectRequiredException" and redirect user to Google login page accordingly.
+Switched to a new branch 'migration-base'

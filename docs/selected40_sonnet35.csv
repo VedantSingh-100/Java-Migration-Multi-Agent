@@ -4,11 +4,11 @@ xVir/api-ai-java-webhook,ee93847a8d3fb39743a23bb094929ccda4f2c064,4,118,1,1,-2,A
 JaroslavTulach/heapdump,87042b6e4f8b58dd49cb0df3bd6867621f5d5e27,2,127,1,1,1,Apache-2.0,True,True
 jonashackt/spring-boot-rest-clientcertificate,8b3a6c8e1c93a42fb9dc3244b573213208f1e3c8,5,128,1,2,1,MIT,False,True
 iKubernetes/spring-boot-helloWorld,fea6fe43e54f3f0ed434b5f2f2b3e1c3e938d8e8,5,129,1,3,3,Apache-2.0,True,True
-serpro69/kotlin-aspectj-maven-example,c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d,4,156,1,1,2,MIT,False,True
-SimpleProgramming/springboot-security-simple-jwt,de69c334bab277be94605c4807958822b2865494,8,194,1,1,1,MIT,False,False
-lkrnac/blog-2014-12-06-mock-spring-bean,396af50db7af42d23dde0c59c0e5e74e3467eb49,10,203,1,5,-2,MIT,False,False
-BjoernKW/oauth2-with-jira,d24180b10d3bd803524dc858db1e01f41bfe8dfe,6,251,1,1,1,Apache-2.0,False,False
-fromi/spring-google-openidconnect,7e29fdfa27f41848dd95f3788c088bffa235888f,7,281,1,1,-2,MIT,False,False
+serpro69/kotlin-aspectj-maven-example,c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d,4,156,1,1,2,MIT,True,True
+SimpleProgramming/springboot-security-simple-jwt,de69c334bab277be94605c4807958822b2865494,8,194,1,1,1,MIT,True,True
+lkrnac/blog-2014-12-06-mock-spring-bean,396af50db7af42d23dde0c59c0e5e74e3467eb49,10,203,1,5,-2,MIT,False,True
+BjoernKW/oauth2-with-jira,d24180b10d3bd803524dc858db1e01f41bfe8dfe,6,251,1,1,1,Apache-2.0,False,True
+fromi/spring-google-openidconnect,7e29fdfa27f41848dd95f3788c088bffa235888f,7,281,1,1,-2,MIT,False,True
 dilagurung/java-request-interceptor,57406451e1c81c101f03cc78d3087e30c8e1375b,7,338,1,1,1,Apache-2.0,True,True
 Artur-/a-vaadin-helper,84c6e9d4d040fc04d042b7d92414844825553976,8,347,1,2,3,Apache-2.0,False,False
 m1l4n54v1c/meetup,b3492a44aebc7542007a79ed263340a61026aa2c,10,414,4,0,5,Apache-2.0,False,False
