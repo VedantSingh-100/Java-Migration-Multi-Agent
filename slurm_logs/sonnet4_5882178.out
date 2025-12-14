@@ -10563,3 +10563,158 @@ Result for jarlehansen/springfox-loader: success=False, status=unknown, detail=<
 
 [32m05:02:35[0m | [1mINFO    [0m | [1m================================================================================[0m
 
+[32m05:02:51[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mMIGRATION SESSION STARTED: fedefary/signer[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mTimestamp: 20251214_050251[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mLog directory: /home/vhsingh/Java_Migration/logs_sonnet4/fedefary__signer[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1m================================================================================[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mMIGRATION TARGET: fedefary/signer[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mBASE COMMIT: 7fece3bc4a288b1e317da5100954fc229aec448d[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mCSV FILE: /home/vhsingh/Java_Migration/docs/selected40_sonnet4.csv[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mStarting migration for fedefary/signer[0m
+
+[32m05:02:51[0m | [1mINFO    [0m | [1mCSV STATUS UPDATE: Marking fedefary/signer as attempted[0m
+
+[32m05:02:52[0m | [1mINFO    [0m | [1mPreparing repository: fedefary/signer at 7fece3bc4a288b1e317da5100954fc229aec448d[0m
+
+[32m05:02:52[0m | [1mINFO    [0m | [1mAPPROACH: Cloning repository to /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mRepository prepared successfully at: /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mStarting migration orchestrator...[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mAPPROACH: Initializing SupervisorMigrationOrchestrator[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mSet MIGRATION_BASE_COMMIT=7fece3bc4a288b1e317da5100954fc229aec448d[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mSet MIGRATION_REPO_PATH=/home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mToken counter reset - LLM call limit set to 500[0m
+
+[32m05:02:53[0m | [1mINFO    [0m | [1mCOMPONENT: SupervisorMigrationOrchestrator initialized[0m
+
+[32m05:03:06[0m | [1mINFO    [0m | [1mAPPROACH: Running multi-agent migration process[0m
+
+[32m05:03:06[0m | [1mINFO    [0m | [1mCleaning previous migration state...[0m
+
+[32m05:03:06[0m | [32m[1mSUCCESS [0m | [32m[1mDeleted 2 stale state files[0m
+
+[32m05:03:06[0m | [1mINFO    [0m | [1mFILE_OPS: Project path set to '/home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer'[0m
+
+[32m05:03:06[0m | [1mINFO    [0m | [1mPHASE: Agent coordination started[0m
+
+[32m05:03:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:03:33[0m | [1mINFO    [0m | [1mMAVEN FIND POMS SUCCESS: Found 1 POMs in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:03:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:03:49[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:03:59[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.9s[0m
+
+[32m05:04:06[0m | [1mINFO    [0m | [1mMAVEN READ POM SUCCESS: signer (Java 8, 3 dependencies)[0m
+
+[32m05:04:17[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.0s[0m
+
+[32m05:04:28[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.9s[0m
+
+[32m05:04:40[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:04:46[0m | [1mINFO    [0m | [1mMAVEN GET JAVA VERSION SUCCESS: Found version 8 in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer/pom.xml[0m
+
+[32m05:04:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m05:05:09[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:05:24[0m | [1mINFO    [0m | [1mMAVEN LIST DEPENDENCIES SUCCESS: Found 3 dependencies in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer/pom.xml[0m
+
+[32m05:05:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.9s[0m
+
+[32m05:05:43[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.1s[0m
+
+[32m05:05:54[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.6s[0m
+
+[32m05:06:03[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 2126 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer/pom.xml[0m
+
+[32m05:06:14[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.0s[0m
+
+[32m05:06:26[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.2s[0m
+
+[32m05:06:33[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m05:06:45[0m | [1mINFO    [0m | [1mLIST JAVA FILES SUCCESS: Found 13 files in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:06:52[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.8s[0m
+
+[32m05:07:05[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.3s[0m
+
+[32m05:07:23[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.1s[0m
+
+[32m05:07:33[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 10 matches for 'javax\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:07:41[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.7s[0m
+
+[32m05:07:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.4s[0m
+
+[32m05:07:55[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.5s[0m
+
+[32m05:08:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.3s[0m
+
+[32m05:08:27[0m | [1mINFO    [0m | [1mSEARCH FILES SUCCESS: 1 matches for 'org\.junit\.' in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:08:34[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.1s[0m
+
+[32m05:08:46[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.6s[0m
+
+[32m05:08:59[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m05:09:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 9.0s[0m
+
+[32m05:09:25[0m | [1mINFO    [0m | [1mSEARCH FILES NO MATCHES: Pattern '@RunWith' not found in /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer[0m
+
+[32m05:09:37[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.3s[0m
+
+[32m05:09:46[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.7s[0m
+
+[32m05:09:58[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.2s[0m
+
+[32m05:10:13[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.4s[0m
+
+[32m05:10:29[0m | [1mINFO    [0m | [1mFILE READ SUCCESS: 217 characters from /home/vhsingh/Java_Migration/repositories_sonnet4/fedefary_signer/src/test/java/com/ffsec/signer/SignerApplicationTests.java[0m
+
+[32m05:10:39[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 1.2s[0m
+
+[32m05:10:47[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 2.8s[0m
+
+[32m05:10:57[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 4.3s[0m
+
+[32m05:11:07[0m | [1mINFO    [0m | [1m[THROTTLE] AWS Bedrock rate limit hit, retrying in 8.9s[0m
+
+[32m05:11:22[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:11:22[0m | [31m[1mERROR   [0m | [31m[1mLLM Error: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many tokens per day, please wait before trying again.[0m
+
+[32m05:11:22[0m | [31m[1mERROR   [0m | [31m[1mMigration failed for fedefary/signer[0m
+
+[32m05:11:22[0m | [1mINFO    [0m | [1mRESULT: Migration failed[0m
+
+[32m05:11:22[0m | [1mINFO    [0m | [1mSTATUS: FAILURE[0m
+
+[32m05:11:22[0m | [1mINFO    [0m | [1mFAILURE REASON: <no-result>[0m
+
+Result for fedefary/signer: success=False, status=unknown, detail=<no-result>
+[32m05:11:22[0m | [1mINFO    [0m | [1mFINAL RESULT: FAILURE[0m
+
+[32m05:11:22[0m | [1mINFO    [0m | [1mMIGRATION SESSION ENDED[0m
+
+[32m05:11:22[0m | [1mINFO    [0m | [1m================================================================================[0m
+
