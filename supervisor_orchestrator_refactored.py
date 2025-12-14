@@ -114,9 +114,13 @@ if not BEDROCK_API_KEY:
 # AWS Region for Bedrock
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
-# Claude 3.5 Sonnet model ID on Amazon Bedrock (cross-region inference profile)
-# Using us. prefix for cross-region inference which is required for v2 models
-BEDROCK_MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+# Claude model ID on Amazon Bedrock (cross-region inference profile)
+# Can be overridden via BEDROCK_MODEL_ID environment variable for model comparison experiments
+# Available models:
+#   - us.anthropic.claude-3-5-sonnet-20241022-v2:0  (Claude 3.5 Sonnet v2)
+#   - us.anthropic.claude-sonnet-4-20250514-v1:0   (Claude Sonnet 4)
+#   - us.anthropic.claude-sonnet-4-5-20250929-v1:0 (Claude Sonnet 4.5)
+BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-3-5-sonnet-20241022-v2:0")
 
 # Global token counter
 tc = TokenCounter()

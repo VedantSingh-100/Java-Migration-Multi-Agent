@@ -1,0 +1,180 @@
+2025-12-13 21:29:48.264 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-13 21:29:48.426 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/xVir_api-ai-java-webhook'...
+Note: switching to 'ee93847a8d3fb39743a23bb094929ccda4f2c064'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at ee93847 Add service address to docs
+Switched to a new branch 'migration-base'
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-13 21:58:03.484 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-13 21:58:03.503 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/jonashackt_spring-boot-rest-clientcertificate'...
+Note: switching to '8b3a6c8e1c93a42fb9dc3244b573213208f1e3c8'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 8b3a6c8 Update dependency org.springframework.boot:spring-boot-starter-parent to v2.7.18
+Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/http/client.py", line 1430, in getresponse
+    response.begin()
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/http/client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/http/client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/ssl.py", line 1251, in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/ssl.py", line 1103, in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/httpsession.py", line 465, in send
+    urllib_response = conn.urlopen(
+                      ^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/urllib3/connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: AWSHTTPSConnectionPool(host='bedrock-runtime.us-east-1.amazonaws.com', port=443): Read timed out. (read timeout=60)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1060, in _make_api_call
+    http, parsed_response = self._make_request(
+                            ^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1084, in _make_request
+    return self._endpoint.make_request(operation_model, request_dict)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/endpoint.py", line 119, in make_request
+    return self._send_request(request_dict, operation_model)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/endpoint.py", line 200, in _send_request
+    while self._needs_retry(
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+    responses = self._event_emitter.emit(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/hooks.py", line 412, in emit
+    return self._emitter.emit(aliased_event_name, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/hooks.py", line 256, in emit
+    return self._emit(event_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/hooks.py", line 239, in _emit
+    response = handler(**kwargs)
+               ^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/retryhandler.py", line 207, in __call__
+    if self._checker(**checker_kwargs):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/retryhandler.py", line 284, in __call__
+    should_retry = self._should_retry(
+                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+    return self._checker(attempt_number, response, caught_exception)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/retryhandler.py", line 363, in __call__
+    checker_response = checker(
+                       ^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/retryhandler.py", line 247, in __call__
+    return self._check_caught_exception(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+    raise caught_exception
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+    http_response = self._send(request)
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/endpoint.py", line 383, in _send
+    return self.http_session.send(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/httpsession.py", line 502, in send
+    raise ReadTimeoutError(endpoint_url=request.url, error=e)
+botocore.exceptions.ReadTimeoutError: Read timeout on endpoint URL: "https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-3-5-sonnet-20241022-v2%3A0/invoke"
+2025-12-13 22:48:59.305 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-13 22:48:59.450 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/serpro69_kotlin-aspectj-maven-example'...
+Note: switching to 'c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at c05c595 Add java sources
+Switched to a new branch 'migration-base'

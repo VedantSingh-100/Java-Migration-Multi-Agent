@@ -21,8 +21,9 @@ def setup_migration_logging(repo_name: str):
     # Create safe repo name for filesystem
     repo_safe_name = repo_name.replace("/", "__").replace("\\", "__")
 
-    # Create directory structure: logs/repo_name/
-    repo_log_dir = os.path.join("logs", repo_safe_name)
+    # Allow custom logs directory via environment variable (for model comparison experiments)
+    logs_base = os.environ.get("LOGS_DIR", "logs")
+    repo_log_dir = os.path.join(logs_base, repo_safe_name)
     os.makedirs(repo_log_dir, exist_ok=True)
 
     # Generate timestamp for this migration session

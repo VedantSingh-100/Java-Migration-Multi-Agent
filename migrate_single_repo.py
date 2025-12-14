@@ -17,8 +17,9 @@ def migrate(repo: str, base_commit: str, csv_path: str):
 
     # Get the absolute path to the migration script directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Repositories should be in migration/repositories (sibling to this script)
-    dest_dir = os.path.join(script_dir, "repositories", repo.replace("/", "_"))
+    # Allow custom repos directory via environment variable (for model comparison experiments)
+    repos_base = os.environ.get("REPOS_DIR", os.path.join(script_dir, "repositories"))
+    dest_dir = os.path.join(repos_base, repo.replace("/", "_"))
     log_console(f"Preparing repository: {repo} at {base_commit}")
     log_summary(f"APPROACH: Cloning repository to {dest_dir}")
 
