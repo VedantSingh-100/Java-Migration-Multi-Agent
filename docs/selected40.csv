@@ -16,7 +16,7 @@ software-space/qiyana-aggregator,02c6e224a997da91b37ed8a8a720a29b12119991,8,415,
 TaoZhuGongBoy/enumstatemachine,c113642308637e8836b2abaf3514b3aa285800b7,13,417,1,3,5,Apache-2.0,False,True
 epignosisx/spring-cloud-config-server-jwt,49a923eb4c973b930bfe1d5d68f2bc5b25414ced,8,422,1,1,1,MIT,False,True
 uzxmx/javasist-demo,a83c84e81d437383fbf1592b429ece32344727c2,10,427,1,4,4,MIT,False,True
-SimpleProgramming/spring-boot-ehCache-CacheManager,447e53f8abe9aeff330b544a48b0e740ede750ac,12,489,1,1,1,MIT,False,False
+SimpleProgramming/spring-boot-ehCache-CacheManager,447e53f8abe9aeff330b544a48b0e740ede750ac,12,489,1,1,1,MIT,False,True
 jenkinsci/chef-identity-plugin,bb784cd67b245a97c06e51e6dc477fe21355d8d7,4,491,1,0,8,MIT,False,False
 hzpz/mongeez-spring-boot-starter,15366a4b02bc743f31cd030636872bd276259811,5,530,1,2,8,Apache-2.0,False,False
 fbeaufume/spring-graphql-sample,d61fe282d8cd1372e5f6a152f77fdce8cb535dd1,13,531,1,1,4,MIT,False,False
