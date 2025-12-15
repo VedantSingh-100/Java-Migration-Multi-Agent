@@ -1359,3 +1359,44 @@ Turn off this advice by setting config variable advice.detachedHead to false
 
 HEAD is now at 02331f6 Calendar event retrieval service implemented.
 Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/yyenigun_light-calendar/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/yyenigun_light-calendar/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/yyenigun_light-calendar/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/yyenigun_light-calendar/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:Test mismatch for files (len = 000/000): `[]`
+  test files len = 0: `[]`.
+2025-12-15 00:36:17.523 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-15 00:36:17.690 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/erhmutlu_iyzico-kafka-demo'...
+Updating files:  52% (23/44)Updating files:  54% (24/44)Updating files:  56% (25/44)Updating files:  59% (26/44)Updating files:  61% (27/44)Updating files:  63% (28/44)Updating files:  65% (29/44)Updating files:  68% (30/44)Updating files:  70% (31/44)Updating files:  72% (32/44)Updating files:  75% (33/44)Updating files:  77% (34/44)Updating files:  79% (35/44)Updating files:  81% (36/44)Updating files:  84% (37/44)Updating files:  86% (38/44)Updating files:  88% (39/44)Updating files:  90% (40/44)Updating files:  93% (41/44)Updating files:  95% (42/44)Updating files:  97% (43/44)Updating files: 100% (44/44)Updating files: 100% (44/44), done.
+Note: switching to '77ab3bef7eee59883ec2db3b2a1ef136381951ee'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 77ab3be mapper
+Switched to a new branch 'migration-base'
