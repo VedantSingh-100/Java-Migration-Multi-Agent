@@ -1214,3 +1214,148 @@ Traceback (most recent call last):
   File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
     raise error_class(parsed_response, operation_name)
 botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+WARNING:root:Test mismatch for files (len = 000/001): `[]`
+  test files len = 0: `[]`.
+2025-12-14 21:26:08.819 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 21:26:08.978 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/exabrial_form-binding'...
+Updating files:  72% (27/37)Updating files:  75% (28/37)Updating files:  78% (29/37)Updating files:  81% (30/37)Updating files:  83% (31/37)Updating files:  86% (32/37)Updating files:  89% (33/37)Updating files:  91% (34/37)Updating files:  94% (35/37)Updating files:  97% (36/37)Updating files: 100% (37/37)Updating files: 100% (37/37), done.
+Note: switching to '5e997ef96e890918de6b10083e612af1471403dc'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 5e997ef [maven-release-plugin] prepare for next development iteration
+Switched to a new branch 'migration-base'
+Error raised by bedrock service
+Traceback (most recent call last):
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/langchain_aws/llms/bedrock.py", line 1093, in _prepare_input_and_invoke
+    response = self.client.invoke_model(**request_options)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 602, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/context.py", line 123, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vhsingh/miniconda3/envs/java_migration/lib/python3.12/site-packages/botocore/client.py", line 1078, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.ThrottlingException: An error occurred (ThrottlingException) when calling the InvokeModel operation (reached max retries: 4): Too many requests, please wait before trying again.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/exabrial_form-binding/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/exabrial_form-binding/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/exabrial_form-binding/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/exabrial_form-binding/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:Test mismatch for files (len = 000/000): `[]`
+  test files len = 0: `[]`.
+2025-12-14 21:49:47.517 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 21:49:47.827 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/wangqifox_spring-demo'...
+Updating files:  84% (37/44)Updating files:  86% (38/44)Updating files:  88% (39/44)Updating files:  90% (40/44)Updating files:  93% (41/44)Updating files:  95% (42/44)Updating files:  97% (43/44)Updating files: 100% (44/44)Updating files: 100% (44/44), done.
+Note: switching to 'ee872c782d93748e00013193e98910f155375ead'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at ee872c7 add m4
+Switched to a new branch 'migration-base'
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/wangqifox_spring-demo/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/wangqifox_spring-demo/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/wangqifox_spring-demo/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/wangqifox_spring-demo/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:Test mismatch for files (len = 000/000): `[]`
+  test files len = 0: `[]`.
+2025-12-14 22:18:16.371 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 22:18:16.399 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/dabla_grizzly-spring-boot-starter'...
+Note: switching to '16807691c69750bc9fb2e1bf07e5b97069c454ee'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 1680769 docs: Added link to the first Spring Boot 3.0.0 milestone
+Switched to a new branch 'migration-base'
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/dabla_grizzly-spring-boot-starter/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/dabla_grizzly-spring-boot-starter/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/dabla_grizzly-spring-boot-starter/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/dabla_grizzly-spring-boot-starter/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:Test mismatch for files (len = 000/000): `[]`
+  test files len = 0: `[]`.
+2025-12-14 23:20:40.856 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 23:20:40.921 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5'...
+Note: switching to 'b4d14f3a981c06c47bc9071182a3c4101453c035'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at b4d14f3 update readme to inform that code was moved
+Switched to a new branch 'migration-base'
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:CMD: find /home/vhsingh/Java_Migration/repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5/src/test -name \*.java => ERROR: Command 'find /home/vhsingh/Java_Migration/repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5/src/test -name \*.java' returned non-zero exit status 1.
+WARNING:root:Test mismatch for files (len = 000/000): `[]`
+  test files len = 0: `[]`.
+2025-12-14 23:44:53.168 | INFO     | src.utils.logging_config:log_summary:96 - [ERROR_CLASSIFIER] UnifiedErrorClassifier initialized
+2025-12-14 23:44:53.552 | INFO     | src.utils.logging_config:log_summary:96 - [POM_TRACKER] Initialized PomChangeTracker singleton
+Cloning into '/home/vhsingh/Java_Migration/repositories_sonnet35/yyenigun_light-calendar'...
+Updating files:  21% (15/70)Updating files:  22% (16/70)Updating files:  24% (17/70)Updating files:  25% (18/70)Updating files:  27% (19/70)Updating files:  28% (20/70)Updating files:  30% (21/70)Updating files:  31% (22/70)Updating files:  32% (23/70)Updating files:  34% (24/70)Updating files:  35% (25/70)Updating files:  37% (26/70)Updating files:  38% (27/70)Updating files:  40% (28/70)Updating files:  41% (29/70)Updating files:  42% (30/70)Updating files:  44% (31/70)Updating files:  45% (32/70)Updating files:  47% (33/70)Updating files:  48% (34/70)Updating files:  50% (35/70)Updating files:  51% (36/70)Updating files:  52% (37/70)Updating files:  54% (38/70)Updating files:  55% (39/70)Updating files:  57% (40/70)Updating files:  58% (41/70)Updating files:  60% (42/70)Updating files:  61% (43/70)Updating files:  62% (44/70)Updating files:  64% (45/70)Updating files:  65% (46/70)Updating files:  67% (47/70)Updating files:  68% (48/70)Updating files:  70% (49/70)Updating files:  71% (50/70)Updating files:  72% (51/70)Updating files:  74% (52/70)Updating files:  75% (53/70)Updating files:  77% (54/70)Updating files:  78% (55/70)Updating files:  80% (56/70)Updating files:  81% (57/70)Updating files:  82% (58/70)Updating files:  84% (59/70)Updating files:  85% (60/70)Updating files:  87% (61/70)Updating files:  88% (62/70)Updating files:  90% (63/70)Updating files:  91% (64/70)Updating files:  92% (65/70)Updating files:  94% (66/70)Updating files:  95% (67/70)Updating files:  97% (68/70)Updating files:  98% (69/70)Updating files: 100% (70/70)Updating files: 100% (70/70), done.
+Note: switching to '02331f6f4db184285ce17185a33f1b286992bc1e'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 02331f6 Calendar event retrieval service implemented.
+Switched to a new branch 'migration-base'
