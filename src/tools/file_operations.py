@@ -6,10 +6,106 @@ from pathlib import Path
 from langchain_core.tools import tool
 from src.utils.logging_config import log_summary
 import re
+import os
 
 
 # Global project path - set by orchestrator before tool execution
 _current_project_path: str = None
+
+
+# =============================================================================
+# JAVA VERSION GUARDRAIL FOR FIND_REPLACE
+# =============================================================================
+
+def _get_target_java_version() -> int:
+    """Get the configured target Java version as an integer."""
+    target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
+    return int(target_version) if target_version.isdigit() else 21
+
+
+# Extended patterns to catch more Java version formats
+JAVA_VERSION_PATTERNS = [
+    # Standard Maven properties
+    r'<java\.version>\s*(\d+)\s*</java\.version>',
+    r'<maven\.compiler\.source>\s*(\d+)\s*</maven\.compiler\.source>',
+    r'<maven\.compiler\.target>\s*(\d+)\s*</maven\.compiler\.target>',
+    r'<maven\.compiler\.release>\s*(\d+)\s*</maven\.compiler\.release>',
+    r'<release>\s*(\d+)\s*</release>',
+    r'<source>\s*(\d+)\s*</source>',
+    r'<target>\s*(\d+)\s*</target>',
+    # Handle 1.x format (e.g., 1.8)
+    r'<java\.version>\s*1\.(\d+)\s*</java\.version>',
+    r'<maven\.compiler\.source>\s*1\.(\d+)\s*</maven\.compiler\.source>',
+    r'<maven\.compiler\.target>\s*1\.(\d+)\s*</maven\.compiler\.target>',
+]
+
+
+def _check_java_version_downgrade_in_replacement(find_text: str, replace_text: str) -> tuple:
+    """
+    Check if a find_replace operation is attempting to downgrade Java version.
+
+    Returns:
+        (is_blocked, message) - True if downgrade should be blocked
+    """
+    target_int = _get_target_java_version()
+    target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
+
+    for pattern in JAVA_VERSION_PATTERNS:
+        # Check if find_text contains a Java version tag
+        find_match = re.search(pattern, find_text, re.IGNORECASE)
+        replace_match = re.search(pattern, replace_text, re.IGNORECASE)
+
+        if find_match and replace_match:
+            old_version = int(find_match.group(1))
+            new_version = int(replace_match.group(1))
+
+            # Block if: we're lowering the version AND it goes below target
+            if new_version < old_version and new_version < target_int:
+                msg = (
+                    f"🚫 BLOCKED: Java version downgrade detected in find_replace! "
+                    f"Attempting to change from {old_version} to {new_version}. "
+                    f"Target version is {target_version}. "
+                    f"Downgrading is forbidden. Fix dependency versions instead."
+                )
+                log_summary(f"GUARDRAIL BLOCKED FIND_REPLACE: Java downgrade {old_version} -> {new_version}")
+                return True, msg
+
+    return False, ""
+
+
+def _check_java_version_in_content(content: str, file_path: str) -> tuple:
+    """
+    Check if file content contains Java version below target.
+    Used by write_file to prevent writing pom.xml with downgraded Java version.
+
+    Returns:
+        (is_blocked, message) - True if content should be blocked
+    """
+    # Only check pom.xml files
+    if not file_path.endswith('pom.xml'):
+        return False, ""
+
+    target_int = _get_target_java_version()
+    target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
+
+    versions_found = []
+
+    for pattern in JAVA_VERSION_PATTERNS:
+        for match in re.finditer(pattern, content, re.IGNORECASE):
+            version = int(match.group(1))
+            versions_found.append(version)
+
+            if version < target_int:
+                msg = (
+                    f"🚫 BLOCKED: write_file attempting to write pom.xml with Java version {version}! "
+                    f"Target version is {target_version}. "
+                    f"Downgrading Java version is forbidden. "
+                    f"Fix dependency versions instead of lowering Java version."
+                )
+                log_summary(f"GUARDRAIL BLOCKED WRITE_FILE: Java version {version} < target {target_int} in pom.xml")
+                return True, msg
+
+    return False, ""
 
 
 def set_project_path(path: str):
@@ -79,9 +175,17 @@ def write_file(file_path: str, content: str) -> str:
     Call this function with a file_path and content properly else you'll get the following error
 
     Field required [type=missing, input_value={'file_path': '*.java'}, input_type=dict]
+
+    NOTE: Writing pom.xml with Java version below TARGET_JAVA_VERSION will be BLOCKED.
     """
     try:
         resolved_path = _resolve_path(file_path)
+
+        # GUARDRAIL: Check for Java version downgrade in pom.xml content
+        is_blocked, block_msg = _check_java_version_in_content(content, resolved_path)
+        if is_blocked:
+            return block_msg
+
         Path(resolved_path).write_text(content, encoding='utf-8')
         log_summary(f"FILE WRITE SUCCESS: {resolved_path}")
         return f"Successfully wrote to {resolved_path}"
@@ -92,7 +196,12 @@ def write_file(file_path: str, content: str) -> str:
 
 @tool
 def find_replace(file_path: str, find_text: str, replace_text: str) -> str:
-    """Find and replace text in a file."""
+    """Find and replace text in a file. BLOCKS Java version downgrades."""
+    # GUARDRAIL: Check for Java version downgrade attempts
+    is_blocked, block_msg = _check_java_version_downgrade_in_replacement(find_text, replace_text)
+    if is_blocked:
+        return block_msg
+
     try:
         resolved_path = _resolve_path(file_path)
         content = Path(resolved_path).read_text(encoding='utf-8')

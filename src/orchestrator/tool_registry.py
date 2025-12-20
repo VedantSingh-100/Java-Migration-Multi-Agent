@@ -948,7 +948,7 @@ Your task tracking works like this:
         # Match task to verification function using patterns
         verifications = [
             (r'add.*openrewrite|openrewrite.*plugin|configure.*recipe', self._verify_openrewrite_setup),
-            (r'java\s*21|java\s*version.*21|UpgradeToJava21', self._verify_java_21),
+            (r'java\s*\d+|java\s*version.*\d+|UpgradeToJava\d+', self._verify_java_version),
             (r'spring\s*boot\s*3|UpgradeSpringBoot', self._verify_spring_boot_3),
             (r'jakarta|javax.*to.*jakarta|JavaxMigration', self._verify_jakarta_migration),
             (r'junit.*4.*to.*5|junit.*5|junit.*migration|JUnit4to5', self._verify_junit5_migration),
@@ -984,8 +984,8 @@ Your task tracking works like this:
             return True, "OpenRewrite plugin found in pom.xml"
         return False, "OpenRewrite plugin not found in pom.xml"
 
-    def _verify_java_21(self) -> tuple:
-        """Verify Java version is set to 21"""
+    def _verify_java_version(self) -> tuple:
+        """Verify Java version is set to TARGET_JAVA_VERSION"""
         import os
         pom_path = os.path.join(self.project_path, "pom.xml")
         if not os.path.exists(pom_path):
@@ -994,15 +994,18 @@ Your task tracking works like this:
         with open(pom_path, 'r') as f:
             content = f.read()
 
-        # Check for java.version property
-        if '<java.version>21</java.version>' in content:
-            return True, "Java version 21 configured via java.version property"
-        if '<maven.compiler.source>21</maven.compiler.source>' in content:
-            return True, "Java version 21 configured via maven.compiler.source"
-        if '<release>21</release>' in content:
-            return True, "Java version 21 configured via release tag"
+        # Use target version from environment
+        target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
 
-        return False, "Java version 21 not found in pom.xml"
+        # Check for java.version property
+        if f'<java.version>{target_version}</java.version>' in content:
+            return True, f"Java version {target_version} configured via java.version property"
+        if f'<maven.compiler.source>{target_version}</maven.compiler.source>' in content:
+            return True, f"Java version {target_version} configured via maven.compiler.source"
+        if f'<release>{target_version}</release>' in content:
+            return True, f"Java version {target_version} configured via release tag"
+
+        return False, f"Java version {target_version} not found in pom.xml"
 
     def _verify_spring_boot_3(self) -> tuple:
         """Verify Spring Boot 3.x is configured"""

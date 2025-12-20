@@ -304,7 +304,7 @@ def setup_search_context_from_pom(project_path: str) -> Dict[str, str]:
 
     versions = {
         'CURRENT_JAVA_VERSION': '8',
-        'TARGET_JAVA_VERSION': '21',
+        'TARGET_JAVA_VERSION': os.environ.get('TARGET_JAVA_VERSION', '21'),
         'CURRENT_SPRING_VERSION': 'unknown',
         'MIGRATION_REPO_PATH': project_path,
     }

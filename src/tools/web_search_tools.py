@@ -172,11 +172,14 @@ def call_openrewrite_agent(command: str) -> str:
         command: Your question about OpenRewrite recipes
 
     Example queries:
-        - "how to migrate Java 8 to Java 21"
+        - "how to migrate Java 8 to target version"
         - "which recipe fixes javax to jakarta imports"
         - "Spring Boot 2 to 3 migration recipes"
     """
     log_agent(f"[OPENREWRITE_RAG] Query: {command[:100]}...")
+
+    # Get target Java version from environment
+    target_java_version = os.environ.get("TARGET_JAVA_VERSION", "21")
 
     # TODO: Replace with BNY OpenRewrite RAG Agent when available
     # This is a knowledge-based fallback
@@ -185,9 +188,8 @@ def call_openrewrite_agent(command: str) -> str:
 
 📋 **Common Migration Recipes:**
 
-**Java Version Upgrade:**
-- `org.openrewrite.java.migrate.UpgradeToJava17` - Java 8/11 to 17
-- `org.openrewrite.java.migrate.UpgradeToJava21` - Java 17 to 21
+**Java Version Upgrade (TARGET: Java {target_java_version}):**
+- `org.openrewrite.java.migrate.UpgradeToJava{target_java_version}` - Upgrade to Java {target_java_version} (YOUR TARGET)
 
 **Spring Boot Migration:**
 - `org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7` - Upgrade to 2.7.x

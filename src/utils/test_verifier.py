@@ -105,7 +105,7 @@ def read_class_major_version(class_file_path: str) -> Optional[int]:
         return None
 
 
-def audit_bytecode_versions(project_path: str, expected_java_version: int = 21) -> Tuple[bool, str, Dict]:
+def audit_bytecode_versions(project_path: str, expected_java_version: int = None) -> Tuple[bool, str, Dict]:
     """
     Audit all compiled .class files to verify bytecode version consistency.
 
@@ -116,11 +116,18 @@ def audit_bytecode_versions(project_path: str, expected_java_version: int = 21) 
 
     Args:
         project_path: Path to the project root
-        expected_java_version: Expected Java version (default 21)
+        expected_java_version: Expected Java version (default from TARGET_JAVA_VERSION env or 21)
 
     Returns:
         (all_match, message, details_dict)
     """
+    import os
+
+    # Use environment variable if not specified
+    if expected_java_version is None:
+        target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
+        expected_java_version = int(target_version) if target_version.isdigit() else 21
+
     project_dir = Path(project_path)
     if not project_dir.exists():
         return False, f"Error: Project path not found: {project_path}", {}

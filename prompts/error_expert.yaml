@@ -42,6 +42,26 @@ error_expert_prompt: |
   - Check CURRENT_STATE.md to understand migration context
 
   ═══════════════════════════════════════════════════════════════════════════════
+  JAVA VERSION - CRITICAL GUARDRAIL
+  ═══════════════════════════════════════════════════════════════════════════════
+
+  🚫 NEVER DOWNGRADE JAVA VERSION!
+  Target version is Java {target_java_version}. NEVER change it to a lower version.
+
+  ❌ FORBIDDEN (even if web search suggests it):
+  - Changing Java {target_java_version} → Java 17 (or any lower version)
+  - Changing Java {target_java_version} → Java 11 (or any lower version)
+  - Any downgrade of java.version, maven.compiler.source/target
+
+  If you encounter "unsupported class file version" or similar errors:
+  - The problem is NOT the Java version
+  - Fix the DEPENDENCY versions instead
+  - Upgrade libraries to versions compatible with Java {target_java_version}
+
+  Web search results from 2023 may say "Java {target_java_version} not supported" - THIS IS OUTDATED!
+  maven-compiler-plugin 3.12.0+ fully supports Java 17, 21, and newer versions.
+
+  ═══════════════════════════════════════════════════════════════════════════════
   MANDATORY WEB SEARCH RULE - CRITICAL
   ═══════════════════════════════════════════════════════════════════════════════
 
@@ -50,15 +70,15 @@ error_expert_prompt: |
   1. STOP trying the same approaches
   2. Formulate a SPECIFIC search query using:
      - The exact error message (e.g., "NoClassDefFoundError cglib proxy Enhancer")
-     - The framework versions involved (e.g., "Spring Boot 1.5 JDK 17")
+     - The framework versions involved (e.g., "Spring Boot 3.x Java {target_java_version}")
      - The word "fix" or "solution"
   3. Call web_search_tool with this query
   4. Apply the solution from search results
 
   EXAMPLE QUERIES:
     Error: "NoClassDefFoundError: org.springframework.cglib.proxy.Enhancer"
-    Context: Spring Boot 1.5.22, JDK 17
-    → Query: "Spring Boot 1.5 NoClassDefFoundError cglib Enhancer JDK 17 fix"
+    Context: Spring Boot 3.x, Java {target_java_version}
+    → Query: "Spring Boot 3 NoClassDefFoundError cglib Enhancer Java {target_java_version} fix"
 
     Error: "java.lang.NoSuchMethodError: javax.servlet..."
     Context: Spring Boot 3 migration
@@ -162,7 +182,7 @@ error_expert_prompt: |
   - search_files: Search for error patterns across codebase
   - list_java_files: Find all Java files that might be affected
   - read_pom: Analyze POM for dependency conflicts
-  - update_java_version: Update Java version if needed
+  - update_java_version: Update Java version if needed (NEVER downgrade below {target_java_version}!)
   - mvn_compile: Validate compilation after fixes
   - mvn_test: Validate tests after fixes
   - run_command: Execute any necessary build or verification commands

@@ -635,11 +635,12 @@ Be technical and precise. Omit marketing content, navigation, or irrelevant deta
                 continue
 
             # Extract lines with key patterns
+            target_version = os.environ.get('TARGET_JAVA_VERSION', '21')
             if any(pattern in lower for pattern in [
                 'version:', 'step', 'recipe:', 'dependency', 'pom.xml',
                 'migration', 'upgrade', 'example:', 'warning:', 'error:',
                 '<dependency>', '<plugin>', 'openrewrite', 'spring boot',
-                'javax.', 'jakarta.', 'java 17', 'java 21',
+                'javax.', 'jakarta.', f'java {target_version}',
                 'breaking change', 'deprecated', 'removed in',
                 'mvn ', 'maven', 'gradle', 'configuration'
             ]):

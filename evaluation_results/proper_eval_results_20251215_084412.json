@@ -1,0 +1,430 @@
+{
+  "timestamp": "2025-12-15T08:44:12.689178",
+  "summary": {
+    "total": 36,
+    "on_migration_branch": 36,
+    "build_success": 26,
+    "java_version_ok": 34,
+    "spring_boot_3x": 23,
+    "minimal_migration": 26,
+    "maximal_migration": 17
+  },
+  "results": [
+    {
+      "repo": "284885166_spring-boot-hashids",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/284885166_spring-boot-hashids",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "Artur-_a-vaadin-helper",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/Artur-_a-vaadin-helper",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": false,
+      "tests_run": 2,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 2.2.0. Tests: 2. ",
+      "errors": []
+    },
+    {
+      "repo": "BjoernKW_oauth2-with-jira",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/BjoernKW_oauth2-with-jira",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.2. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "DickChesterwood_fleetman-webapp",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/DickChesterwood_fleetman-webapp",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": false,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 2.3.0. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "SimpleProgramming_spring-boot-ehCache-CacheManager",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/SimpleProgramming_spring-boot-ehCache-CacheManager",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "SimpleProgramming_springboot-security-simple-jwt",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/SimpleProgramming_springboot-security-simple-jwt",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "TaoZhuGongBoy_enumstatemachine",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/TaoZhuGongBoy_enumstatemachine",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 5,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.3. Tests: 5. ",
+      "errors": []
+    },
+    {
+      "repo": "camunda-community-hub_camunda-bpm-junit5",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "dabla_grizzly-spring-boot-starter",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/dabla_grizzly-spring-boot-starter",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.2. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "epignosisx_spring-cloud-config-server-jwt",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/epignosisx_spring-cloud-config-server-jwt",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "erhmutlu_iyzico-kafka-demo",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/erhmutlu_iyzico-kafka-demo",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "exabrial_form-binding",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/exabrial_form-binding",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 4,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. Tests: 4. ",
+      "errors": []
+    },
+    {
+      "repo": "fbeaufume_spring-graphql-sample",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/fbeaufume_spring-graphql-sample",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 3,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 3. ",
+      "errors": []
+    },
+    {
+      "repo": "fedefary_signer",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/fedefary_signer",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "fromi_spring-google-openidconnect",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/fromi_spring-google-openidconnect",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 0. ",
+      "errors": []
+    },
+    {
+      "repo": "hzpz_mongeez-spring-boot-starter",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/hzpz_mongeez-spring-boot-starter",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 8,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. Tests: 8. ",
+      "errors": []
+    },
+    {
+      "repo": "jarlehansen_springfox-loader",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/jarlehansen_springfox-loader",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "jenkinsci_chef-identity-plugin",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/jenkinsci_chef-identity-plugin",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": false,
+      "spring_boot_3x": null,
+      "tests_run": 0,
+      "details": "Java: Java version not 17/21. SpringBoot: Spring Boot version not found. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "jobmission_oauth2-client",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/jobmission_oauth2-client",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "jonashackt_spring-boot-rest-clientcertificate",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/jonashackt_spring-boot-rest-clientcertificate",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": false,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 2.7.18. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "jzheaux_resolutions",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/jzheaux_resolutions",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.3.13. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "knes1_springmockedtests",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/knes1_springmockedtests",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "lkrnac_blog-2014-12-06-mock-spring-bean",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/lkrnac_blog-2014-12-06-mock-spring-bean",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "m1l4n54v1c_meetup",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/m1l4n54v1c_meetup",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 5,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.3. Tests: 5. ",
+      "errors": []
+    },
+    {
+      "repo": "poetix_ambivalence",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/poetix_ambivalence",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 11,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. Tests: 11. ",
+      "errors": []
+    },
+    {
+      "repo": "rupert-madden-abbott_jcommander-spring-boot-starter",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/rupert-madden-abbott_jcommander-spring-boot-starter",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 12,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 12. ",
+      "errors": []
+    },
+    {
+      "repo": "serpro69_kotlin-aspectj-maven-example",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/serpro69_kotlin-aspectj-maven-example",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "software-space_qiyana-aggregator",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/software-space_qiyana-aggregator",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.3. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "spring-attic_tasklauncher-dataflow",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/spring-attic_tasklauncher-dataflow",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": false,
+      "spring_boot_3x": false,
+      "tests_run": 0,
+      "details": "Java: Java version not 17/21. SpringBoot: Spring Boot 2.2.4. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "spring-cloud-services-samples_traveler",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/spring-cloud-services-samples_traveler",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.3. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "uzxmx_javasist-demo",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/uzxmx_javasist-demo",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "wangqifox_spring-demo",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/wangqifox_spring-demo",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": null,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot version not found. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "wanwenjie1993_Emoticon",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/wanwenjie1993_Emoticon",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "xVir_api-ai-java-webhook",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/xVir_api-ai-java-webhook",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 1,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.2. Tests: 1. ",
+      "errors": []
+    },
+    {
+      "repo": "xebia-os_xebia-archunit-extension",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/xebia-os_xebia-archunit-extension",
+      "on_migration_branch": true,
+      "build_success": false,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 0,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. ",
+      "errors": [
+        "Build failure"
+      ]
+    },
+    {
+      "repo": "yyenigun_light-calendar",
+      "path": "/home/vhsingh/Java_Migration/repositories_sonnet35/yyenigun_light-calendar",
+      "on_migration_branch": true,
+      "build_success": true,
+      "java_version_ok": true,
+      "spring_boot_3x": true,
+      "tests_run": 5,
+      "details": "Java: Java 17/21 found. SpringBoot: Spring Boot 3.2.1. Tests: 5. ",
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "timestamp": "20251220_043244",
+  "summary": {
+    "total": 1,
+    "build_success": 1,
+    "java_version_correct": 1,
+    "test_count_maintained": 1,
+    "test_methods_invariant": 1,
+    "maximal_migration": 0,
+    "fully_passing": 1
+  },
+  "metrics_summary": {
+    "total_llm_calls": 0,
+    "total_duration_seconds": 0,
+    "total_cost_usd": 0.0,
+    "total_tokens": 0
+  },
+  "results": [
+    {
+      "repo": "fedefary/signer",
+      "base_commit": "7fece3bc4a288b1e317da5100954fc229aec448d",
+      "repo_path": "repositories/fedefary_signer",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": true,
+      "test_count_maintained": 

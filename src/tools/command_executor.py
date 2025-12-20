@@ -168,6 +168,11 @@ BLOCKED_COMMANDS = {
     'ssh', 'scp', 'ftp', 'telnet',       # Remote access
     'nc', 'netcat', 'nmap',              # Network tools
     'docker', 'podman',                  # Container operations
+    # File modification tools that bypass guardrails
+    'sed', 'awk', 'perl',                # Text processing that can modify files
+    'tee',                               # Can write to files via redirection
+    'patch',                             # Can modify files
+    'ed', 'ex', 'vi', 'vim', 'nano',     # Text editors
 }
 
 BLOCKED_PATTERNS = [
@@ -194,6 +199,19 @@ BLOCKED_PATTERNS = [
     r'git\s+reset\s+--hard',             # git reset --hard removes uncommitted changes
     r'git\s+clean',                      # git clean removes untracked files
     r'git\s+restore\s+--staged',         # git restore can undo staged state files
+    # File redirection patterns that could bypass Java version guardrails
+    r'>\s*.*pom\.xml',                   # Redirecting output to pom.xml
+    r'>>\s*.*pom\.xml',                  # Appending to pom.xml
+    r'>\s*.*\.xml',                      # Redirecting to any XML file
+    r'>>\s*.*\.xml',                     # Appending to any XML file
+    # Echo/printf redirections to pom files
+    r'echo\s+.*>\s*.*pom',               # echo ... > pom.xml
+    r'printf\s+.*>\s*.*pom',             # printf ... > pom.xml
+    r'cat\s+.*>\s*.*pom',                # cat ... > pom.xml (heredoc bypass)
+    # Prevent piping to file modification commands
+    r'\|\s*sed',                         # Piping to sed
+    r'\|\s*awk',                         # Piping to awk
+    r'\|\s*perl',                        # Piping to perl
 ]
 
 ALLOWED_COMMANDS = {
@@ -219,18 +237,36 @@ _maven_path_cache = None
 
 def get_maven_env() -> dict:
     """
-    Get environment dict with Maven properly configured.
+    Get environment dict with Maven and Java properly configured.
 
     Searches for Maven in:
     1. MAVEN_HOME environment variable
     2. Common installation paths
     3. User's home directory
 
+    Sets JAVA_HOME based on TARGET_JAVA_VERSION environment variable.
+
     Returns environment dict to pass to subprocess.
     """
     global _maven_path_cache
 
     env = os.environ.copy()
+
+    # CRITICAL: Set JAVA_HOME based on TARGET_JAVA_VERSION
+    target_java_version = os.environ.get('TARGET_JAVA_VERSION', '21')
+    java_home_paths = {
+        '17': '/usr/lib/jvm/java-17-openjdk',
+        '21': '/usr/lib/jvm/java-21-openjdk',
+    }
+
+    if target_java_version in java_home_paths:
+        java_home = java_home_paths[target_java_version]
+        if os.path.isdir(java_home):
+            env['JAVA_HOME'] = java_home
+            # Also update PATH to include this Java's bin
+            java_bin = os.path.join(java_home, 'bin')
+            env['PATH'] = java_bin + os.pathsep + env.get('PATH', '')
+            log_summary(f"MAVEN_ENV: Set JAVA_HOME={java_home} for TARGET_JAVA_VERSION={target_java_version}")
 
     # If already found Maven, use cached path
     if _maven_path_cache:
@@ -867,6 +903,51 @@ def mvn_test(project_path: str) -> str:
         return f"Maven test error: {str(e)}"
 
 
+def _check_openrewrite_recipes_for_downgrade(project_path: str) -> tuple:
+    """
+    Check if configured OpenRewrite recipes would cause Java version downgrade.
+
+    Returns:
+        (is_blocked, message) - True if recipes should be blocked
+    """
+    pom_path = os.path.join(project_path, "pom.xml")
+    if not os.path.exists(pom_path):
+        return False, ""
+
+    try:
+        with open(pom_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception:
+        return False, ""
+
+    target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
+    target_int = int(target_version) if target_version.isdigit() else 21
+
+    # Map of Java upgrade recipes to their target versions
+    java_recipes = {
+        'UpgradeToJava8': 8,
+        'UpgradeToJava11': 11,
+        'UpgradeToJava17': 17,
+        'UpgradeToJava21': 21,
+        'Java8toJava11': 11,
+        'Java11toJava17': 17,
+    }
+
+    # Check for downgrade recipes
+    for recipe_name, recipe_target in java_recipes.items():
+        if recipe_name in content and recipe_target < target_int:
+            msg = (
+                f"🚫 BLOCKED: OpenRewrite recipe '{recipe_name}' targets Java {recipe_target}, "
+                f"but TARGET_JAVA_VERSION is {target_version}. "
+                f"This would cause a Java version downgrade! "
+                f"Use 'UpgradeToJava{target_version}' instead, or update the recipe configuration in pom.xml."
+            )
+            log_summary(f"GUARDRAIL BLOCKED OPENREWRITE: Recipe {recipe_name} targets Java {recipe_target} < {target_int}")
+            return True, msg
+
+    return False, ""
+
+
 @tool
 def mvn_rewrite_run(project_path: str) -> str:
     """[EXECUTES RECIPES] Run ALL configured OpenRewrite recipes using 'mvn rewrite:run'.
@@ -874,8 +955,15 @@ def mvn_rewrite_run(project_path: str) -> str:
     This tool ACTUALLY EXECUTES the recipes configured in pom.xml and applies code changes.
     Use this after configuring recipes with configure_openrewrite_recipes() or add_openrewrite_plugin().
 
+    NOTE: Will BLOCK if configured recipes would cause Java version downgrade.
+
     Returns the Maven output showing which files were modified.
     """
+    # GUARDRAIL: Check for downgrade recipes before running
+    is_blocked, block_msg = _check_openrewrite_recipes_for_downgrade(project_path)
+    if is_blocked:
+        return block_msg
+
     return run_command.invoke({"command": "mvn rewrite:run", "cwd": project_path})
 
 
@@ -897,6 +985,41 @@ def git_commit(project_path: str, message: str) -> str:
     return run_command.invoke({"command": f'git commit -m "{message}"', "cwd": project_path})
 
 
+def _check_recipe_for_downgrade(recipe_name: str) -> tuple:
+    """
+    Check if a specific OpenRewrite recipe would cause Java version downgrade.
+
+    Returns:
+        (is_blocked, message) - True if recipe should be blocked
+    """
+    target_version = os.environ.get("TARGET_JAVA_VERSION", "21")
+    target_int = int(target_version) if target_version.isdigit() else 21
+
+    # Map of Java upgrade recipes to their target versions
+    java_recipes = {
+        'UpgradeToJava8': 8,
+        'UpgradeToJava11': 11,
+        'UpgradeToJava17': 17,
+        'UpgradeToJava21': 21,
+        'Java8toJava11': 11,
+        'Java11toJava17': 17,
+    }
+
+    # Check if recipe name contains any downgrade recipe
+    for recipe_pattern, recipe_target in java_recipes.items():
+        if recipe_pattern in recipe_name and recipe_target < target_int:
+            msg = (
+                f"🚫 BLOCKED: Recipe '{recipe_name}' targets Java {recipe_target}, "
+                f"but TARGET_JAVA_VERSION is {target_version}. "
+                f"This would cause a Java version downgrade! "
+                f"Use a recipe targeting Java {target_version} instead."
+            )
+            log_summary(f"GUARDRAIL BLOCKED RECIPE: {recipe_name} targets Java {recipe_target} < {target_int}")
+            return True, msg
+
+    return False, ""
+
+
 @tool
 def mvn_rewrite_run_recipe(project_path: str, recipe_name: str) -> str:
     """[EXECUTES SPECIFIC RECIPE] Run a single OpenRewrite recipe using 'mvn rewrite:run -Drewrite.activeRecipes=...'.
@@ -904,8 +1027,15 @@ def mvn_rewrite_run_recipe(project_path: str, recipe_name: str) -> str:
     This tool ACTUALLY EXECUTES a specific recipe by name and applies code changes.
     Use this to run one recipe at a time instead of all configured recipes.
 
-    Example recipe names: 'org.openrewrite.java.migrate.Java8toJava11', 'org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0'
+    NOTE: Will BLOCK if recipe would cause Java version downgrade.
+
+    Example recipe names: 'org.openrewrite.java.migrate.UpgradeToJava21', 'org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0'
     """
+    # GUARDRAIL: Check for downgrade recipe
+    is_blocked, block_msg = _check_recipe_for_downgrade(recipe_name)
+    if is_blocked:
+        return block_msg
+
     return run_command.invoke({"command": f"mvn rewrite:run -Drewrite.activeRecipes={recipe_name}", "cwd": project_path})
 
 

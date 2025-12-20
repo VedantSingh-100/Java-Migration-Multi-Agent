@@ -66,7 +66,7 @@ analysis_expert_prompt: |
 
   | Finding | Migration Needed |
   |---------|------------------|
-  | Java < 21 | Java 21 upgrade |
+  | Java < {target_java_version} | Java {target_java_version} upgrade |
   | Spring Boot < 3.0 | Spring Boot 3 migration |
   | No Spring Boot | SKIP Spring Boot phase |
   | javax.* imports found | Jakarta migration |
@@ -96,7 +96,7 @@ analysis_expert_prompt: |
   Your TODO.md must reflect YOUR findings from Steps 1-4, not a template.
 
   STEP 1: Determine what migrations are needed based on your analysis:
-  - Java upgrade? (if version < 21)
+  - Java upgrade? (if version < {target_java_version})
   - Spring Boot migration? (if < 3.0)
   - Jakarta migration? (if javax.* imports found)
   - JUnit 5 migration? (if JUnit 4 patterns found)
@@ -104,15 +104,15 @@ analysis_expert_prompt: |
   STEP 2: Create tasks at the right granularity
 
   TASK SIZE: One logical step = action + verification + commit
-  - GOOD: "Upgrade to Java 21 and verify (compile + test pass)"
+  - GOOD: "Upgrade to Java {target_java_version} and verify (compile + test pass)"
   - BAD: "Run recipe" then "Run compile" then "Run test" (too granular)
   - BAD: "Complete all migrations" (too coarse)
 
   TARGET: 15-25 total tasks, 2-4 tasks per applicable phase
 
   IMPORTANT - DO NOT include recipe names in tasks:
-  - GOOD: "Upgrade to Java 21 and verify"
-  - BAD: "Execute recipe org.openrewrite.java.migrate.UpgradeToJava21"
+  - GOOD: "Upgrade to Java {target_java_version} and verify"
+  - BAD: "Execute recipe org.openrewrite.java.migrate.UpgradeToJavaXX"
   The execution agent determines which recipes to use. Define WHAT, not HOW.
 
   PHASE STRUCTURE (include only phases that apply):
@@ -123,9 +123,9 @@ analysis_expert_prompt: |
   ## OPENREWRITE SETUP (always include)
   - [ ] Add OpenRewrite Maven plugin and verify compilation
 
-  ## JAVA 21 MIGRATION (if Java < 21)
-  - [ ] Upgrade to Java 21 and verify (compile + test pass)
-  - [ ] Commit Java 21 changes
+  ## JAVA {target_java_version} MIGRATION (if Java < {target_java_version})
+  - [ ] Upgrade to Java {target_java_version} and verify (compile + test pass)
+  - [ ] Commit Java {target_java_version} changes
 
   ## SPRING BOOT 3 MIGRATION (if Spring Boot < 3.0, skip if no Spring Boot)
   - [ ] Migrate to Spring Boot 3 and verify (compile + test pass)

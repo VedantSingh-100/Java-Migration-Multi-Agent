@@ -1,0 +1,1013 @@
+{
+  "timestamp": "20251215_112742",
+  "summary": {
+    "total": 27,
+    "build_success": 18,
+    "java_version_correct": 0,
+    "test_count_maintained": 17,
+    "test_methods_invariant": 23,
+    "maximal_migration": 23,
+    "fully_passing": 0
+  },
+  "metrics_summary": {
+    "total_llm_calls": 4990,
+    "total_duration_seconds": 0,
+    "total_cost_usd": 121.112,
+    "total_tokens": 39716005
+  },
+  "results": [
+    {
+      "repo": "zeroual-omar/config-server",
+      "base_commit": "d7801ef6ab7fbb7ff838da860b200646bf8c47ee",
+      "repo_path": "repositories_sonnet35/zeroual-omar_config-server",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/zeroual-omar_config-server"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "xVir/api-ai-java-webhook",
+      "base_commit": "ee93847a8d3fb39743a23bb094929ccda4f2c064",
+      "repo_path": "repositories_sonnet35/xVir_api-ai-java-webhook",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 138,
+          "duration_seconds": null,
+          "total_cost_usd": 3.5256,
+          "total_tokens": 1152112,
+          "prompt_tokens": 1146343,
+          "response_tokens": 5769
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 138,
+        "duration_seconds": null,
+        "total_cost_usd": 3.5256,
+        "total_tokens": 1152112,
+        "prompt_tokens": 1146343,
+        "response_tokens": 5769
+      }
+    },
+    {
+      "repo": "JaroslavTulach/heapdump",
+      "base_commit": "87042b6e4f8b58dd49cb0df3bd6867621f5d5e27",
+      "repo_path": "repositories_sonnet35/JaroslavTulach_heapdump",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/JaroslavTulach_heapdump"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "iKubernetes/spring-boot-helloWorld",
+      "base_commit": "fea6fe43e54f3f0ed434b5f2f2b3e1c3e938d8e8",
+      "repo_path": "repositories_sonnet35/iKubernetes_spring-boot-helloWorld",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/iKubernetes_spring-boot-helloWorld"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "serpro69/kotlin-aspectj-maven-example",
+      "base_commit": "c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d",
+      "repo_path": "repositories_sonnet35/serpro69_kotlin-aspectj-maven-example",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 2,
+        "actual_test_count": 2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 120,
+          "duration_seconds": null,
+          "total_cost_usd": 2.3407,
+          "total_tokens": 761680,
+          "prompt_tokens": 757038,
+          "response_tokens": 4642
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 120,
+        "duration_seconds": null,
+        "total_cost_usd": 2.3407,
+        "total_tokens": 761680,
+        "prompt_tokens": 757038,
+        "response_tokens": 4642
+      }
+    },
+    {
+      "repo": "SimpleProgramming/springboot-security-simple-jwt",
+      "base_commit": "de69c334bab277be94605c4807958822b2865494",
+      "repo_path": "repositories_sonnet35/SimpleProgramming_springboot-security-simple-jwt",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 196,
+          "duration_seconds": null,
+          "total_cost_usd": 4.8126,
+          "total_tokens": 1575707,
+          "prompt_tokens": 1568583,
+          "response_tokens": 7124
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 196,
+        "duration_seconds": null,
+        "total_cost_usd": 4.8126,
+        "total_tokens": 1575707,
+        "prompt_tokens": 1568583,
+        "response_tokens": 7124
+      }
+    },
+    {
+      "repo": "fromi/spring-google-openidconnect",
+      "base_commit": "7e29fdfa27f41848dd95f3788c088bffa235888f",
+      "repo_path": "repositories_sonnet35/fromi_spring-google-openidconnect",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 183,
+          "duration_seconds": null,
+          "total_cost_usd": 4.3869,
+          "total_tokens": 1444193,
+          "prompt_tokens": 1439670,
+          "response_tokens": 4523
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 183,
+        "duration_seconds": null,
+        "total_cost_usd": 4.3869,
+        "total_tokens": 1444193,
+        "prompt_tokens": 1439670,
+        "response_tokens": 4523
+      }
+    },
+    {
+      "repo": "dilagurung/java-request-interceptor",
+      "base_commit": "57406451e1c81c101f03cc78d3087e30c8e1375b",
+      "repo_path": "repositories_sonnet35/dilagurung_java-request-interceptor",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/dilagurung_java-request-interceptor"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "m1l4n54v1c/meetup",
+      "base_commit": "b3492a44aebc7542007a79ed263340a61026aa2c",
+      "repo_path": "repositories_sonnet35/m1l4n54v1c_meetup",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 5,
+        "actual_test_count": 5,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 258,
+          "duration_seconds": null,
+          "total_cost_usd": 6.2269,
+          "total_tokens": 2035967,
+          "prompt_tokens": 2026047,
+          "response_tokens": 9920
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 258,
+        "duration_seconds": null,
+        "total_cost_usd": 6.2269,
+        "total_tokens": 2035967,
+        "prompt_tokens": 2026047,
+        "response_tokens": 9920
+      }
+    },
+    {
+      "repo": "software-space/qiyana-aggregator",
+      "base_commit": "02c6e224a997da91b37ed8a8a720a29b12119991",
+      "repo_path": "repositories_sonnet35/software-space_qiyana-aggregator",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 365,
+          "duration_seconds": null,
+          "total_cost_usd": 7.3694,
+          "total_tokens": 2403065,
+          "prompt_tokens": 2389712,
+          "response_tokens": 13353
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 365,
+        "duration_seconds": null,
+        "total_cost_usd": 7.3694,
+        "total_tokens": 2403065,
+        "prompt_tokens": 2389712,
+        "response_tokens": 13353
+      }
+    },
+    {
+      "repo": "TaoZhuGongBoy/enumstatemachine",
+      "base_commit": "c113642308637e8836b2abaf3514b3aa285800b7",
+      "repo_path": "repositories_sonnet35/TaoZhuGongBoy_enumstatemachine",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 5,
+        "actual_test_count": 5,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 191,
+          "duration_seconds": null,
+          "total_cost_usd": 5.0845,
+          "total_tokens": 1667838,
+          "prompt_tokens": 1661087,
+          "response_tokens": 6751
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 191,
+        "duration_seconds": null,
+        "total_cost_usd": 5.0845,
+        "total_tokens": 1667838,
+        "prompt_tokens": 1661087,
+        "response_tokens": 6751
+      }
+    },
+    {
+      "repo": "epignosisx/spring-cloud-config-server-jwt",
+      "base_commit": "49a923eb4c973b930bfe1d5d68f2bc5b25414ced",
+      "repo_path": "repositories_sonnet35/epignosisx_spring-cloud-config-server-jwt",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 156,
+          "duration_seconds": null,
+          "total_cost_usd": 3.1862,
+          "total_tokens": 1040630,
+          "prompt_tokens": 1035271,
+          "response_tokens": 5359
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 156,
+        "duration_seconds": null,
+        "total_cost_usd": 3.1862,
+        "total_tokens": 1040630,
+        "prompt_tokens": 1035271,
+        "response_tokens": 5359
+      }
+    },
+    {
+      "repo": "SimpleProgramming/spring-boot-ehCache-CacheManager",
+      "base_commit": "447e53f8abe9aeff330b544a48b0e740ede750ac",
+      "repo_path": "repositories_sonnet35/SimpleProgramming_spring-boot-ehCache-CacheManager",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 284,
+          "duration_seconds": null,
+          "total_cost_usd": 5.7732,
+          "total_tokens": 1884722,
+          "prompt_tokens": 1874805,
+          "response_tokens": 9917
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 284,
+        "duration_seconds": null,
+        "total_cost_usd": 5.7732,
+        "total_tokens": 1884722,
+        "prompt_tokens": 1874805,
+        "response_tokens": 9917
+      }
+    },
+    {
+      "repo": "fbeaufume/spring-graphql-sample",
+      "base_commit": "d61fe282d8cd1372e5f6a152f77fdce8cb535dd1",
+      "repo_path": "repositories_sonnet35/fbeaufume_spring-graphql-sample",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 4,
+        "actual_test_count": 7,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 428,
+          "duration_seconds": null,
+          "total_cost_usd": 14.8839,
+          "total_tokens": 4922419,
+          "prompt_tokens": 4912701,
+          "response_tokens": 9718
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 428,
+        "duration_seconds": null,
+        "total_cost_usd": 14.8839,
+        "total_tokens": 4922419,
+        "prompt_tokens": 4912701,
+        "response_tokens": 9718
+      }
+    },
+    {
+      "repo": "jobmission/oauth2-client",
+      "base_commit": "6e792b57816b586ca1755dde0b1fa5b93a1eaad9",
+      "repo_path": "repositories_sonnet35/jobmission_oauth2-client",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 207,
+          "duration_seconds": null,
+          "total_cost_usd": 4.501,
+          "total_tokens": 1466997,
+          "prompt_tokens": 1458659,
+          "response_tokens": 8338
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 207,
+        "duration_seconds": null,
+        "total_cost_usd": 4.501,
+        "total_tokens": 1466997,
+        "prompt_tokens": 1458659,
+        "response_tokens": 8338
+      }
+    },
+    {
+      "repo": "jarlehansen/springfox-loader",
+      "base_commit": "cdd05aff73e94bfbb7fc21f0b5fcd78c13eab5c5",
+      "repo_path": "repositories_sonnet35/jarlehansen_springfox-loader",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 1",
+        "Test count decreased: expected >=17, got 8"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 1,
+        "expected_test_count": 17,
+        "actual_test_count": 8,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 406,
+          "duration_seconds": null,
+          "total_cost_usd": 12.4752,
+          "total_tokens": 4118471,
+          "prompt_tokens": 4108492,
+          "response_tokens": 9979
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 406,
+        "duration_seconds": null,
+        "total_cost_usd": 12.4752,
+        "total_tokens": 4118471,
+        "prompt_tokens": 4108492,
+        "response_tokens": 9979
+      }
+    },
+    {
+      "repo": "fedefary/signer",
+      "base_commit": "7fece3bc4a288b1e317da5100954fc229aec448d",
+      "repo_path": "repositories_sonnet35/fedefary_signer",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 134,
+          "duration_seconds": null,
+          "total_cost_usd": 2.5439,
+          "total_tokens": 829352,
+          "prompt_tokens": 824696,
+          "response_tokens": 4656
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 134,
+        "duration_seconds": null,
+        "total_cost_usd": 2.5439,
+        "total_tokens": 829352,
+        "prompt_tokens": 824696,
+        "response_tokens": 4656
+      }
+    },
+    {
+      "repo": "spring-cloud-services-samples/traveler",
+      "base_commit": "399748d9c44bd14d502b61bc0409849a3a4ceec0",
+      "repo_path": "repositories_sonnet35/spring-cloud-services-samples_traveler",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 1",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 1,
+        "expected_test_count": 4,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 222,
+          "duration_seconds": null,
+          "total_cost_usd": 4.7733,
+          "total_tokens": 1565637,
+          "prompt_tokens": 1559269,
+          "response_tokens": 6368
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 222,
+        "duration_seconds": null,
+        "total_cost_usd": 4.7733,
+        "total_tokens": 1565637,
+        "prompt_tokens": 1559269,
+        "response_tokens": 6368
+      }
+    },
+    {
+      "repo": "poetix/ambivalence",
+      "base_commit": "09b34ccdb07541449588804031c8415d4a80c046",
+      "repo_path": "repositories_sonnet35/poetix_ambivalence",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 16,
+        "actual_test_count": 16,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 109,
+          "duration_seconds": null,
+          "total_cost_usd": 2.2225,
+          "total_tokens": 724904,
+          "prompt_tokens": 720923,
+          "response_tokens": 3981
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 109,
+        "duration_seconds": null,
+        "total_cost_usd": 2.2225,
+        "total_tokens": 724904,
+        "prompt_tokens": 720923,
+        "response_tokens": 3981
+      }
+    },
+    {
+      "repo": "284885166/spring-boot-hashids",
+      "base_commit": "4973285e49b48be7b10818fae530159c55af267a",
+      "repo_path": "repositories_sonnet35/284885166_spring-boot-hashids",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 1"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 1,
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 236,
+          "duration_seconds": null,
+          "total_cost_usd": 5.084,
+          "total_tokens": 1665192,
+          "prompt_tokens": 1657820,
+          "response_tokens": 7372
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 236,
+        "duration_seconds": null,
+        "total_cost_usd": 5.084,
+        "total_tokens": 1665192,
+        "prompt_tokens": 1657820,
+        "response_tokens": 7372
+      }
+    },
+    {
+      "repo": "wanwenjie1993/Emoticon",
+      "base_commit": "581c474aaf51de17ca112491ef7db6e0b34b8737",
+      "repo_path": "repositories_sonnet35/wanwenjie1993_Emoticon",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 263,
+          "duration_seconds": null,
+          "total_cost_usd": 6.7485,
+          "total_tokens": 2217379,
+          "prompt_tokens": 2209352,
+          "response_tokens": 8027
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 263,
+        "duration_seconds": null,
+        "total_cost_usd": 6.7485,
+        "total_tokens": 2217379,
+        "prompt_tokens": 2209352,
+        "response_tokens": 8027
+      }
+    },
+    {
+      "repo": "exabrial/form-binding",
+      "base_commit": "5e997ef96e890918de6b10083e612af1471403dc",
+      "repo_path": "repositories_sonnet35/exabrial_form-binding",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 2,
+        "actual_test_count": 2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 129,
+          "duration_seconds": null,
+          "total_cost_usd": 3.3233,
+          "total_tokens": 1087112,
+          "prompt_tokens": 1081952,
+          "response_tokens": 5160
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 129,
+        "duration_seconds": null,
+        "total_cost_usd": 3.3233,
+        "total_tokens": 1087112,
+        "prompt_tokens": 1081952,
+        "response_tokens": 5160
+      }
+    },
+    {
+      "repo": "wangqifox/spring-demo",
+      "base_commit": "ee872c782d93748e00013193e98910f155375ead",
+      "repo_path": "repositories_sonnet35/wangqifox_spring-demo",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 156,
+          "duration_seconds": null,
+          "total_cost_usd": 3.2167,
+          "total_tokens": 1048107,
+          "prompt_tokens": 1042076,
+          "response_tokens": 6031
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 156,
+        "duration_seconds": null,
+        "total_cost_usd": 3.2167,
+        "total_tokens": 1048107,
+        "prompt_tokens": 1042076,
+        "response_tokens": 6031
+      }
+    },
+    {
+      "repo": "dabla/grizzly-spring-boot-starter",
+      "base_commit": "16807691c69750bc9fb2e1bf07e5b97069c454ee",
+      "repo_path": "repositories_sonnet35/dabla_grizzly-spring-boot-starter",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 1"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 1,
+        "expected_test_count": 4,
+        "actual_test_count": 4,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 247,
+          "duration_seconds": null,
+          "total_cost_usd": 5.5743,
+          "total_tokens": 1824308,
+          "prompt_tokens": 1815861,
+          "response_tokens": 8447
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 247,
+        "duration_seconds": null,
+        "total_cost_usd": 5.5743,
+        "total_tokens": 1824308,
+        "prompt_tokens": 1815861,
+        "response_tokens": 8447
+      }
+    },
+    {
+      "repo": "camunda-community-hub/camunda-bpm-junit5",
+      "base_commit": "b4d14f3a981c06c47bc9071182a3c4101453c035",
+      "repo_path": "repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 1",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 1,
+        "expected_test_count": 1,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 110,
+          "duration_seconds": null,
+          "total_cost_usd": 2.3684,
+          "total_tokens": 773306,
+          "prompt_tokens": 769262,
+          "response_tokens": 4044
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 110,
+        "duration_seconds": null,
+        "total_cost_usd": 2.3684,
+        "total_tokens": 773306,
+        "prompt_tokens": 769262,
+        "response_tokens": 4044
+      }
+    },
+    {
+      "repo": "yyenigun/light-calendar",
+      "base_commit": "02331f6f4db184285ce17185a33f1b286992bc1e",
+      "repo_path": "repositories_sonnet35/yyenigun_light-calendar",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 5,
+        "actual_test_count": 5,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 216,
+          "duration_seconds": null,
+          "total_cost_usd": 5.0615,
+          "total_tokens": 1661234,
+          "prompt_tokens": 1654748,
+          "response_tokens": 6486
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 216,
+        "duration_seconds": null,
+        "total_cost_usd": 5.0615,
+        "total_tokens": 1661234,
+        "prompt_tokens": 1654748,
+        "response_tokens": 6486
+      }
+    },
+    {
+      "repo": "erhmutlu/iyzico-kafka-demo",
+      "base_commit": "77ab3bef7eee59883ec2db3b2a1ef136381951ee",
+      "repo_path": "repositories_sonnet35/erhmutlu_iyzico-kafka-demo",
+      "exists": true,
+      "build_success": true,
+      "java_version_correct": false,
+      "test_count_maintained": true,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Java version mismatch: expected 65, got {61}"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 0,
+        "compiled_java_versions": [
+          61
+        ],
+        "expected_test_count": 1,
+        "actual_test_count": 1,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 236,
+          "duration_seconds": null,
+          "total_cost_usd": 5.6295,
+          "total_tokens": 1845673,
+          "prompt_tokens": 1837963,
+          "response_tokens": 7710
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 236,
+        "duration_seconds": null,
+        "total_cost_usd": 5.6295,
+        "total_tokens": 1845673,
+        "prompt_tokens": 1837963,
+        "response_tokens": 7710
+      }
+    }
+  ]
+}

@@ -8,6 +8,11 @@ import yaml
 import os
 from pathlib import Path
 
+# Function to get target Java version dynamically (not cached at import time)
+def get_target_java_version_from_env() -> str:
+    """Get target Java version from environment variable dynamically"""
+    return os.environ.get("TARGET_JAVA_VERSION", "21")
+
 
 class PromptLoader:
     """Utility to load and format prompts from YAML files"""
@@ -46,29 +51,54 @@ class PromptLoader:
         prompt = self.load_prompt(filename, key)
         return prompt.format(**kwargs)
 
-    def get_supervisor_prompt(self) -> str:
+    def get_supervisor_prompt(self, target_java_version: str = None) -> str:
         """Get supervisor prompt"""
-        return self.load_prompt("supervisor.yaml", "supervisor_prompt")
+        version = target_java_version or get_target_java_version_from_env()
+        prompt = self.load_prompt("supervisor.yaml", "supervisor_prompt")
+        try:
+            return prompt.format(target_java_version=version)
+        except KeyError:
+            return prompt
 
-    def get_migration_request(self, project_path: str) -> str:
+    def get_migration_request(self, project_path: str, target_java_version: str = None) -> str:
         """Get formatted migration request"""
+        version = target_java_version or get_target_java_version_from_env()
         return self.format_prompt(
             "supervisor.yaml",
             "migration_request_template",
-            project_path=project_path
+            project_path=project_path,
+            target_java_version=version
         )
 
-    def get_analysis_expert_prompt(self) -> str:
+    def get_analysis_expert_prompt(self, target_java_version: str = None) -> str:
         """Get analysis expert prompt as string for create_react_agent"""
-        return self.load_prompt("analysis_expert.yaml", "analysis_expert_prompt")
+        version = target_java_version or get_target_java_version_from_env()
+        prompt = self.load_prompt("analysis_expert.yaml", "analysis_expert_prompt")
+        # Format with target_java_version if placeholder exists
+        try:
+            return prompt.format(target_java_version=version)
+        except KeyError:
+            return prompt
 
-    def get_execution_expert_prompt(self) -> str:
+    def get_execution_expert_prompt(self, target_java_version: str = None) -> str:
         """Get execution expert prompt as string for create_react_agent"""
-        return self.load_prompt("execution_expert.yaml", "execution_expert_prompt")
+        version = target_java_version or get_target_java_version_from_env()
+        prompt = self.load_prompt("execution_expert.yaml", "execution_expert_prompt")
+        # Format with target_java_version if placeholder exists
+        try:
+            return prompt.format(target_java_version=version)
+        except KeyError:
+            return prompt
 
-    def get_error_expert_prompt(self) -> str:
+    def get_error_expert_prompt(self, target_java_version: str = None) -> str:
         """Get error expert prompt as string for create_react_agent"""
-        return self.load_prompt("error_expert.yaml", "error_expert_prompt")
+        version = target_java_version or get_target_java_version_from_env()
+        prompt = self.load_prompt("error_expert.yaml", "error_expert_prompt")
+        # Format with target_java_version if placeholder exists
+        try:
+            return prompt.format(target_java_version=version)
+        except KeyError:
+            return prompt
 
 
 # Global prompt loader instance
@@ -84,13 +114,18 @@ def get_migration_request(project_path: str) -> str:
     return prompt_loader.get_migration_request(project_path)
 
 
-def get_analysis_expert_prompt() -> ChatPromptTemplate:
-    return prompt_loader.get_analysis_expert_prompt()
+def get_analysis_expert_prompt(target_java_version: str = None) -> str:
+    return prompt_loader.get_analysis_expert_prompt(target_java_version)
 
 
-def get_execution_expert_prompt() -> ChatPromptTemplate:
-    return prompt_loader.get_execution_expert_prompt()
+def get_execution_expert_prompt(target_java_version: str = None) -> str:
+    return prompt_loader.get_execution_expert_prompt(target_java_version)
 
 
-def get_error_expert_prompt() -> ChatPromptTemplate:
-    return prompt_loader.get_error_expert_prompt()
+def get_error_expert_prompt(target_java_version: str = None) -> str:
+    return prompt_loader.get_error_expert_prompt(target_java_version)
+
+
+def get_target_java_version() -> str:
+    """Get the configured target Java version"""
+    return get_target_java_version_from_env()

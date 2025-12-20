@@ -37,5 +37,5 @@ wangqifox/spring-demo,ee872c782d93748e00013193e98910f155375ead,35,955,5,0,1,Apac
 dabla/grizzly-spring-boot-starter,16807691c69750bc9fb2e1bf07e5b97069c454ee,20,974,3,0,4,Apache-2.0,True,True
 camunda-community-hub/camunda-bpm-junit5,b4d14f3a981c06c47bc9071182a3c4101453c035,19,980,4,0,1,Apache-2.0,True,True
 yyenigun/light-calendar,02331f6f4db184285ce17185a33f1b286992bc1e,29,1009,2,0,5,Apache-2.0,True,True
-erhmutlu/iyzico-kafka-demo,77ab3bef7eee59883ec2db3b2a1ef136381951ee,33,1102,4,0,1,MIT,False,True
-spring-attic/tasklauncher-dataflow,7817457f63dfc22a8dc002581e4c56aa8eacab22,12,1185,6,0,7,Apache-2.0,False,False
+erhmutlu/iyzico-kafka-demo,77ab3bef7eee59883ec2db3b2a1ef136381951ee,33,1102,4,0,1,MIT,True,True
+spring-attic/tasklauncher-dataflow,7817457f63dfc22a8dc002581e4c56aa8eacab22,12,1185,6,0,7,Apache-2.0,False,True

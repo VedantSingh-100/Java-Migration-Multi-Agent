@@ -3,7 +3,13 @@ LangChain tools for OpenRewrite operations in migration agents
 """
 from pathlib import Path
 import yaml
+import os
 from langchain_core.tools import tool
+
+
+def get_target_java_version() -> str:
+    """Get the configured target Java version from environment."""
+    return os.environ.get("TARGET_JAVA_VERSION", "21")
 
 @tool
 def create_rewrite_config(project_path: str, recipes: str) -> str:
@@ -13,9 +19,10 @@ def create_rewrite_config(project_path: str, recipes: str) -> str:
 @tool
 def get_available_recipes() -> str:
     """Get list of commonly used OpenRewrite recipes."""
+    target_version = get_target_java_version()
     recipes = {
         "Java Version Migration": [
-            "org.openrewrite.java.migrate.UpgradeToJava21"
+            f"org.openrewrite.java.migrate.UpgradeToJava{target_version}"
         ],
         "Spring Boot Migration": [
             "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0",
@@ -80,30 +87,35 @@ def remove_rewrite_config(project_path: str) -> str:
         return f"Error removing rewrite config: {str(e)}"
 
 @tool
-def suggest_recipes_for_java_version(current_version: str, target_version: str = "21") -> str:
-    """Suggest OpenRewrite recipes based on current and target Java versions."""
-    version_mapping = {
-        "8": ["org.openrewrite.java.migrate.UpgradeToJava21"],
-        "11": ["org.openrewrite.java.migrate.UpgradeToJava21"],
-        "17": ["org.openrewrite.java.migrate.UpgradeToJava21"]
+def suggest_recipes_for_java_version(current_version: str, target_version: str = None) -> str:
+    """Suggest OpenRewrite recipes based on current and target Java versions.
+
+    Target version defaults to TARGET_JAVA_VERSION environment variable (default: 21).
+    """
+    # Use configured target version if not specified
+    if target_version is None:
+        target_version = get_target_java_version()
+
+    # Recipe mapping based on target version
+    recipe_map = {
+        "21": "org.openrewrite.java.migrate.UpgradeToJava21",
+        "17": "org.openrewrite.java.migrate.UpgradeToJava17",
+        "11": "org.openrewrite.java.migrate.UpgradeToJava11",
     }
 
     try:
         current = current_version.replace("1.8", "8")  # Handle 1.8 format
         recipes = []
 
-        if current == "8" and target_version == "21":
-            recipes.extend([
-                "org.openrewrite.java.migrate.UpgradeToJava21",
-            ])
-        elif current == "11" and target_version == "21":
-            recipes.extend([
-                "org.openrewrite.java.migrate.UpgradeToJava21",
-            ])
-        elif current == "17" and target_version == "21":
-            recipes.append("org.openrewrite.java.migrate.UpgradeToJava21")
+        # Get the appropriate recipe for target version
+        target_recipe = recipe_map.get(target_version)
+        if target_recipe:
+            recipes.append(target_recipe)
         else:
-            return f"No specific recipes for Java {current} to {target_version} migration"
+            return f"No specific recipes for Java {current} to {target_version} migration. Target version '{target_version}' not in recipe map."
+
+        if not recipes:
+            return f"No specific recipes needed for Java {current} to {target_version} migration"
 
         return f"Recommended recipes for Java {current} to {target_version}:\n" + "\n".join(f"- {recipe}" for recipe in recipes)
 

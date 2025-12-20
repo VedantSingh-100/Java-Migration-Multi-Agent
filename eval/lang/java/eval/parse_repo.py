@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+import subprocess
 
 from migration_bench.common import git_repo, utils
 from migration_bench.lang.java.eval import parse_file
@@ -12,6 +13,66 @@ TEST_SUB_DIR = "src/test"
 
 LHS_BRANCH = "ported"
 RHS_BRANCH = None
+
+
+def _get_current_ref(root_dir: str) -> str:
+    """
+    Get the current git reference (branch name or commit hash).
+
+    Returns branch name if on a branch, or commit hash if in detached HEAD state.
+    This allows proper restoration after checkout operations.
+    """
+    try:
+        # First try to get the branch name
+        result = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        ref = result.stdout.strip()
+
+        # If HEAD, we're in detached state - get the commit hash instead
+        if ref == "HEAD":
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root_dir,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            ref = result.stdout.strip()
+
+        return ref
+    except subprocess.CalledProcessError as e:
+        logging.warning(f"Failed to get current git ref: {e}")
+        return None
+
+
+def _restore_ref(root_dir: str, ref: str) -> bool:
+    """
+    Restore the git repository to the given reference.
+
+    Args:
+        root_dir: Path to the git repository
+        ref: Branch name or commit hash to checkout
+
+    Returns:
+        True if successful, False otherwise
+    """
+    if ref is None:
+        return False
+
+    try:
+        repo = git_repo.GitRepo(root_dir)
+        result = repo.checkout(ref)
+        if result:
+            logging.info(f"Restored repository to: {ref}")
+        return result
+    except Exception as e:
+        logging.warning(f"Failed to restore git ref '{ref}': {e}")
+        return False
 
 
 def get_repo_test_files(
@@ -48,7 +109,11 @@ def same_repo_test_files(
     early_stop: bool = True,
     **kwargs,
 ):
-    """Whether it's the same test files based on classes and methods."""
+    """Whether it's the same test files based on classes and methods.
+
+    IMPORTANT: This function saves and restores the original git branch/ref
+    to avoid leaving the repository in a detached HEAD state after comparison.
+    """
     if lhs_branch is None and rhs_branch is not None:
         lhs_branch, rhs_branch = rhs_branch, lhs_branch
 
@@ -61,62 +126,78 @@ def same_repo_test_files(
         if early_stop:
             return True, None, None
 
-    # NOTE: Run rhs first, as the branch name might be None.
-    rhs_tests = get_repo_test_files(root_dir, rhs_branch, **kwargs)
+    # CRITICAL FIX: Save current branch/ref BEFORE any checkout operations
+    # This prevents leaving the repo in detached HEAD state after comparison
+    original_ref = _get_current_ref(root_dir)
+    logging.info(f"Saved original git ref for restoration: {original_ref}")
 
-    lhs_tests = get_repo_test_files(root_dir, lhs_branch, **kwargs)
+    try:
+        # NOTE: Run rhs first, as the branch name might be None.
+        rhs_tests = get_repo_test_files(root_dir, rhs_branch, **kwargs)
 
-    if len(lhs_tests) != len(rhs_tests):
+        lhs_tests = get_repo_test_files(root_dir, lhs_branch, **kwargs)
+
+        if len(lhs_tests) != len(rhs_tests):
+            logging.warning(
+                "File count mismatch: %05d => %05d.", len(lhs_tests), len(rhs_tests)
+            )
+            return False, max(len(lhs_tests), len(rhs_tests)), None
+
+        files = sorted(lhs_tests.keys())
+        if files != sorted(rhs_tests.keys()):
+            logging.warning("File mismatch: `%s` => `%s`.", files, sorted(rhs_tests.keys()))
+            return False, len(lhs_tests), None
+
+        issues = []
+        test_issues = []
+        for index, file in enumerate(files):
+            lhs = lhs_tests[file]
+            rhs = rhs_tests[file]
+            if parse_file.same_classes_and_methods(lhs, rhs):
+                continue
+
+            test_is_ok = parse_file.same_classes_and_methods(
+                lhs, rhs, has_test_annotation=True
+            )
+            logging.info(
+                (
+                    "[test_is_ok=%d] Test mismatch (%03d/%03d out of %03d) for `%s`:\n"
+                    "    [LHS] <<<%s>>> vs\n"
+                    "    [RHS] <<<%s>>>"
+                ),
+                int(test_is_ok),
+                len(issues),
+                index,
+                len(files),
+                file,
+                lhs,
+                rhs,
+            )
+            issues.append(file)
+
+            if not test_is_ok:
+                test_issues.append(file)
+
         logging.warning(
-            "File count mismatch: %05d => %05d.", len(lhs_tests), len(rhs_tests)
-        )
-        return False, max(len(lhs_tests), len(rhs_tests)), None
-
-    files = sorted(lhs_tests.keys())
-    if files != sorted(rhs_tests.keys()):
-        logging.warning("File mismatch: `%s` => `%s`.", files, sorted(rhs_tests.keys()))
-        return False, len(lhs_tests)
-
-    issues = []
-    test_issues = []
-    for index, file in enumerate(files):
-        lhs = lhs_tests[file]
-        rhs = rhs_tests[file]
-        if parse_file.same_classes_and_methods(lhs, rhs):
-            continue
-
-        test_is_ok = parse_file.same_classes_and_methods(
-            lhs, rhs, has_test_annotation=True
-        )
-        logging.info(
-            (
-                "[test_is_ok=%d] Test mismatch (%03d/%03d out of %03d) for `%s`:\n"
-                "    [LHS] <<<%s>>> vs\n"
-                "    [RHS] <<<%s>>>"
-            ),
-            int(test_is_ok),
+            "Test mismatch for files (len = %03d/%03d): `%s`\n  test files len = %d: `%s`.",
             len(issues),
-            index,
             len(files),
-            file,
-            lhs,
-            rhs,
+            issues,
+            len(test_issues),
+            test_issues,
         )
-        issues.append(file)
 
-        if not test_is_ok:
-            test_issues.append(file)
+        return not bool(issues), len(files), not bool(test_issues)
 
-    logging.warning(
-        "Test mismatch for files (len = %03d/%03d): `%s`\n  test files len = %d: `%s`.",
-        len(issues),
-        len(files),
-        issues,
-        len(test_issues),
-        test_issues,
-    )
-
-    return not bool(issues), len(files), not bool(test_issues)
+    finally:
+        # CRITICAL: Always restore the original branch/ref after comparison
+        # This ensures the repository is not left in detached HEAD state
+        if original_ref:
+            restored = _restore_ref(root_dir, original_ref)
+            if restored:
+                logging.info(f"Successfully restored repository to: {original_ref}")
+            else:
+                logging.warning(f"Failed to restore repository to: {original_ref}")
 
 
 def main(repos):

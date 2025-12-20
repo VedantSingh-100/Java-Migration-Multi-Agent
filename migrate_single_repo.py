@@ -1,11 +1,65 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import sys
 import pandas as pd
 from loguru import logger
 from src.utils.repo_utils import clone_and_prepare_repo
 from src.utils.logging_config import setup_migration_logging, log_summary, log_console
 from supervisor_orchestrator_refactored import SupervisorMigrationOrchestrator
+
+
+def setup_java_environment(target_version: str = "21") -> bool:
+    """
+    Configure JAVA_HOME and PATH for the target Java version.
+    Returns True if successful, False otherwise.
+    """
+    # Map of Java versions to their installation paths
+    java_paths = {
+        "21": "/usr/lib/jvm/java-21-openjdk",
+        "17": "/usr/lib/jvm/java-17-openjdk",
+        "11": "/usr/lib/jvm/java-11-openjdk",
+        "8": "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.452.b09-2.el9.x86_64",
+    }
+
+    # Get the path for the target version
+    java_home = java_paths.get(target_version)
+
+    if not java_home:
+        print(f"ERROR: Unknown Java version: {target_version}")
+        print(f"Supported versions: {list(java_paths.keys())}")
+        return False
+
+    # Check if the Java installation exists
+    if not os.path.isdir(java_home):
+        print(f"ERROR: Java {target_version} not installed at {java_home}")
+        print("Please install Java using: sudo dnf install java-{version}-openjdk-devel")
+        return False
+
+    # Set JAVA_HOME
+    os.environ["JAVA_HOME"] = java_home
+
+    # Prepend Java bin to PATH
+    java_bin = os.path.join(java_home, "bin")
+    current_path = os.environ.get("PATH", "")
+
+    # Remove any existing Java paths from PATH to avoid conflicts
+    path_parts = current_path.split(os.pathsep)
+    filtered_parts = [p for p in path_parts if "/jvm/" not in p]
+    new_path = os.pathsep.join([java_bin] + filtered_parts)
+    os.environ["PATH"] = new_path
+
+    # Verify the setup
+    java_executable = os.path.join(java_bin, "java")
+    if not os.path.isfile(java_executable):
+        print(f"ERROR: Java executable not found at {java_executable}")
+        return False
+
+    print(f"Java environment configured:")
+    print(f"  JAVA_HOME = {java_home}")
+    print(f"  Java bin  = {java_bin}")
+
+    return True
 
 
 def migrate(repo: str, base_commit: str, csv_path: str):
@@ -134,7 +188,21 @@ if __name__ == "__main__":
         default="./selected.csv",
         help="Path to selected.csv (will be updated on success)",
     )
+    parser.add_argument(
+        "--target-java-version",
+        default=os.environ.get("TARGET_JAVA_VERSION", "21"),
+        help="Target Java version for migration (default: 21). Set via CLI or TARGET_JAVA_VERSION env var.",
+    )
     args = parser.parse_args()
+
+    # Set the target Java version in environment for all components to use
+    os.environ["TARGET_JAVA_VERSION"] = args.target_java_version
+
+    # Setup Java environment BEFORE anything else
+    if not setup_java_environment(args.target_java_version):
+        print(f"FATAL: Failed to configure Java {args.target_java_version} environment")
+        print("Migration cannot proceed without proper Java setup.")
+        sys.exit(1)
 
     # Setup structured logging
     log_files = setup_migration_logging(args.repo)
@@ -142,7 +210,9 @@ if __name__ == "__main__":
     log_summary(f"MIGRATION TARGET: {args.repo}")
     log_summary(f"BASE COMMIT: {args.base_commit}")
     log_summary(f"CSV FILE: {args.csv}")
+    log_summary(f"TARGET JAVA VERSION: {args.target_java_version}")
     log_console(f"Starting migration for {args.repo}")
+    log_console(f"Target Java version: {args.target_java_version}")
 
     try:
         ok = migrate(args.repo, args.base_commit, args.csv)

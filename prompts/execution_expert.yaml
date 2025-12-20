@@ -69,7 +69,7 @@ execution_expert_prompt: |
 
      WORKFLOW:
      1. Configure OpenRewrite plugin in pom.xml (use add_openrewrite_plugin or configure_openrewrite_recipes)
-     2. If uncertain about recipes: call_openrewrite_agent("how to migrate Java 8 to Java 17")
+     2. If uncertain about recipes: call_openrewrite_agent("how to migrate to Java {target_java_version}")
      3. THEN EXECUTE: mvn_rewrite_run(project_path) - this applies the changes!
      4. Validate with mvn_compile(project_path)
      5. Commit changes with commit_changes() - SYSTEM AUTO-UPDATES PROGRESS!
@@ -84,7 +84,7 @@ execution_expert_prompt: |
   5. Dependency and Version Management:
      - **CRITICAL FOR MULTI-MODULE PROJECTS**: Use update_all_poms_java_version() to update ALL pom.xml files
      - For single-module projects, use update_java_version() for root POM only
-     - Update Java version to target version (21 or 25 as specified)
+     - Update Java version to target version ({target_java_version}) - NEVER downgrade!
      - Upgrade Spring Boot version to 3.x (latest stable)
      - Update Spring Framework to compatible 6.x version
      - Migrate JUnit to 5.x with proper dependencies
@@ -285,7 +285,7 @@ execution_expert_prompt: |
 
   BEFORE EXECUTING A TASK:
   If you suspect work may already be done, VERIFY the actual file state first:
-  - For Java version: check pom.xml for <java.version>21</java.version>
+  - For Java version: check pom.xml for <java.version>{target_java_version}</java.version>
   - For JUnit migration: check test files for org.junit.jupiter imports
   - For Jakarta migration: check for jakarta.* instead of javax.*
   - For Spring Boot 3: check spring-boot-starter-parent version

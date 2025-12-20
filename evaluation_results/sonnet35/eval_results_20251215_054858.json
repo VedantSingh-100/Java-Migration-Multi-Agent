@@ -1,0 +1,1009 @@
+{
+  "timestamp": "20251215_054858",
+  "summary": {
+    "total": 40,
+    "build_success": 0,
+    "java_version_correct": 0,
+    "test_count_maintained": 0,
+    "test_methods_invariant": 12,
+    "maximal_migration": 12,
+    "fully_passing": 0
+  },
+  "metrics_summary": {
+    "total_llm_calls": 1112,
+    "total_duration_seconds": 0,
+    "total_cost_usd": 24.187199999999997,
+    "total_tokens": 7876617
+  },
+  "results": [
+    {
+      "repo": "zeroual-omar/config-server",
+      "base_commit": "d7801ef6ab7fbb7ff838da860b200646bf8c47ee",
+      "repo_path": "repositories_sonnet35/zeroual-omar_config-server",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/zeroual-omar_config-server"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "xVir/api-ai-java-webhook",
+      "base_commit": "ee93847a8d3fb39743a23bb094929ccda4f2c064",
+      "repo_path": "repositories_sonnet35/xVir_api-ai-java-webhook",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at ee93847). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "JaroslavTulach/heapdump",
+      "base_commit": "87042b6e4f8b58dd49cb0df3bd6867621f5d5e27",
+      "repo_path": "repositories_sonnet35/JaroslavTulach_heapdump",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/JaroslavTulach_heapdump"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "jonashackt/spring-boot-rest-clientcertificate",
+      "base_commit": "8b3a6c8e1c93a42fb9dc3244b573213208f1e3c8",
+      "repo_path": "repositories_sonnet35/jonashackt_spring-boot-rest-clientcertificate",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 1,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": null,
+          "duration_seconds": null,
+          "total_cost_usd": null,
+          "total_tokens": null,
+          "prompt_tokens": null,
+          "response_tokens": null
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": null,
+        "duration_seconds": null,
+        "total_cost_usd": null,
+        "total_tokens": null,
+        "prompt_tokens": null,
+        "response_tokens": null
+      }
+    },
+    {
+      "repo": "iKubernetes/spring-boot-helloWorld",
+      "base_commit": "fea6fe43e54f3f0ed434b5f2f2b3e1c3e938d8e8",
+      "repo_path": "repositories_sonnet35/iKubernetes_spring-boot-helloWorld",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/iKubernetes_spring-boot-helloWorld"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "serpro69/kotlin-aspectj-maven-example",
+      "base_commit": "c05c5953ff3bac7a1184fe6ef1cdcd7b76181e2d",
+      "repo_path": "repositories_sonnet35/serpro69_kotlin-aspectj-maven-example",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at c05c595). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "SimpleProgramming/springboot-security-simple-jwt",
+      "base_commit": "de69c334bab277be94605c4807958822b2865494",
+      "repo_path": "repositories_sonnet35/SimpleProgramming_springboot-security-simple-jwt",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at de69c33). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "lkrnac/blog-2014-12-06-mock-spring-bean",
+      "base_commit": "396af50db7af42d23dde0c59c0e5e74e3467eb49",
+      "repo_path": "repositories_sonnet35/lkrnac_blog-2014-12-06-mock-spring-bean",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 152,
+          "duration_seconds": null,
+          "total_cost_usd": 3.2319,
+          "total_tokens": 1048248,
+          "prompt_tokens": 1040984,
+          "response_tokens": 7264
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 152,
+        "duration_seconds": null,
+        "total_cost_usd": 3.2319,
+        "total_tokens": 1048248,
+        "prompt_tokens": 1040984,
+        "response_tokens": 7264
+      }
+    },
+    {
+      "repo": "BjoernKW/oauth2-with-jira",
+      "base_commit": "d24180b10d3bd803524dc858db1e01f41bfe8dfe",
+      "repo_path": "repositories_sonnet35/BjoernKW_oauth2-with-jira",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 1,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 192,
+          "duration_seconds": null,
+          "total_cost_usd": 3.514,
+          "total_tokens": 1130882,
+          "prompt_tokens": 1120771,
+          "response_tokens": 10111
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 192,
+        "duration_seconds": null,
+        "total_cost_usd": 3.514,
+        "total_tokens": 1130882,
+        "prompt_tokens": 1120771,
+        "response_tokens": 10111
+      }
+    },
+    {
+      "repo": "fromi/spring-google-openidconnect",
+      "base_commit": "7e29fdfa27f41848dd95f3788c088bffa235888f",
+      "repo_path": "repositories_sonnet35/fromi_spring-google-openidconnect",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 7e29fdf). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "dilagurung/java-request-interceptor",
+      "base_commit": "57406451e1c81c101f03cc78d3087e30c8e1375b",
+      "repo_path": "repositories_sonnet35/dilagurung_java-request-interceptor",
+      "exists": false,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository path does not exist: repositories_sonnet35/dilagurung_java-request-interceptor"
+      ],
+      "details": {},
+      "migration_metrics": {}
+    },
+    {
+      "repo": "Artur-/a-vaadin-helper",
+      "base_commit": "84c6e9d4d040fc04d042b7d92414844825553976",
+      "repo_path": "repositories_sonnet35/Artur-_a-vaadin-helper",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 3,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 133,
+          "duration_seconds": null,
+          "total_cost_usd": 2.0415,
+          "total_tokens": 661783,
+          "prompt_tokens": 657103,
+          "response_tokens": 4680
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 133,
+        "duration_seconds": null,
+        "total_cost_usd": 2.0415,
+        "total_tokens": 661783,
+        "prompt_tokens": 657103,
+        "response_tokens": 4680
+      }
+    },
+    {
+      "repo": "m1l4n54v1c/meetup",
+      "base_commit": "b3492a44aebc7542007a79ed263340a61026aa2c",
+      "repo_path": "repositories_sonnet35/m1l4n54v1c_meetup",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at b3492a4). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "software-space/qiyana-aggregator",
+      "base_commit": "02c6e224a997da91b37ed8a8a720a29b12119991",
+      "repo_path": "repositories_sonnet35/software-space_qiyana-aggregator",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 02c6e22). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "TaoZhuGongBoy/enumstatemachine",
+      "base_commit": "c113642308637e8836b2abaf3514b3aa285800b7",
+      "repo_path": "repositories_sonnet35/TaoZhuGongBoy_enumstatemachine",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at c113642). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "epignosisx/spring-cloud-config-server-jwt",
+      "base_commit": "49a923eb4c973b930bfe1d5d68f2bc5b25414ced",
+      "repo_path": "repositories_sonnet35/epignosisx_spring-cloud-config-server-jwt",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 49a923e). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "uzxmx/javasist-demo",
+      "base_commit": "a83c84e81d437383fbf1592b429ece32344727c2",
+      "repo_path": "repositories_sonnet35/uzxmx_javasist-demo",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 4,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 92,
+          "duration_seconds": null,
+          "total_cost_usd": 2.3108,
+          "total_tokens": 756563,
+          "prompt_tokens": 753140,
+          "response_tokens": 3423
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 92,
+        "duration_seconds": null,
+        "total_cost_usd": 2.3108,
+        "total_tokens": 756563,
+        "prompt_tokens": 753140,
+        "response_tokens": 3423
+      }
+    },
+    {
+      "repo": "SimpleProgramming/spring-boot-ehCache-CacheManager",
+      "base_commit": "447e53f8abe9aeff330b544a48b0e740ede750ac",
+      "repo_path": "repositories_sonnet35/SimpleProgramming_spring-boot-ehCache-CacheManager",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 447e53f). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "jenkinsci/chef-identity-plugin",
+      "base_commit": "bb784cd67b245a97c06e51e6dc477fe21355d8d7",
+      "repo_path": "repositories_sonnet35/jenkinsci_chef-identity-plugin",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 8,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": null,
+          "duration_seconds": null,
+          "total_cost_usd": null,
+          "total_tokens": null,
+          "prompt_tokens": null,
+          "response_tokens": null
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": null,
+        "duration_seconds": null,
+        "total_cost_usd": null,
+        "total_tokens": null,
+        "prompt_tokens": null,
+        "response_tokens": null
+      }
+    },
+    {
+      "repo": "hzpz/mongeez-spring-boot-starter",
+      "base_commit": "15366a4b02bc743f31cd030636872bd276259811",
+      "repo_path": "repositories_sonnet35/hzpz_mongeez-spring-boot-starter",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 8,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": null,
+          "duration_seconds": null,
+          "total_cost_usd": null,
+          "total_tokens": null,
+          "prompt_tokens": null,
+          "response_tokens": null
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": null,
+        "duration_seconds": null,
+        "total_cost_usd": null,
+        "total_tokens": null,
+        "prompt_tokens": null,
+        "response_tokens": null
+      }
+    },
+    {
+      "repo": "fbeaufume/spring-graphql-sample",
+      "base_commit": "d61fe282d8cd1372e5f6a152f77fdce8cb535dd1",
+      "repo_path": "repositories_sonnet35/fbeaufume_spring-graphql-sample",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at d61fe28). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "jobmission/oauth2-client",
+      "base_commit": "6e792b57816b586ca1755dde0b1fa5b93a1eaad9",
+      "repo_path": "repositories_sonnet35/jobmission_oauth2-client",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 6e792b5). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "jarlehansen/springfox-loader",
+      "base_commit": "cdd05aff73e94bfbb7fc21f0b5fcd78c13eab5c5",
+      "repo_path": "repositories_sonnet35/jarlehansen_springfox-loader",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at cdd05af). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "fedefary/signer",
+      "base_commit": "7fece3bc4a288b1e317da5100954fc229aec448d",
+      "repo_path": "repositories_sonnet35/fedefary_signer",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 7fece3b). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "spring-cloud-services-samples/traveler",
+      "base_commit": "399748d9c44bd14d502b61bc0409849a3a4ceec0",
+      "repo_path": "repositories_sonnet35/spring-cloud-services-samples_traveler",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 399748d). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "rupert-madden-abbott/jcommander-spring-boot-starter",
+      "base_commit": "9724d009990daddd60d025cdf1fe614bfc82343a",
+      "repo_path": "repositories_sonnet35/rupert-madden-abbott_jcommander-spring-boot-starter",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 9724d00). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "poetix/ambivalence",
+      "base_commit": "09b34ccdb07541449588804031c8415d4a80c046",
+      "repo_path": "repositories_sonnet35/poetix_ambivalence",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 09b34cc). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "DickChesterwood/fleetman-webapp",
+      "base_commit": "8bb27b695219979d0da44b13b927c320885d26d9",
+      "repo_path": "repositories_sonnet35/DickChesterwood_fleetman-webapp",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 1,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 145,
+          "duration_seconds": null,
+          "total_cost_usd": 3.1577,
+          "total_tokens": 1030772,
+          "prompt_tokens": 1025320,
+          "response_tokens": 5452
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 145,
+        "duration_seconds": null,
+        "total_cost_usd": 3.1577,
+        "total_tokens": 1030772,
+        "prompt_tokens": 1025320,
+        "response_tokens": 5452
+      }
+    },
+    {
+      "repo": "jzheaux/resolutions",
+      "base_commit": "5632a44cc9673bbf7b43e807b97d38c89b6bc1bf",
+      "repo_path": "repositories_sonnet35/jzheaux_resolutions",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 1,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 107,
+          "duration_seconds": null,
+          "total_cost_usd": 1.9947,
+          "total_tokens": 646608,
+          "prompt_tokens": 642037,
+          "response_tokens": 4571
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 107,
+        "duration_seconds": null,
+        "total_cost_usd": 1.9947,
+        "total_tokens": 646608,
+        "prompt_tokens": 642037,
+        "response_tokens": 4571
+      }
+    },
+    {
+      "repo": "knes1/springmockedtests",
+      "base_commit": "10bba566a28c3a26404dd4af5d02a2b26ced7687",
+      "repo_path": "repositories_sonnet35/knes1_springmockedtests",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 1,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": 291,
+          "duration_seconds": null,
+          "total_cost_usd": 7.9366,
+          "total_tokens": 2601761,
+          "prompt_tokens": 2590817,
+          "response_tokens": 10944
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": 291,
+        "duration_seconds": null,
+        "total_cost_usd": 7.9366,
+        "total_tokens": 2601761,
+        "prompt_tokens": 2590817,
+        "response_tokens": 10944
+      }
+    },
+    {
+      "repo": "284885166/spring-boot-hashids",
+      "base_commit": "4973285e49b48be7b10818fae530159c55af267a",
+      "repo_path": "repositories_sonnet35/284885166_spring-boot-hashids",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 4973285). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "xebia-os/xebia-archunit-extension",
+      "base_commit": "de7cdd4d36f2fd30b5a7167d3711f18d8a9f6064",
+      "repo_path": "repositories_sonnet35/xebia-os_xebia-archunit-extension",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 19,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": null,
+          "duration_seconds": null,
+          "total_cost_usd": null,
+          "total_tokens": null,
+          "prompt_tokens": null,
+          "response_tokens": null
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": null,
+        "duration_seconds": null,
+        "total_cost_usd": null,
+        "total_tokens": null,
+        "prompt_tokens": null,
+        "response_tokens": null
+      }
+    },
+    {
+      "repo": "wanwenjie1993/Emoticon",
+      "base_commit": "581c474aaf51de17ca112491ef7db6e0b34b8737",
+      "repo_path": "repositories_sonnet35/wanwenjie1993_Emoticon",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 581c474). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "exabrial/form-binding",
+      "base_commit": "5e997ef96e890918de6b10083e612af1471403dc",
+      "repo_path": "repositories_sonnet35/exabrial_form-binding",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 5e997ef). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "wangqifox/spring-demo",
+      "base_commit": "ee872c782d93748e00013193e98910f155375ead",
+      "repo_path": "repositories_sonnet35/wangqifox_spring-demo",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at ee872c7). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "dabla/grizzly-spring-boot-starter",
+      "base_commit": "16807691c69750bc9fb2e1bf07e5b97069c454ee",
+      "repo_path": "repositories_sonnet35/dabla_grizzly-spring-boot-starter",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 1680769). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "camunda-community-hub/camunda-bpm-junit5",
+      "base_commit": "b4d14f3a981c06c47bc9071182a3c4101453c035",
+      "repo_path": "repositories_sonnet35/camunda-community-hub_camunda-bpm-junit5",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at b4d14f3). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "yyenigun/light-calendar",
+      "base_commit": "02331f6f4db184285ce17185a33f1b286992bc1e",
+      "repo_path": "repositories_sonnet35/yyenigun_light-calendar",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 02331f6). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "erhmutlu/iyzico-kafka-demo",
+      "base_commit": "77ab3bef7eee59883ec2db3b2a1ef136381951ee",
+      "repo_path": "repositories_sonnet35/erhmutlu_iyzico-kafka-demo",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": false,
+      "maximal_migration": false,
+      "overall_pass": false,
+      "errors": [
+        "Repository is in detached HEAD state: (HEAD detached at 77ab3be). Please checkout a proper branch before evaluation."
+      ],
+      "details": {
+        "branch_state": "detached_head"
+      },
+      "migration_metrics": {}
+    },
+    {
+      "repo": "spring-attic/tasklauncher-dataflow",
+      "base_commit": "7817457f63dfc22a8dc002581e4c56aa8eacab22",
+      "repo_path": "repositories_sonnet35/spring-attic_tasklauncher-dataflow",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": false,
+      "test_methods_invariant": true,
+      "maximal_migration": true,
+      "overall_pass": false,
+      "errors": [
+        "Maven build failed with return code 127",
+        "Unable to determine test count"
+      ],
+      "details": {
+        "current_branch": "migration-base",
+        "build_return_code": 127,
+        "expected_test_count": 7,
+        "actual_test_count": -2,
+        "test_methods_same": true,
+        "migration_metrics": {
+          "llm_calls": null,
+          "duration_seconds": null,
+          "total_cost_usd": null,
+          "total_tokens": null,
+          "prompt_tokens": null,
+          "response_tokens": null
+        }
+      },
+      "migration_metrics": {
+        "llm_calls": null,
+        "duration_seconds": null,
+        "total_cost_usd": null,
+        "total_tokens": null,
+        "prompt_tokens": null,
+        "response_tokens": null
+      }
+    }
+  ]
+}

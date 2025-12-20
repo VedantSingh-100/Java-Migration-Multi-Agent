@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from langchain_core.tools import tool
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Tuple
 import requests
 import json
 import re
@@ -18,6 +18,54 @@ from src.utils.logging_config import log_summary
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+# =============================================================================
+# JAVA VERSION GUARDRAIL
+# =============================================================================
+
+def get_target_java_version() -> str:
+    """Get the configured target Java version from environment."""
+    return os.environ.get("TARGET_JAVA_VERSION", "21")
+
+
+def parse_java_version(version: str) -> int:
+    """Parse Java version string to comparable integer.
+
+    Handles: "8", "11", "17", "21", "1.8", "1.11", etc.
+    """
+    if not version:
+        return 0
+    version = str(version).strip()
+    # Handle "1.8" format -> "8"
+    if version.startswith("1."):
+        version = version[2:]
+    try:
+        return int(version)
+    except ValueError:
+        return 0
+
+
+def check_java_version_downgrade(requested_version: str) -> Tuple[bool, str]:
+    """Check if the requested Java version is a downgrade from target.
+
+    Returns:
+        (is_blocked, message) - True if downgrade should be blocked
+    """
+    target = get_target_java_version()
+    target_int = parse_java_version(target)
+    requested_int = parse_java_version(requested_version)
+
+    if requested_int < target_int:
+        msg = (
+            f"🚫 BLOCKED: Java version downgrade detected! "
+            f"Requested: Java {requested_version}, Target: Java {target}. "
+            f"Downgrading is forbidden. Fix dependency versions instead of lowering Java version."
+        )
+        log_summary(f"GUARDRAIL BLOCKED: Java downgrade {requested_version} < {target}")
+        return True, msg
+
+    return False, ""
 
 @tool
 def find_all_poms(project_path: str) -> str:
@@ -193,7 +241,12 @@ def get_java_version(project_path: str) -> str:
 
 @tool
 def update_java_version_in_pom(pom_file_path: str, java_version: str) -> str:
-    """Update Java version in a specific pom.xml file."""
+    """Update Java version in a specific pom.xml file. WILL BLOCK downgrades below target version."""
+    # GUARDRAIL: Check for downgrade
+    is_blocked, msg = check_java_version_downgrade(java_version)
+    if is_blocked:
+        return msg
+
     try:
         pom_path = Path(pom_file_path)
         if not pom_path.exists():
@@ -238,7 +291,12 @@ def update_java_version_in_pom(pom_file_path: str, java_version: str) -> str:
 
 @tool
 def update_all_poms_java_version(project_path: str, java_version: str) -> str:
-    """Update Java version in ALL pom.xml files in the project (for multi-module projects)."""
+    """Update Java version in ALL pom.xml files in the project. WILL BLOCK downgrades below target version."""
+    # GUARDRAIL: Check for downgrade
+    is_blocked, msg = check_java_version_downgrade(java_version)
+    if is_blocked:
+        return msg
+
     try:
         project_dir = Path(project_path)
         if not project_dir.exists():
@@ -277,7 +335,12 @@ def update_all_poms_java_version(project_path: str, java_version: str) -> str:
 
 @tool
 def update_java_version(project_path: str, java_version: str) -> str:
-    """Update Java version in root pom.xml properties. For multi-module projects, use update_all_poms_java_version instead."""
+    """Update Java version in root pom.xml. WILL BLOCK downgrades below target version."""
+    # GUARDRAIL: Check for downgrade
+    is_blocked, msg = check_java_version_downgrade(java_version)
+    if is_blocked:
+        return msg
+
     pom_path = Path(project_path) / "pom.xml"
     try:
         content = pom_path.read_text(encoding='utf-8')
@@ -353,15 +416,20 @@ def add_openrewrite_plugin(project_path: str) -> str:
             log_summary(f"MAVEN ADD OPENREWRITE PLUGIN ALREADY EXISTS: Plugin already present in {pom_path}")
             return "OpenRewrite plugin already present in pom.xml"
 
+        # Get target Java version from environment (default: 21)
+        target_version = get_target_java_version()
+        java_upgrade_recipe = f"org.openrewrite.java.migrate.UpgradeToJava{target_version}"
+        log_summary(f"MAVEN ADD OPENREWRITE PLUGIN: Using recipe {java_upgrade_recipe} for target Java {target_version}")
+
         # Version 5.42.0 is stable and has all modern migration recipes
-        plugin_xml = '''        <plugin>
+        plugin_xml = f'''        <plugin>
                 <groupId>org.openrewrite.maven</groupId>
                 <artifactId>rewrite-maven-plugin</artifactId>
                 <version>5.42.0</version>
                 <configuration>
                     <exportDatatables>true</exportDatatables>
                     <activeRecipes>
-                        <recipe>org.openrewrite.java.migrate.UpgradeToJava21</recipe>
+                        <recipe>{java_upgrade_recipe}</recipe>
                     </activeRecipes>
                 </configuration>
                 <dependencies>
