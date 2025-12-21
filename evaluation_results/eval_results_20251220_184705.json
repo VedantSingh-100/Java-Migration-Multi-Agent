@@ -1,0 +1,26 @@
+{
+  "timestamp": "20251220_184705",
+  "summary": {
+    "total": 1,
+    "build_success": 0,
+    "java_version_correct": 0,
+    "test_count_maintained": 1,
+    "test_methods_invariant": 1,
+    "maximal_migration": 0,
+    "fully_passing": 0
+  },
+  "metrics_summary": {
+    "total_llm_calls": 0,
+    "total_duration_seconds": 0,
+    "total_cost_usd": 0.0,
+    "total_tokens": 0
+  },
+  "results": [
+    {
+      "repo": "fedefary/signer",
+      "base_commit": "7fece3bc4a288b1e317da5100954fc229aec448d",
+      "repo_path": "/home/vhsingh/Java_Migration/repositories/fedefary_signer",
+      "exists": true,
+      "build_success": false,
+      "java_version_correct": false,
+      "test_count_maintained": 
